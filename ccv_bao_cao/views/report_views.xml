@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="alpha_report_form_inherit" model="ir.ui.view">
+        <field name="name">alpha.report.form.inherit</field>
+        <field name="model">alpha.report</field>
+        <field name="inherit_id" ref="ccv_sql.form_alpha_report_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position='after'>
+                <field name="is_foreign_currency" invisible="1"/>
+            </xpath>
+            <xpath expr="//notebook" position='inside'>
+                <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_thu')]}">
+                    <field name="beta_line1_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_thu')]}">
+                        <tree>
+                            <field name="account_id" invisible="1"/>
+                            <field name="partner_id" invisible="1"/>
+                            <field name="parent_id" invisible="1"/>
+                            <field name="is_foreign_currency" invisible="1"/>
+                            <field name="customer_name"/>
+                            <field name="customer_code"/>
+                            <field name="customer_group"/>
+                            <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="start_credit" sum="total_start_credit"/>
+                            <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="start_debit" sum="total_start_debit"/>
+                            <field name="ps_credit_nt" sum="total_ps_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="ps_credit" sum="total_ps_credit"/>
+                            <field name="ps_debit_nt" sum="total_ps_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="ps_debit" sum="total_ps_debit"/>
+                            <field name="end_credit_nt" sum="total_end_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="end_credit" sum="total_end_credit"/>
+                            <field name="end_debit_nt" sum="total_end_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="end_debit" sum="total_end_debit"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_tra')]}">
+                    <field name="beta_line2_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_tra')]}">
+                        <tree>
+                            <field name="account_id" invisible="1"/>
+                            <field name="partner_id" invisible="1"/>
+                            <field name="parent_id" invisible="1"/>
+                            <field name="is_foreign_currency" invisible="1"/>
+                            <field name="customer_name"/>
+                            <field name="customer_code"/>
+                            <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="start_credit" sum="total_start_credit"/>
+                            <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="start_debit" sum="total_start_debit"/>
+                            <field name="ps_credit_nt" sum="total_ps_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="ps_credit" sum="total_ps_credit"/>
+                            <field name="ps_debit_nt" sum="total_ps_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="ps_debit" sum="total_ps_debit"/>
+                            <field name="end_credit_nt" sum="total_end_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="end_credit" sum="total_end_credit"/>
+                            <field name="end_debit_nt" sum="total_end_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="end_debit" sum="total_end_debit"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_thu_usd')]}">
+                    <field name="beta_line3_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_thu_usd')]}">
+                        <tree>
+                            <field name="account_id" invisible="1"/>
+                            <field name="partner_id" invisible="1"/>
+                            <field name="parent_id" invisible="1"/>
+                            <field name="is_foreign_currency" invisible="1"/>
+                            <field name="customer_name"/>
+                            <field name="customer_code"/>                            <field name="address"/>
+                            <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="start_credit" sum="total_start_credit"/>
+                            <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="start_debit" sum="total_start_debit"/>
+                            <field name="ps_credit_nt" sum="total_ps_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="ps_credit" sum="total_ps_credit"/>
+                            <field name="ps_debit_nt" sum="total_ps_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="ps_debit" sum="total_ps_debit"/>
+                            <field name="end_credit_nt" sum="total_end_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="end_credit" sum="total_end_credit"/>
+                            <field name="end_debit_nt" sum="total_end_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="end_debit" sum="total_end_debit"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_tra_usd')]}">
+                    <field name="beta_line4_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_tra_usd')]}">
+                        <tree>
+                            <field name="account_id" invisible="1"/>
+                            <field name="partner_id" invisible="1"/>
+                            <field name="parent_id" invisible="1"/>
+                            <field name="is_foreign_currency" invisible="1"/>
+                            <field name="customer_name"/>
+                            <field name="customer_code"/>                            <field name="vat"/>
+                            <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="start_credit" sum="total_start_credit"/>
+                            <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="start_debit" sum="total_start_debit"/>
+                            <field name="ps_credit_nt" sum="total_ps_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="ps_credit" sum="total_ps_credit"/>
+                            <field name="ps_debit_nt" sum="total_ps_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="ps_debit" sum="total_ps_debit"/>
+                            <field name="end_credit_nt" sum="total_end_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="end_credit" sum="total_end_credit"/>
+                            <field name="end_debit_nt" sum="total_end_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                            <field name="end_debit" sum="total_end_debit"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

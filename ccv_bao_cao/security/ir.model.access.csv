@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_beta_tong_hop_cong_no,access.beta_tong_hop_cong_no,model_report_line_mixin,base.group_user,1,1,1,1
+access_beta.report.line1,access.beta_report_line1,model_beta_report_line1,base.group_user,1,1,1,1
+access_beta.report.line2,access.beta_report_line2,model_beta_report_line2,base.group_user,1,1,1,1
+access_beta.report.line3,access.beta_report_line3,model_beta_report_line3,base.group_user,1,1,1,1
+access_beta.report.line4,access.beta_report_line4,model_beta_report_line4,base.group_user,1,1,1,1

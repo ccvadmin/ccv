@@ -1,0 +1,37 @@
+<odoo>
+    <data>
+        <template id="ccv_add_filter_currency_search_template_template">
+            <button type="button" class="o-no-caret btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                <span class="fa fa-money" aria-hidden="true"></span>
+                Tiền tệ:  
+                <t t-set="currency_value">Tất cả</t>
+                <t t-foreach="options.get('currency_options', [])" t-as="a">
+                    <t t-if="a.get('selected')">
+                        <t t-set="currency_value" t-value="a.get('name')"/>
+                    </t>
+                </t>
+                <t t-esc="currency_value"/>
+            </button>
+            <div class="dropdown-menu o_filter_menu" role="menu">
+                <t t-foreach="options.get('currency_options')" t-as="a">
+                    <a role="menuitem"
+                       class="dropdown-item js_ccv_add_filter_currency_filter"
+                       data-filter="currencies"
+                       t-att-title="a.get('name')" t-att-data-id="a.get('id')"
+                       t-att-data-currency="a.get('name')">
+                       <t t-esc="a.get('name')"/>
+                    </a>
+                </t>
+            </div>
+        </template>
+    
+        <template id="ccv_add_filter_currency_search_template" inherit_id="account_reports.search_template">
+            <xpath expr="//div[hasclass('o_account_reports_filter_date')]" position="after">
+                <div class="btn-group dropdown o_ccv_add_filter_currency_search_template" t-if="report.filter_currency">
+                    <t t-call="ccv_add_filter_currency.ccv_add_filter_currency_search_template_template"/>
+                </div>
+            </xpath>
+        </template>
+    </data>
+    </odoo>
+    

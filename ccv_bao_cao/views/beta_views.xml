@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="tong_hop_cong_no_phai_thu_beta_view_tree" model="ir.ui.view">
+        <field name="name">beta.view.tree.thu</field>
+        <field name="model">beta.report.line1</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="account_id" invisible="1"/>
+                <field name="partner_id" invisible="1"/>
+                <field name="parent_id" invisible="1"/>
+                <field name="is_foreign_currency" invisible="1"/>
+                <field name="customer_name"/>
+                <field name="customer_code"/>
+                <field name="customer_group"/>
+                <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="start_credit" sum="total_start_credit"/>
+                <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="start_debit" sum="total_start_debit"/>
+                <field name="ps_credit_nt" sum="total_ps_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="ps_credit" sum="total_ps_credit"/>
+                <field name="ps_debit_nt" sum="total_ps_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="ps_debit" sum="total_ps_debit"/>
+                <field name="end_credit_nt" sum="total_end_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="end_credit" sum="total_end_credit"/>
+                <field name="end_debit_nt" sum="total_end_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="end_debit" sum="total_end_debit"/>
+            </tree>
+        </field>
+    </record>
+    <record id="tong_hop_cong_no_phai_tra_beta_view_tree" model="ir.ui.view">
+        <field name="name">beta.view.tree.tra</field>
+        <field name="model">beta.report.line2</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="account_id" invisible="1"/>
+                <field name="partner_id" invisible="1"/>
+                <field name="parent_id" invisible="1"/>
+                <field name="is_foreign_currency" invisible="1"/>
+                <field name="customer_name"/>
+                <field name="customer_code"/>
+                <field name="address"/>
+                <field name="vat"/>
+                <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="start_credit" sum="total_start_credit"/>
+                <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="start_debit" sum="total_start_debit"/>
+                <field name="ps_credit_nt" sum="total_ps_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="ps_credit" sum="total_ps_credit"/>
+                <field name="ps_debit_nt" sum="total_ps_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="ps_debit" sum="total_ps_debit"/>
+                <field name="end_credit_nt" sum="total_end_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="end_credit" sum="total_end_credit"/>
+                <field name="end_debit_nt" sum="total_end_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="end_debit" sum="total_end_debit"/>
+            </tree>
+        </field>
+    </record>
+    <record id="tong_hop_cong_no_phai_thu_usd_beta_view_tree" model="ir.ui.view">
+        <field name="name">beta.view.tree.tra</field>
+        <field name="model">beta.report.line3</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="account_id" invisible="1"/>
+                <field name="partner_id" invisible="1"/>
+                <field name="parent_id" invisible="1"/>
+                <field name="is_foreign_currency" invisible="1"/>
+                <field name="customer_name"/>
+                <field name="customer_code"/>
+                <field name="address"/>
+                <field name="vat"/>
+                <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="start_credit" sum="total_start_credit"/>
+                <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="start_debit" sum="total_start_debit"/>
+                <field name="ps_credit_nt" sum="total_ps_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="ps_credit" sum="total_ps_credit"/>
+                <field name="ps_debit_nt" sum="total_ps_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="ps_debit" sum="total_ps_debit"/>
+                <field name="end_credit_nt" sum="total_end_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="end_credit" sum="total_end_credit"/>
+                <field name="end_debit_nt" sum="total_end_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="end_debit" sum="total_end_debit"/>
+            </tree>
+        </field>
+    </record>
+    <record id="tong_hop_cong_no_phai_tra_usd_beta_view_tree" model="ir.ui.view">
+        <field name="name">beta.view.tree.tra</field>
+        <field name="model">beta.report.line4</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="account_id" invisible="1"/>
+                <field name="partner_id" invisible="1"/>
+                <field name="parent_id" invisible="1"/>
+                <field name="is_foreign_currency" invisible="1"/>
+                <field name="customer_name"/>
+                <field name="customer_code"/>
+                <field name="address"/>
+                <field name="vat"/>
+                <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="start_credit" sum="total_start_credit"/>
+                <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="start_debit" sum="total_start_debit"/>
+                <field name="ps_credit_nt" sum="total_ps_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="ps_credit" sum="total_ps_credit"/>
+                <field name="ps_debit_nt" sum="total_ps_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="ps_debit" sum="total_ps_debit"/>
+                <field name="end_credit_nt" sum="total_end_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="end_credit" sum="total_end_credit"/>
+                <field name="end_debit_nt" sum="total_end_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
+                <field name="end_debit" sum="total_end_debit"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
