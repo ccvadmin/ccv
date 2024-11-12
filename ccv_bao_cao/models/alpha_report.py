@@ -7,17 +7,10 @@ _logger = logging.getLogger(__name__)
 
 
 class AlphaReport(models.TransientModel):
-    _name = "alpha.report"
-    # _inherit = "alpha.report"
+    _inherit = "alpha.report"
 
     type = fields.Selection(
-        # selection_add=[
-        #     ("tong_hop_cong_no_phai_thu", "Tổng hợp công nợ phải thu"),
-        #     ("tong_hop_cong_no_phai_tra", "Tổng hợp công nợ phải trả"),
-        #     ("tong_hop_cong_no_phai_thu_usd", "Tổng hợp công nợ phải thu USD"),
-        #     ("tong_hop_cong_no_phai_tra_usd", "Tổng hợp công nợ phải trả USD"),
-        # ]
-        selection=[
+        selection_add=[
             ("tong_hop_cong_no_phai_thu", "Tổng hợp công nợ phải thu"),
             ("tong_hop_cong_no_phai_tra", "Tổng hợp công nợ phải trả"),
             ("tong_hop_cong_no_phai_thu_usd", "Tổng hợp công nợ phải thu USD"),
