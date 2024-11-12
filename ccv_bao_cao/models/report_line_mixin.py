@@ -3,7 +3,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-class BetaLineTongHopCongNo(models.Model):
+class BetaLineTongHopCongNo(models.TransientModel):
     _name = "report.line.mixin"
     _description = "Report Mixin"
 
@@ -13,24 +13,24 @@ class BetaLineTongHopCongNo(models.Model):
     parent_id = fields.Many2one('alpha.report', readonly=True)
 
     # Tiền gốc (Local currency)
-    start_credit = fields.Float(string="Có đầu kỳ", default=0)
-    start_debit = fields.Float(string="Nợ đầu kỳ", default=0)
+    start_credit = fields.Float(string="Có đầu kỳ", default=0, digits=(16, 0))
+    start_debit = fields.Float(string="Nợ đầu kỳ", default=0, digits=(16, 0))
     
-    ps_credit = fields.Float(string="PS có", default=0)
-    ps_debit = fields.Float(string="PS nợ", default=0)
+    ps_credit = fields.Float(string="PS có", default=0, digits=(16, 0))
+    ps_debit = fields.Float(string="PS nợ", default=0, digits=(16, 0))
     
     end_credit = fields.Float(string="Có cuối kỳ", compute="_compute_end_balance", store=True)
     end_debit = fields.Float(string="Nợ cuối kỳ", compute="_compute_end_balance", store=True)
 
     # Ngoại tệ (Foreign currency)
-    start_credit_nt = fields.Float(string="Có đầu kỳ (Ngoại tệ)", default=0)
-    start_debit_nt = fields.Float(string="Nợ đầu kỳ (Ngoại tệ)", default=0)
+    start_credit_nt = fields.Float(string="Có đầu kỳ (Ngoại tệ)", default=0, digits=(16, 2))
+    start_debit_nt = fields.Float(string="Nợ đầu kỳ (Ngoại tệ)", default=0, digits=(16, 2))
     
-    ps_credit_nt = fields.Float(string="PS có (Ngoại tệ)", default=0)
-    ps_debit_nt = fields.Float(string="PS nợ (Ngoại tệ)", default=0)
+    ps_credit_nt = fields.Float(string="PS có (Ngoại tệ)", default=0, digits=(16, 2))
+    ps_debit_nt = fields.Float(string="PS nợ (Ngoại tệ)", default=0, digits=(16, 2))
     
-    end_credit_nt = fields.Float(string="Có cuối kỳ (Ngoại tệ)", compute="_compute_end_balance_nt", store=True)
-    end_debit_nt = fields.Float(string="Nợ cuối kỳ (Ngoại tệ)", compute="_compute_end_balance_nt", store=True)
+    end_credit_nt = fields.Float(string="Có cuối kỳ (Ngoại tệ)", compute="_compute_end_balance_nt", store=True, digits=(16, 2))
+    end_debit_nt = fields.Float(string="Nợ cuối kỳ (Ngoại tệ)", compute="_compute_end_balance_nt", store=True, digits=(16, 2))
 
     # Field phát triển
 

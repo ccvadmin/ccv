@@ -6,31 +6,24 @@ from odoo.modules.module import get_module_resource
 _logger = logging.getLogger(__name__)
 
 
-class AlphaReport(models.Model):
-    # _name = "alpha.report"
-    _inherit = "alpha.report"
+class AlphaReport(models.TransientModel):
+    _name = "alpha.report"
+    # _inherit = "alpha.report"
 
     type = fields.Selection(
-        selection_add=[
+        # selection_add=[
+        #     ("tong_hop_cong_no_phai_thu", "Tổng hợp công nợ phải thu"),
+        #     ("tong_hop_cong_no_phai_tra", "Tổng hợp công nợ phải trả"),
+        #     ("tong_hop_cong_no_phai_thu_usd", "Tổng hợp công nợ phải thu USD"),
+        #     ("tong_hop_cong_no_phai_tra_usd", "Tổng hợp công nợ phải trả USD"),
+        # ]
+        selection=[
             ("tong_hop_cong_no_phai_thu", "Tổng hợp công nợ phải thu"),
             ("tong_hop_cong_no_phai_tra", "Tổng hợp công nợ phải trả"),
             ("tong_hop_cong_no_phai_thu_usd", "Tổng hợp công nợ phải thu USD"),
             ("tong_hop_cong_no_phai_tra_usd", "Tổng hợp công nợ phải trả USD"),
         ]
     )
-
-    # date_from = fields.Date(default=datetime.datetime.now()-datetime.timedelta(days=20))
-    # date_to = fields.Date(default=datetime.datetime.now())
-    # account_id = fields.Many2one('account.account')
-
-    # type = fields.Selection(
-    #     selection=[
-    #         ("tong_hop_cong_no_phai_thu", "Tổng hợp công nợ phải thu"),
-    #         ("tong_hop_cong_no_phai_tra", "Tổng hợp công nợ phải trả"),
-    #         ("tong_hop_cong_no_phai_thu_usd", "Tổng hợp công nợ phải thu USD"),
-    #         ("tong_hop_cong_no_phai_tra_usd", "Tổng hợp công nợ phải trả USD"),
-    #     ]
-    # )
 
     beta_line1_ids = fields.One2many("beta.report.line1",'parent_id', string="Tong hop cong no phai thu")
     beta_line2_ids = fields.One2many("beta.report.line2",'parent_id', string="Tong hop cong no phai tra")

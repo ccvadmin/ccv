@@ -3,7 +3,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-class BetaReportLine1(models.Model):
+class BetaReportLine1(models.TransientModel):
     _name = "beta.report.line1"
     _description = "Tong Hop Cong No Phai Thu"
     _inherit = ["report.line.mixin"]

@@ -9,7 +9,7 @@
     'description': """Bao Cao CCV""",
     'depends': [
         'account',
-        'ccv_sql',
+        # 'ccv_sql',
     ],
     'data': [
         'security/ir.model.access.csv',
