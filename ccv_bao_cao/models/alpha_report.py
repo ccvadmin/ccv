@@ -84,18 +84,22 @@ class AlphaReport(models.TransientModel):
         return self._get_action_view("action_%s_beta_view_tree" % report_type, domain)
 
     def _get_action_view(self, view_name, domain=[]):
-        action = self.env.ref('ccv_bao_cao.%s' % view_name)
+        try:
+            action = self.env.ref('ccv_bao_cao.%s' % view_name)
+        except ValueError:
+            action = None
         if action:
-            if domain != []:
+            if domain:
                 action['domain'] = domain
             return action
         else:
             return {
                 "type": "ir.actions.act_window",
-                "res_model": "alpha.report",
+                "res_model": "beta.report.line1",
                 "view_mode": "tree",
                 "target": "current",
             }
+
 
     ###########################################
     ############  HÀM XUẤT REPORT  ############
