@@ -81,12 +81,11 @@ class AlphaReport(models.TransientModel):
         if report_type:
             ids = getattr(self, all_type.get(report_type)).ids
             domain = [('id', 'in', ids)]
-        return self._get_action_view(report_type + "_beta_view_tree", domain)
+        return self._get_action_view("action_%s_beta_view_tree" % report_type, domain)
 
     def _get_action_view(self, view_name, domain=[]):
         action = self.env.ref('ccv_bao_cao.%s' % view_name)
         if action:
-            action = action.read()[0]
             if domain != []:
                 action['domain'] = domain
             return action
@@ -431,7 +430,7 @@ class AlphaReport(models.TransientModel):
 
         lines = []
         count = 1
-        for data in self.beta_line3_ids:
+        for data in self.beta_line4_ids:
             customer_name       = data.customer_name if data.customer_name else ""
             customer_code       = data.customer_code if data.customer_code else ""
             address             = data.address if data.address else ""
