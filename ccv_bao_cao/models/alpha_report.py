@@ -5,6 +5,17 @@ from odoo.modules.module import get_module_resource
 
 _logger = logging.getLogger(__name__)
 
+ALL_TYPE = {
+    "tong_hop_cong_no_phai_thu": ("Tổng hợp công nợ phải thu", 'beta.report.line1', 'beta_line1_ids'),
+    "tong_hop_cong_no_phai_tra": ("Tổng hợp công nợ phải trả", 'beta.report.line2', 'beta_line2_ids'),
+    "tong_hop_cong_no_phai_thu_usd": ("Tổng hợp công nợ phải thu USD", 'beta.report.line3', 'beta_line3_ids'),
+    "tong_hop_cong_no_phai_tra_usd": ("Tổng hợp công nợ phải trả USD", 'beta.report.line4', 'beta_line4_ids'),
+}
+
+ALL_TYPE_NT = {
+    "tong_hop_cong_no_phai_thu_usd": ("Tổng hợp công nợ phải thu USD", 'beta.report.line3', 'beta_line3_ids'),
+    "tong_hop_cong_no_phai_tra_usd": ("Tổng hợp công nợ phải trả USD", 'beta.report.line4', 'beta_line4_ids'),
+}
 
 class AlphaReport(models.TransientModel):
     _inherit = "alpha.report"
@@ -27,41 +38,23 @@ class AlphaReport(models.TransientModel):
 
     @api.depends("type")
     def _compute_foreign_currency(self):
-        if self.type in [
-            "tong_hop_cong_no_phai_thu_usd",
-            "tong_hop_cong_no_phai_tra_usd",
-        ]:
+        if self.type in ALL_TYPE_NT.keys():
             self.is_foreign_currency = True
         else:
             self.is_foreign_currency = False
 
     def action_confirm(self):
-        if self.type in [
-            "tong_hop_cong_no_phai_tra",
-            "tong_hop_cong_no_phai_thu",
-            "tong_hop_cong_no_phai_thu_usd",
-            "tong_hop_cong_no_phai_tra_usd",
-        ]:
+        if self.type in ALL_TYPE.keys():
             return getattr(self, "get_row_data_" + self.type)()
         return super(AlphaReport, self).action_confirm()
 
     def action_view_tree(self):
-        if self.type in [
-            "tong_hop_cong_no_phai_tra",
-            "tong_hop_cong_no_phai_thu",
-            "tong_hop_cong_no_phai_thu_usd",
-            "tong_hop_cong_no_phai_tra_usd",
-        ]:
+        if self.type in ALL_TYPE.keys():
             return self.beta_view_tree(self.type)
         return super(AlphaReport, self).action_view_tree()
 
     def action_print_report(self):
-        if self.type in [
-            "tong_hop_cong_no_phai_tra",
-            "tong_hop_cong_no_phai_thu",
-            "tong_hop_cong_no_phai_thu_usd",
-            "tong_hop_cong_no_phai_tra_usd",
-        ]:
+        if self.type in ALL_TYPE.keys():
             return getattr(self, self.type + "_report")()
         return super(AlphaReport, self).action_print_report()
 
@@ -70,35 +63,27 @@ class AlphaReport(models.TransientModel):
     ##########################################
 
     def beta_view_tree(self, report_type):
-        all_type = {
-            "tong_hop_cong_no_phai_tra": 'beta_line1_ids',
-            "tong_hop_cong_no_phai_thu": 'beta_line2_ids',
-            "tong_hop_cong_no_phai_thu_usd": 'beta_line3_ids',
-            "tong_hop_cong_no_phai_tra_usd": 'beta_line4_ids',
-        }
         ids = []
         domain = []
-        if report_type:
-            ids = getattr(self, all_type.get(report_type)).ids
-            domain = [('id', 'in', ids)]
-        return self._get_action_view("action_%s_beta_view_tree" % report_type, domain)
+        model_name = ""
+        title = ""
+        if report_type in ALL_TYPE:
+            title, model_name, line_ids_field = ALL_TYPE[report_type]
+            ids = getattr(self, line_ids_field).ids
+            if ids:
+                domain = [('id', 'in', ids)]
+        return self._get_action_view(title, model_name, domain)
 
-    def _get_action_view(self, view_name, domain=[]):
-        try:
-            action = self.env.ref('ccv_bao_cao.%s' % view_name)
-        except ValueError:
-            action = None
-        if action:
-            if domain:
-                action['domain'] = domain
-            return action
-        else:
-            return {
-                "type": "ir.actions.act_window",
-                "res_model": "beta.report.line1",
-                "view_mode": "tree",
-                "target": "current",
-            }
+
+    def _get_action_view(self, title, model_name, domain=[]):
+        return {
+            'name': title,
+            'res_model': model_name,
+            'view_mode': 'tree',
+            'target': 'current',
+            'type': 'ir.actions.act_window',
+            'domain' : domain or []
+        }
 
 
     ###########################################
