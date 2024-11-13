@@ -6,7 +6,7 @@ _logger = logging.getLogger(__name__)
 class BetaLineTongHopCongNo(models.TransientModel):
     _name = "report.line.mixin"
     _description = "Report Mixin"
-
+    
     partner_id = fields.Many2one('res.partner', string="Khách hàng", readonly=True)
     account_id = fields.Many2one('account.account', string="Tài khoản", readonly=True)
     account_dest_id = fields.Many2one('account.account', string="Tài khoản đích", readonly=True)
@@ -35,11 +35,11 @@ class BetaLineTongHopCongNo(models.TransientModel):
     # Field phát triển
 
     is_foreign_currency = fields.Boolean("Ngoại tệ", compute="_compute_foreign_currency")
-
+    
     #########################################
     ###############  COMPUTE  ###############
     #########################################
-
+    
     @api.depends('start_credit', 'start_debit', 'ps_credit', 'ps_debit')
     def _compute_end_balance(self):
         for record in self:
