@@ -5,8 +5,7 @@ odoo.define('ccv_add_filter_currency.custom_account_reports', function (require)
     var _t = core._t;
     var account_reports = require('account_reports.account_report');
 
-    // account_reports.accountReportsWidget.include({
-    account_reports.include({
+    account_reports.accountReportsWidget.include({
     // account_reports.include({
         _onCurrencyChanged: function (event) {
             var selectedCurrency = $(event.target).data('currency');

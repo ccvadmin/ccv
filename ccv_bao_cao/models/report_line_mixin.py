@@ -71,7 +71,14 @@ class BetaLineTongHopCongNo(models.TransientModel):
     @api.depends("parent_id.is_foreign_currency")
     def _compute_foreign_currency(self):
         for line in self:
-            line.is_foreign_currency = line.parent_id.is_foreign_currency
+            if line.parent_id:
+                line.is_foreign_currency = line.parent_id.is_foreign_currency
+            else:
+                line.is_foreign_currency = False
+    
+    @api.depends('partner_id')
+    def _compute_info(self):
+        pass
 
     ##########################################
     ###############  FUNCTION  ###############

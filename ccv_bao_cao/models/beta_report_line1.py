@@ -13,7 +13,7 @@ class BetaReportLine1(models.TransientModel):
     customer_group = fields.Char(string="Mã nhóm khách hàng", default="")
 
     @api.depends('partner_id')
-    def _compute_customer_info(self):
+    def _compute_info(self):
         for record in self:
             if record.partner_id:
                 record.customer_name = record.partner_id.name

@@ -133,40 +133,32 @@ class AlphaReport(models.TransientModel):
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
         partner_ids = self.env["res.partner"].search([]).mapped('id')
+        self.env.cr.execute("delete from beta_report_line1 where parent_id = %s;" % self.id)
         query = [
             "select * from function_tong_hop_cong_no_phai_thu_1_kh('%s','%s', %s,%s,%s,%s)"
-            % (
-                date_start,
-                date_end,
-                self.account_id.id,
-                partner_id,
-                self.env.user.id,
-                self.id,
-            )
+            % (date_start, date_end, self.account_id.id, partner_id, self.env.user.id, self.id)
             for partner_id in partner_ids
         ]
         self.env.cr.execute("; ".join(query))
         result = self.env.cr.fetchall()
+        self.beta_line1_ids._compute_end_balance()
+        self.beta_line1_ids._compute_info()
         return result
 
     def get_row_data_tong_hop_cong_no_phai_tra(self):
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
         partner_ids = self.env["res.partner"].search([]).mapped('id')
+        self.env.cr.execute("delete from beta_report_line2 where parent_id = %s;" % self.id)
         query = [
             "select * from function_tong_hop_cong_no_phai_tra_1_kh('%s','%s', %s,%s,%s,%s)"
-            % (
-                date_start,
-                date_end,
-                self.account_id.id,
-                partner_id,
-                self.env.user.id,
-                self.id,
-            )
+            % (date_start, date_end, self.account_id.id, partner_id, self.env.user.id, self.id)
             for partner_id in partner_ids
         ]
         self.env.cr.execute("; ".join(query))
         result = self.env.cr.fetchall()
+        self.beta_line2_ids._compute_end_balance()
+        self.beta_line2_ids._compute_info()
         return result
 
     def get_row_data_tong_hop_cong_no_phai_thu_usd(self):
@@ -174,21 +166,17 @@ class AlphaReport(models.TransientModel):
         date_end = self.date_to.strftime("%Y%m%d")
         date_currency = self.date_to.strftime("%Y-%m-%d")
         partner_ids = self.env["res.partner"].search([]).mapped('id')
+        self.env.cr.execute("delete from beta_report_line3 where parent_id = %s;" % self.id)
         query = [
-            "select * from function_tong_hop_cong_no_phai_thu_usd_1_kh('%s','%s','%s',%s,%s,%s,%s)"
-            % (
-                date_start,
-                date_end,
-                date_currency,
-                self.env.user.company_id.id,
-                self.account_id.id,
-                partner_id,
-                self.env.user.id,
-            )
+            "select * from function_tong_hop_cong_no_phai_thu_usd_1_kh('%s','%s','%s',%s,%s,%s,%s,%s)"
+            % (date_start, date_end, date_currency, self.env.user.company_id.id, self.account_id.id, partner_id, self.env.user.id, self.id)
             for partner_id in partner_ids
         ]
         self.env.cr.execute("; ".join(query))
         result = self.env.cr.fetchall()
+        self.beta_line3_ids._compute_end_balance()
+        self.beta_line3_ids._compute_end_balance_nt()
+        self.beta_line3_ids._compute_info()
         return result
 
     def get_row_data_tong_hop_cong_no_phai_tra_usd(self):
@@ -196,21 +184,17 @@ class AlphaReport(models.TransientModel):
         date_end = self.date_to.strftime("%Y%m%d")
         date_currency = self.date_to.strftime("%Y-%m-%d")
         partner_ids = self.env["res.partner"].search([]).mapped('id')
+        self.env.cr.execute("delete from beta_report_line4 where parent_id = %s;" % self.id)
         query = [
-            "select * from function_tong_hop_cong_no_phai_tra_usd_1_kh('%s','%s','%s',%s,%s,%s,%s)"
-            % (
-                date_start,
-                date_end,
-                date_currency,
-                self.env.user.company_id.id,
-                self.account_id.id,
-                partner_id,
-                self.env.user.id,
-            )
+            "select * from function_tong_hop_cong_no_phai_tra_usd_1_kh('%s','%s','%s',%s,%s,%s,%s,%s)"
+            % (date_start, date_end, date_currency, self.env.user.company_id.id, self.account_id.id, partner_id, self.env.user.id, self.id)
             for partner_id in partner_ids
         ]
         self.env.cr.execute("; ".join(query))
         result = self.env.cr.fetchall()
+        self.beta_line4_ids._compute_end_balance()
+        self.beta_line4_ids._compute_end_balance_nt()
+        self.beta_line4_ids._compute_info()
         return result
 
     ##########################################
@@ -227,9 +211,9 @@ class AlphaReport(models.TransientModel):
         lines = []
         count = 1
         for data in self.beta_line1_ids:
-            customer_name   = data.customer_name
-            customer_code   = data.customer_code
-            customer_group  = data.customer_group
+            customer_name   = data.customer_name if data.customer_name else ""
+            customer_code   = data.customer_code if data.customer_code else ""
+            customer_group  = data.customer_group if data.customer_group else ""
             start_credit    = data.start_credit
             start_debit     = data.start_debit
             ps_credit       = data.ps_credit
@@ -281,10 +265,10 @@ class AlphaReport(models.TransientModel):
         lines = []
         count = 1
         for data in self.beta_line2_ids:
-            customer_name   = data.customer_name
-            customer_code   = data.customer_code
-            address         = data.address
-            vat             = data.vat
+            customer_name   = data.customer_name if data.customer_name else ""
+            customer_code   = data.customer_code if data.customer_code else ""
+            address         = data.address if data.address else ""
+            vat             = data.vat if data.vat else ""
             start_credit    = data.start_credit
             start_debit     = data.start_debit
             ps_credit       = data.ps_credit
@@ -328,27 +312,27 @@ class AlphaReport(models.TransientModel):
         }
 
     def get_data_export_tong_hop_cong_no_phai_thu_usd(self):
-        sum_start_credit_usd    = sum(self.beta_line1_ids.mapped("start_credit_nt"))
-        sum_start_debit_usd     = sum(self.beta_line1_ids.mapped("start_debit_nt"))
-        sum_ps_credit_usd       = sum(self.beta_line1_ids.mapped("ps_credit_nt"))
-        sum_ps_debit_usd        = sum(self.beta_line1_ids.mapped("ps_debit_nt"))
-        sum_end_credit_usd      = sum(self.beta_line1_ids.mapped("end_credit_nt"))
-        sum_end_debit_usd       = sum(self.beta_line1_ids.mapped("end_debit_nt"))
+        sum_start_credit_usd    = sum(self.beta_line3_ids.mapped("start_credit_nt"))
+        sum_start_debit_usd     = sum(self.beta_line3_ids.mapped("start_debit_nt"))
+        sum_ps_credit_usd       = sum(self.beta_line3_ids.mapped("ps_credit_nt"))
+        sum_ps_debit_usd        = sum(self.beta_line3_ids.mapped("ps_debit_nt"))
+        sum_end_credit_usd      = sum(self.beta_line3_ids.mapped("end_credit_nt"))
+        sum_end_debit_usd       = sum(self.beta_line3_ids.mapped("end_debit_nt"))
 
-        sum_start_credit_vnd    = sum(self.beta_line1_ids.mapped("start_credit"))
-        sum_start_debit_vnd     = sum(self.beta_line1_ids.mapped("start_debit"))
-        sum_ps_credit_vnd       = sum(self.beta_line1_ids.mapped("ps_credit"))
-        sum_ps_debit_vnd        = sum(self.beta_line1_ids.mapped("ps_debit"))
-        sum_end_credit_vnd      = sum(self.beta_line1_ids.mapped("end_credit"))
-        sum_end_debit_vnd       = sum(self.beta_line1_ids.mapped("end_debit"))
+        sum_start_credit_vnd    = sum(self.beta_line3_ids.mapped("start_credit"))
+        sum_start_debit_vnd     = sum(self.beta_line3_ids.mapped("start_debit"))
+        sum_ps_credit_vnd       = sum(self.beta_line3_ids.mapped("ps_credit"))
+        sum_ps_debit_vnd        = sum(self.beta_line3_ids.mapped("ps_debit"))
+        sum_end_credit_vnd      = sum(self.beta_line3_ids.mapped("end_credit"))
+        sum_end_debit_vnd       = sum(self.beta_line3_ids.mapped("end_debit"))
 
         lines = []
         count = 1
         for data in self.beta_line3_ids:
-            customer_code       = data.customer_code
-            customer_name       = data.customer_name
-            address             = data.address
-            vat                 = data.vat
+            customer_name       = data.customer_name if data.customer_name else ""
+            customer_code       = data.customer_code if data.customer_code else ""
+            address             = data.address if data.address else ""
+            vat                 = data.vat if data.vat else ""
             account_id          = data.account_id.code
             start_debit_usd     = data.start_debit_nt
             start_debit_vnd     = data.start_debit
@@ -412,28 +396,28 @@ class AlphaReport(models.TransientModel):
         }
 
     def get_data_export_tong_hop_cong_no_phai_tra_usd(self):
-        sum_start_credit_usd    = sum(self.beta_line1_ids.mapped("start_credit_nt"))
-        sum_start_debit_usd     = sum(self.beta_line1_ids.mapped("start_debit_nt"))
-        sum_ps_credit_usd       = sum(self.beta_line1_ids.mapped("ps_credit_nt"))
-        sum_ps_debit_usd        = sum(self.beta_line1_ids.mapped("ps_debit_nt"))
-        sum_end_credit_usd      = sum(self.beta_line1_ids.mapped("end_credit_nt"))
-        sum_end_debit_usd       = sum(self.beta_line1_ids.mapped("end_debit_nt"))
+        sum_start_credit_usd    = sum(self.beta_line4_ids.mapped("start_credit_nt"))
+        sum_start_debit_usd     = sum(self.beta_line4_ids.mapped("start_debit_nt"))
+        sum_ps_credit_usd       = sum(self.beta_line4_ids.mapped("ps_credit_nt"))
+        sum_ps_debit_usd        = sum(self.beta_line4_ids.mapped("ps_debit_nt"))
+        sum_end_credit_usd      = sum(self.beta_line4_ids.mapped("end_credit_nt"))
+        sum_end_debit_usd       = sum(self.beta_line4_ids.mapped("end_debit_nt"))
 
-        sum_start_credit_vnd    = sum(self.beta_line1_ids.mapped("start_credit"))
-        sum_start_debit_vnd     = sum(self.beta_line1_ids.mapped("start_debit"))
-        sum_ps_credit_vnd       = sum(self.beta_line1_ids.mapped("ps_credit"))
-        sum_ps_debit_vnd        = sum(self.beta_line1_ids.mapped("ps_debit"))
-        sum_end_credit_vnd      = sum(self.beta_line1_ids.mapped("end_credit"))
-        sum_end_debit_vnd       = sum(self.beta_line1_ids.mapped("end_debit"))
+        sum_start_credit_vnd    = sum(self.beta_line4_ids.mapped("start_credit"))
+        sum_start_debit_vnd     = sum(self.beta_line4_ids.mapped("start_debit"))
+        sum_ps_credit_vnd       = sum(self.beta_line4_ids.mapped("ps_credit"))
+        sum_ps_debit_vnd        = sum(self.beta_line4_ids.mapped("ps_debit"))
+        sum_end_credit_vnd      = sum(self.beta_line4_ids.mapped("end_credit"))
+        sum_end_debit_vnd       = sum(self.beta_line4_ids.mapped("end_debit"))
 
         lines = []
         count = 1
         for data in self.beta_line3_ids:
-            customer_code       = data.customer_code
-            customer_name       = data.customer_name
-            address             = data.address
-            vat                 = data.vat
-            account_id          = data.account_id.code
+            customer_name       = data.customer_name if data.customer_name else ""
+            customer_code       = data.customer_code if data.customer_code else ""
+            address             = data.address if data.address else ""
+            vat                 = data.vat if data.vat else ""
+            account_id          = data.account_id.code if data.account_id else ""
             start_debit_usd     = data.start_debit_nt
             start_debit_vnd     = data.start_debit
             start_credit_usd    = data.start_credit_nt

@@ -52,12 +52,12 @@ class tong_hop_cong_no_phai_tra(models.AbstractModel):
 
         # Format cho chữ
         font_size_8 = workbook.add_format(json_format(11.5, right=True,left=True,bottom=True,top=True))
-        # Format cho số
-        font_size_8_number = workbook.add_format(json_format(10, right=True,left=True,bottom=True,top=True))
         font_size_8.set_align("center")
         font_size_8.set_text_wrap()
+        # Format cho số
+        font_size_8_number = workbook.add_format(json_format(10, right=True,left=True,bottom=True,top=True))
         font_size_8_number.set_align("right")
-        font_size_8_number.set_num_format("#,##0.00")
+        font_size_8_number.set_num_format("#,##0")
 
         format_company_title = workbook.add_format(json_format(13))
         format_company_title.set_align("left")

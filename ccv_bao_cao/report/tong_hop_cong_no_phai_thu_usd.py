@@ -39,32 +39,31 @@ class tong_hop_cong_no_phai_thu_usd(models.AbstractModel):
         sheet.set_landscape()
 
         # Format cho tiêu đề
-        format1 = workbook.add_format(json_format(16))
+        format1 = workbook.add_format(json_format(16, bold=True))
         format1.set_align("center")
 
         # Format cho tiêu đề phụ
-        format21 = workbook.add_format(json_format(16, bold=True, italic=True))
+        format21 = workbook.add_format(json_format(12, bold=True, italic=True))
         format21.set_text_wrap(True)
         format21.set_align("center")
 
         # Format cho header
-        format_header = workbook.add_format(json_format(11, right=True, left=True, bottom=True, top=True, bold=True))
+        format_header = workbook.add_format(json_format(11, bold=True, right=True,left=True,bottom=True,top=True))
         format_header.set_text_wrap(True)
         format_header.set_align("center")
 
         # Format cho chữ
-        font_size_8 = workbook.add_format(json_format(11.5, right=True, left=True, bottom=True, top=True))
+        font_size_8 = workbook.add_format(json_format(11.5, right=True,left=True,bottom=True,top=True))
         font_size_8.set_align("center")
         font_size_8.set_text_wrap()
-
         # Format cho số
-        font_size_8_number_usd = workbook.add_format(json_format(10, right=True, left=True, bottom=True, top=True))
-        font_size_8_number_usd.set_align("right")
-        font_size_8_number_usd.set_num_format("#,##0.00")
+        font_size_8_number = workbook.add_format(json_format(10, right=True,left=True,bottom=True,top=True))
+        font_size_8_number.set_align("right")
+        font_size_8_number.set_num_format("#,##0")
 
-        font_size_8_number_vnd = workbook.add_format(json_format(10, right=True, left=True, bottom=True, top=True))
-        font_size_8_number_vnd.set_align("right")
-        font_size_8_number_vnd.set_num_format("#,##0")
+        font_size_8_number_nt = workbook.add_format(json_format(10, right=True,left=True,bottom=True,top=True))
+        font_size_8_number_nt.set_align("right")
+        font_size_8_number_nt.set_num_format("#,##0.00")
 
         format_company_title = workbook.add_format(json_format(13))
         format_company_title.set_align("left")
@@ -145,9 +144,9 @@ class tong_hop_cong_no_phai_thu_usd(models.AbstractModel):
                 current_font = font_size_8
                 if column["is_num"]:
                     if column["currency"] == "vnd":
-                        current_font = font_size_8_number_vnd
+                        current_font = font_size_8_number
                     else:
-                        current_font = font_size_8_number_usd
+                        current_font = font_size_8_number_nt
                 sheet.set_column(prod_col, prod_col, column["size"])
                 sheet.write(prod_row, prod_col, each[column["name"]], current_font)
                 prod_col += 1

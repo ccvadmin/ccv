@@ -52,12 +52,12 @@ class tong_hop_cong_no_phai_thu(models.AbstractModel):
 
         # Format cho chữ
         font_size_8 = workbook.add_format(json_format(11.5, right=True,left=True,bottom=True,top=True))
-        # Format cho số
-        font_size_8_number = workbook.add_format(json_format(10, right=True,left=True,bottom=True,top=True))
         font_size_8.set_align("center")
         font_size_8.set_text_wrap()
+        # Format cho số
+        font_size_8_number = workbook.add_format(json_format(10, right=True,left=True,bottom=True,top=True))
         font_size_8_number.set_align("right")
-        font_size_8_number.set_num_format("#,##0.00")
+        font_size_8_number.set_num_format("#,##0")
 
         format_company_title = workbook.add_format(json_format(13))
         format_company_title.set_align("left")
@@ -106,13 +106,13 @@ class tong_hop_cong_no_phai_thu(models.AbstractModel):
             {"size": 5, "name": "no", "is_num": False},
             {"size": 12, "name": "customer_code", "is_num": False},
             {"size": 25, "name": "customer_name", "is_num": False},
-            {"size": 25, "name": "address", "is_num": False},
-            {"size": 10, "name": "start_debit_vnd", "is_num": True},
-            {"size": 10, "name": "start_credit_vnd", "is_num": True},
-            {"size": 10, "name": "ps_debit_vnd", "is_num": True},
-            {"size": 10, "name": "ps_credit_vnd", "is_num": True},
-            {"size": 10, "name": "end_debit_vnd", "is_num": True},
-            {"size": 10, "name": "end_credit_vnd", "is_num": True},
+            {"size": 25, "name": "customer_group", "is_num": False},
+            {"size": 10, "name": "start_debit", "is_num": True},
+            {"size": 10, "name": "start_credit", "is_num": True},
+            {"size": 10, "name": "ps_debit", "is_num": True},
+            {"size": 10, "name": "ps_credit", "is_num": True},
+            {"size": 10, "name": "end_debit", "is_num": True},
+            {"size": 10, "name": "end_credit", "is_num": True},
             {"size": 12, "name": "customer_group", "is_num": False},
         ]
 
