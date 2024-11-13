@@ -43,6 +43,8 @@
                             <field name="is_foreign_currency" invisible="1"/>
                             <field name="customer_name"/>
                             <field name="customer_code"/>
+                            <field name="vat"/>
+                            <field name="address"/>
                             <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
                             <field name="start_credit" sum="total_start_credit"/>
                             <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
@@ -66,7 +68,9 @@
                             <field name="parent_id" invisible="1"/>
                             <field name="is_foreign_currency" invisible="1"/>
                             <field name="customer_name"/>
-                            <field name="customer_code"/>                            <field name="address"/>
+                            <field name="customer_code"/>
+                            <field name="vat"/>
+                            <field name="address"/>
                             <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
                             <field name="start_credit" sum="total_start_credit"/>
                             <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
@@ -90,7 +94,9 @@
                             <field name="parent_id" invisible="1"/>
                             <field name="is_foreign_currency" invisible="1"/>
                             <field name="customer_name"/>
-                            <field name="customer_code"/>                            <field name="vat"/>
+                            <field name="customer_code"/>
+                            <field name="vat"/>
+                            <field name="address"/>
                             <field name="start_credit_nt" sum="total_start_credit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
                             <field name="start_credit" sum="total_start_credit"/>
                             <field name="start_debit_nt" sum="total_start_debit" attrs="{'invisible': [('is_foreign_currency', '!=', True)]}"/>
