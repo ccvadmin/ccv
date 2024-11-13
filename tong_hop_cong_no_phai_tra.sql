@@ -5,6 +5,7 @@
     Lịch sử chỉnh sửa:
         - 02/11/2024 : Tạo mới
         - 05/11/2024 : Đổi tempory sang With
+        - 13/11/2024 : Thêm điều kiện không tạo khi không có giá trị
 */
 
 DROP TABLE IF EXISTS report_tong_hop_cong_no_phai_tra;
@@ -27,10 +28,12 @@ VOLATILE PARALLEL UNSAFE
 ROWS 1000
 
 AS $BODY$
+DECLARE
+    sum_start_credit DECIMAL;
+    sum_start_debit DECIMAL;
+    sum_ps_debit DECIMAL;
+    sum_ps_credit DECIMAL;
 BEGIN
-    -- Xóa dữ liệu
-    delete from beta_report_line2 where parent_id = p_id;
-    
     -- lấy dữ liệu tài khoản, khách hàng
     WITH account_partner AS (
         SELECT DISTINCT aml.account_id, aml.partner_id
@@ -149,20 +152,24 @@ BEGIN
                       ELSE am.date END, taa.move_id
     )
 
-    -- Insert và trả về kết quả cuối cùng
+    SELECT
+        (SELECT dk.start_credit FROM so_du_dau_ky_khach_hang dk WHERE dk.partner_id = p_partner_id LIMIT 1) AS start_credit_val,
+        (SELECT dk.start_debit FROM so_du_dau_ky_khach_hang dk WHERE dk.partner_id = p_partner_id LIMIT 1) AS start_debit_val,
+        (SELECT SUM(ps.debit) FROM phat_sinh_trong_ky_khach_hang ps WHERE ps.move_id IN (SELECT move_id FROM phat_sinh_trong_ky_khach_hang)) AS total_debit_val,
+        (SELECT SUM(ps.credit) FROM phat_sinh_trong_ky_khach_hang ps WHERE ps.move_id IN (SELECT move_id FROM phat_sinh_trong_ky_khach_hang)) AS total_credit_val
+    INTO sum_start_credit, sum_start_debit, sum_ps_debit, sum_ps_credit;
+
+    -- Thêm Partner đã hoàn thành tính toán vào bảng
+    IF sum_start_credit != 0 AND sum_start_debit != 0 AND sum_ps_debit != 0 AND sum_ps_credit != 0 THEN
     INSERT INTO beta_report_line2 (
         parent_id, create_uid, write_uid, -- bắt buộc
         partner_id, account_id, start_credit, start_debit, ps_credit, ps_debit
     )
     VALUES (
         p_id, p_user_id, p_user_id, -- bắt buộc
-        p_partner_id,
-        p_account_id,
-        (SELECT sh.start_credit FROM so_du_dau_ky_khach_hang sh WHERE sh.partner_id = p_partner_id),
-        (SELECT sh.start_debit FROM so_du_dau_ky_khach_hang sh WHERE sh.partner_id = p_partner_id),
-        (SELECT SUM(ps.debit) FROM phat_sinh_trong_ky_khach_hang ps WHERE ps.move_id IN (SELECT move_id FROM phat_sinh_trong_ky_khach_hang)),
-        (SELECT SUM(ps.credit) FROM phat_sinh_trong_ky_khach_hang ps WHERE ps.move_id IN (SELECT move_id FROM phat_sinh_trong_ky_khach_hang))
+        p_partner_id, p_account_id, sum_start_credit, sum_start_debit, sum_ps_debit, sum_ps_credit
     );
+    END IF;
 
     -- Kết quả trả về
     RETURN QUERY

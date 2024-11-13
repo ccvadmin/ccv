@@ -4,6 +4,7 @@
     Ngày tạo: 06/11/2024
     Lịch sử chỉnh sửa:
         - 06/11/2024 : Tạo mới
+        - 13/11/2024 : Thêm điều kiện không tạo khi không có giá trị
 */
 
 DROP TABLE IF EXISTS public.report_tong_hop_cong_no_phai_thu_usd;
@@ -26,10 +27,16 @@ COST 100
 VOLATILE PARALLEL UNSAFE
 ROWS 1000
 AS $BODY$
+DECLARE
+    sum_start_credit DECIMAL;
+    sum_start_debit DECIMAL;
+    sum_ps_debit DECIMAL;
+    sum_ps_credit DECIMAL;
+    sum_start_credit_nt DECIMAL;
+    sum_start_debit_nt DECIMAL;
+    sum_ps_debit_nt DECIMAL;
+    sum_ps_credit_nt DECIMAL;
 BEGIN
-    -- Xóa dữ liệu
-    delete from beta_report_line3 where parent_id = p_id;
-    
     -- Sử dụng WITH để thay thế các bảng tạm
     WITH 
     -- Lấy Tiền tệ
@@ -267,31 +274,31 @@ BEGIN
     ps_credit_vnd AS (SELECT SUM(credit_vnd) as ps_credit_vnd FROM phat_sinh_trong_ky_khach_hang ps)
 
     -- Thêm Partner đã hoàn thành tính toán vào bảng
-    INSERT INTO public.beta_report_line3 (
-        parent_id, create_uid, write_uid, -- bắt buộc
-        partner_id, account_id,
-        c_account_id,
-        start_debit_nt,
-        start_credit_nt,
-        ps_credit_nt,
-        ps_debit_nt,
-        start_debit,
-        start_credit,
-        ps_credit,
-        ps_debit
-    ) VALUES(
-        p_id, p_user_id, p_user_id, -- bắt buộc
-        p_partner_id,
-        p_account_id,
-        (SELECT p.start_debit_usd FROM start_debit_usd p LIMIT 1),
-        (SELECT p.start_credit_usd FROM start_credit_usd p LIMIT 1),
-        (SELECT p.ps_debit_usd FROM ps_debit_usd p LIMIT 1),
-        (SELECT p.ps_credit_usd FROM ps_credit_usd p LIMIT 1),
-        (SELECT p.start_debit_vnd FROM start_debit_vnd p LIMIT 1),
-        (SELECT p.start_credit_vnd FROM start_credit_vnd p LIMIT 1),
-        (SELECT p.ps_debit_vnd FROM ps_debit_vnd p LIMIT 1),
-        (SELECT p.ps_credit_vnd FROM ps_credit_vnd p LIMIT 1)
-    );
+    SELECT
+        (SELECT p.start_debit_usd FROM start_debit_usd p LIMIT 1) AS start_debit_nt_val,
+        (SELECT p.start_credit_usd FROM start_credit_usd p LIMIT 1) AS start_credit_nt_val,
+        (SELECT p.ps_debit_usd FROM ps_debit_usd p LIMIT 1) AS ps_debit_nt_val,
+        (SELECT p.ps_credit_usd FROM ps_credit_usd p LIMIT 1) AS ps_credit_nt_val,
+        (SELECT p.start_debit_vnd FROM start_debit_vnd p LIMIT 1) AS start_debit_val,
+        (SELECT p.start_credit_vnd FROM start_credit_vnd p LIMIT 1) AS start_credit_val,
+        (SELECT p.ps_debit_vnd FROM ps_debit_vnd p LIMIT 1) AS ps_debit_val,
+        (SELECT p.ps_credit_vnd FROM ps_credit_vnd p LIMIT 1) AS ps_credit_val
+    INTO sum_start_debit_nt, sum_start_credit_nt, sum_ps_debit_nt, sum_ps_credit_nt, sum_start_debit, sum_start_credit, sum_ps_debit, sum_ps_credit;
+
+    -- Thêm Partner đã hoàn thành tính toán vào bảng
+    IF sum_start_credit != 0 AND sum_start_debit != 0 AND sum_ps_debit != 0 AND sum_ps_credit != 0 THEN
+            INSERT INTO public.beta_report_line3 (
+                parent_id, create_uid, write_uid, -- bắt buộc
+                partner_id, account_id,
+                start_debit_nt, start_credit_nt, ps_credit_nt, ps_debit_nt,
+                start_debit, start_credit, ps_credit, ps_debit
+            ) VALUES(
+                p_id, p_user_id, p_user_id, -- bắt buộc
+                p_partner_id, p_account_id,
+                sum_start_debit_nt, sum_start_credit_nt, sum_ps_debit_nt, sum_ps_credit_nt,
+                sum_start_debit, sum_start_credit, sum_ps_debit, sum_ps_credit
+            );
+    END IF;
 
     -- Kết quả trả về
     RETURN QUERY 
