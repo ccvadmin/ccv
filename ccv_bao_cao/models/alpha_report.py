@@ -70,12 +70,25 @@ class AlphaReport(models.TransientModel):
     ##########################################
 
     def beta_view_tree(self, report_type):
-        return self._get_action_view(report_type + "_beta_view_tree")
+        all_type = {
+            "tong_hop_cong_no_phai_tra": 'beta_line1_ids',
+            "tong_hop_cong_no_phai_thu": 'beta_line2_ids',
+            "tong_hop_cong_no_phai_thu_usd": 'beta_line3_ids',
+            "tong_hop_cong_no_phai_tra_usd": 'beta_line4_ids',
+        }
+        ids = []
+        domain = []
+        if report_type:
+            ids = getattr(self, all_type.get(report_type)).ids
+            domain = [('id', 'in', ids)]
+        return self._get_action_view(report_type + "_beta_view_tree", domain)
 
-    def _get_action_view(self, view_name):
+    def _get_action_view(self, view_name, domain=[]):
         action = self.env.ref('ccv_bao_cao.%s' % view_name)
-
         if action:
+            action = action.read()[0]
+            if domain != []:
+                action['domain'] = domain
             return action
         else:
             return {
@@ -88,6 +101,8 @@ class AlphaReport(models.TransientModel):
     ###########################################
     ############  HÀM XUẤT REPORT  ############
     ###########################################
+
+    # TODO: Dynamic hóa
 
     def tong_hop_cong_no_phai_thu_report(self):
         data = {
@@ -128,6 +143,8 @@ class AlphaReport(models.TransientModel):
     ###########################################
     ###############  RUN QUERY  ###############
     ###########################################
+
+    # TODO: Dynamic hóa
 
     def get_row_data_tong_hop_cong_no_phai_thu(self):
         date_start = self.date_from.strftime("%Y%m%d")
@@ -200,6 +217,8 @@ class AlphaReport(models.TransientModel):
     ##########################################
     #############  HÀM LẤY DATA  #############
     ##########################################
+
+    # TODO: Dynamic hóa
 
     def get_data_export_tong_hop_cong_no_phai_thu(self):
         sum_start_credit    = sum(self.beta_line1_ids.mapped("start_credit"))

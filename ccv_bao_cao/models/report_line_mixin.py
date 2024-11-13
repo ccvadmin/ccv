@@ -7,30 +7,49 @@ class BetaLineTongHopCongNo(models.TransientModel):
     _name = "report.line.mixin"
     _description = "Report Mixin"
     
-    partner_id = fields.Many2one('res.partner', string="Khách hàng", readonly=True)
-    account_id = fields.Many2one('account.account', string="Tài khoản", readonly=True)
-    account_dest_id = fields.Many2one('account.account', string="Tài khoản đích", readonly=True)
-    parent_id = fields.Many2one('alpha.report', readonly=True)
+    partner_id          = fields.Many2one('res.partner', string="Khách hàng", readonly=True)
+    account_id          = fields.Many2one('account.account', string="Tài khoản", readonly=True)
+    account_dest_id     = fields.Many2one('account.account', string="Tài khoản đích", readonly=True)
+    parent_id           = fields.Many2one('alpha.report', readonly=True)
+    # employee_id         = fields.Many2one("hr.employee", string="Nhân viên")
+    # move_id             = fields.Many2one(string="Số chứng từ")
+    # partner_ids         = fields.Many2many(string="Khách hàng / Đối tác")
+    # product_id          = fields.Many2one("product.product", string="Sản phẩm")
+    # product_tmpl_id     = fields.Many2one("product.template", string="Sản phẩm (template)")
+    # uom_id              = fields.Many2one("uom.uom", string="ĐVT")
 
     # Tiền gốc (Local currency)
-    start_credit = fields.Float(string="Có đầu kỳ", default=0, digits=(16, 0))
-    start_debit = fields.Float(string="Nợ đầu kỳ", default=0, digits=(16, 0))
+    # price_subtotal      = fields.Float(string="Đơn giá trước thuế", default=0, digits=(16, 0))
+    # price_tax           = fields.Float(string="Đơn giá thuế", default=0, digits=(16, 0))
+    # price_unit          = fields.Float(string="Đơn giá", default=0, digits=(16, 0))
+    # amount_payment      = fields.Float(string="Đã thanh toán", default=0, digits=(16, 0))
+    # amount_tax          = fields.Float(string="Tiền thuế", default=0, digits=(16, 0))
+    # amount_total        = fields.Float(string="Tổng tiền", default=0, digits=(16, 0))
+    # amount_untaxed      = fields.Float(string="Tiền chưa thuế", default=0, digits=(16, 0))
     
-    ps_credit = fields.Float(string="PS có", default=0, digits=(16, 0))
-    ps_debit = fields.Float(string="PS nợ", default=0, digits=(16, 0))
-    
-    end_credit = fields.Float(string="Có cuối kỳ", compute="_compute_end_balance", store=True)
-    end_debit = fields.Float(string="Nợ cuối kỳ", compute="_compute_end_balance", store=True)
+    start_credit        = fields.Float(string="Có đầu kỳ", default=0, digits=(16, 0))
+    start_debit         = fields.Float(string="Nợ đầu kỳ", default=0, digits=(16, 0))
+    ps_credit           = fields.Float(string="PS có", default=0, digits=(16, 0))
+    ps_debit            = fields.Float(string="PS nợ", default=0, digits=(16, 0))
+    end_credit          = fields.Float(string="Có cuối kỳ", compute="_compute_end_balance", store=True)
+    end_debit           = fields.Float(string="Nợ cuối kỳ", compute="_compute_end_balance", store=True)
 
     # Ngoại tệ (Foreign currency)
-    start_credit_nt = fields.Float(string="Có đầu kỳ (Ngoại tệ)", default=0, digits=(16, 2))
-    start_debit_nt = fields.Float(string="Nợ đầu kỳ (Ngoại tệ)", default=0, digits=(16, 2))
-    
-    ps_credit_nt = fields.Float(string="PS có (Ngoại tệ)", default=0, digits=(16, 2))
-    ps_debit_nt = fields.Float(string="PS nợ (Ngoại tệ)", default=0, digits=(16, 2))
-    
-    end_credit_nt = fields.Float(string="Có cuối kỳ (Ngoại tệ)", compute="_compute_end_balance_nt", store=True, digits=(16, 2))
-    end_debit_nt = fields.Float(string="Nợ cuối kỳ (Ngoại tệ)", compute="_compute_end_balance_nt", store=True, digits=(16, 2))
+    start_credit_nt     = fields.Float(string="Có đầu kỳ (Ngoại tệ)", default=0, digits=(16, 2))
+    start_debit_nt      = fields.Float(string="Nợ đầu kỳ (Ngoại tệ)", default=0, digits=(16, 2))
+    ps_credit_nt        = fields.Float(string="PS có (Ngoại tệ)", default=0, digits=(16, 2))
+    ps_debit_nt         = fields.Float(string="PS nợ (Ngoại tệ)", default=0, digits=(16, 2))
+    end_credit_nt       = fields.Float(string="Có cuối kỳ (Ngoại tệ)", compute="_compute_end_balance_nt", store=True, digits=(16, 2))
+    end_debit_nt        = fields.Float(string="Nợ cuối kỳ (Ngoại tệ)", compute="_compute_end_balance_nt", store=True, digits=(16, 2))
+
+    # Số lượng
+    # inventory_quantity  = fields.Float("Số lượng kiểm kê", default=0, digits=(16, 3))
+    # diff_quantity       = fields.Float("Chênh lệch", default=0, digits=(16, 3))
+
+    # Char
+
+    # Khác
+    # level               = fields.Integer("Level")
 
     # Field phát triển
 
