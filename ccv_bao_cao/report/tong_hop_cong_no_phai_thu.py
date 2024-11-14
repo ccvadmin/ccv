@@ -106,14 +106,13 @@ class tong_hop_cong_no_phai_thu(models.AbstractModel):
             {"size": 5, "name": "no", "is_num": False},
             {"size": 12, "name": "customer_code", "is_num": False},
             {"size": 25, "name": "customer_name", "is_num": False},
-            {"size": 25, "name": "customer_group", "is_num": False},
-            {"size": 10, "name": "start_debit", "is_num": True},
             {"size": 10, "name": "start_credit", "is_num": True},
-            {"size": 10, "name": "ps_debit", "is_num": True},
+            {"size": 10, "name": "start_debit", "is_num": True},
             {"size": 10, "name": "ps_credit", "is_num": True},
-            {"size": 10, "name": "end_debit", "is_num": True},
+            {"size": 10, "name": "ps_debit", "is_num": True},
             {"size": 10, "name": "end_credit", "is_num": True},
-            {"size": 12, "name": "customer_group", "is_num": False},
+            {"size": 10, "name": "end_debit", "is_num": True},
+            {"size": 14, "name": "customer_group", "is_num": False},
         ]
 
         for each in data_raw["lines"]:
@@ -154,6 +153,7 @@ class tong_hop_cong_no_phai_thu(models.AbstractModel):
             sheet.write(prod_row, prod_col, sum[total_item], total_font_size)
             prod_col += 1
         
+        sheet.write(prod_row, prod_col, "", total_font_size)
         prod_row +=1
 
         # Footer
