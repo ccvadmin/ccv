@@ -1,0 +1,53 @@
+<odoo>
+    <template id="ccv_header">
+        <div class="header">
+            <div class="row" style="report_header_style">
+                <div class="col-2">
+                    <img t-if="user.company_id.logo" t-att-src="image_data_uri(user.company_id.logo)" style="width: auto; max-height: 80px;" class="float-left" alt="Logo"/>
+                </div>
+                <div class="col-10">
+                    <div style="padding: 10px; font-size: 14px;">
+                        <t t-esc="user.company_id.name"/> - Mã Số Thuế: <t t-esc="user.company_id.vat"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="article o_report_layout_standard">
+            <t t-out="0"/>
+        </div>
+        <div class="footer o_standard_footer"></div>
+    </template>
+    <template id="ccv_header2">
+        <div class="header">
+            <div class="row" style="report_header_style">
+                <div class="col-2">
+                    <img t-if="user.company_id.logo" t-att-src="image_data_uri(user.company_id.logo)" style="width: auto; max-height: 80px;" class="float-left" alt="Logo"/>
+                </div>
+                <div class="col-4">
+                    <div class="col-xs-12">
+                        <div style="margin-right: 25px; font-size: 16px; text-align: left; font-family: Times New Roman">
+                            <t t-esc="user.company_id.name"/> - Mã Số Thuế: <t t-esc="user.company_id.vat"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="col-xs-12">
+                        <div style="padding-top: 2px; text-align: center; font-size: 16px; font-family: Times New Roman">
+                            <strong>Mẫu số: 04-VT</strong>
+                        </div>
+                    </div>
+                    <div class="col-xs-12" style="padding-top: 2px; text-align: center; font-size: 16px; font-family: Times New Roman">
+                        (Ban hành theo Thông Tư số 200/2014/TT-BTC
+                    </div>
+                    <div class="col-xs-12" style="text-align: center; font-size: 16px; font-family: Times New Roman">
+                        Ngày 22/12/2014 của Bộ Tài Chính)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="article o_report_layout_standard">
+            <t t-out="0"/>
+        </div>
+        <div class="footer o_standard_footer"></div>
+    </template>
+</odoo>

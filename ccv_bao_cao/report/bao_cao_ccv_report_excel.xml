@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- PDF -->
-    <report 
-        id="action_report_giay_bao_co"
-        model="account.move"
-        string="Giấy Báo Có"
-        report_type="qweb-pdf"
-        name="ccv_bao_cao.giay_bao_co_report"
-        file="giay_bao_co_report"
-        attachment_use="False"/>
-    
     <!-- Excel -->
     <report
         id="tong_hop_cong_no_phai_tra_report"

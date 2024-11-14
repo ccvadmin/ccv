@@ -13,9 +13,20 @@
     ],
     'data': [
         'security/ir.model.access.csv',
+
+        ##########  Config Report   ##########
+        'report/report_header.xml',
+        'report/bao_cao_ccv_report.xml',
+
+        ##########      Views       ##########
+        
         'views/beta_views.xml',
         'views/report_views.xml',
-        'report/bao_cao_ccv_report.xml',
+
+        ##########  Template Report ##########
+
+        'report/xml/giay_bao_co/report_document.xml',
+        'report/xml/giay_bao_co/report_template.xml',
     ],
     'installable': True,
     'license': 'LGPL-3',
