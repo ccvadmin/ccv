@@ -147,13 +147,13 @@ class tong_hop_cong_no_phai_thu(models.AbstractModel):
             "sum_ps_credit",
             "sum_ps_debit",
             "sum_end_credit",
-            "sum_end_debit"
+            "sum_end_debit",
+            "",
         ]
         for total_item in total_arr:
             sheet.write(prod_row, prod_col, sum[total_item], total_font_size)
             prod_col += 1
         
-        sheet.write(prod_row, prod_col, "", total_font_size)
         prod_row +=1
 
         # Footer
