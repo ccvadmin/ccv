@@ -11,14 +11,14 @@
             <xpath expr="//notebook" position='inside'>
                 <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_thu')]}">
                     <field name="beta_line1_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_thu')]}">
-                        <tree create="0" edit="0" delete="0">
+                        <tree>
                             <field name="account_id" invisible="1"/>
                             <field name="partner_id" invisible="1"/>
                             <field name="parent_id" invisible="1"/>
                             <field name="is_foreign_currency" invisible="1"/>
-                            <field name="customer_name" string="Mã khách hàng"/>
-                            <field name="customer_code" string="Tên khách hàng"/>
-                            <field name="customer_group" string="Mã nhóm khách hàng"/>
+                            <field name="customer_name"/>
+                            <field name="customer_code"/>
+                            <field name="customer_group"/>
                             <field name="start_credit" sum="total_start_credit"/>
                             <field name="start_debit" sum="total_start_debit"/>
                             <field name="ps_credit" sum="total_ps_credit"/>
@@ -30,15 +30,15 @@
                 </page>
                 <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_tra')]}">
                     <field name="beta_line2_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_tra')]}">
-                        <tree create="0" edit="0" delete="0">
+                        <tree>
                             <field name="account_id" invisible="1"/>
                             <field name="partner_id" invisible="1"/>
                             <field name="parent_id" invisible="1"/>
                             <field name="is_foreign_currency" invisible="1"/>
-                            <field name="customer_name" string="Mã nhà cung cấp"/>
-                            <field name="customer_code" string="Tên nhà cung cấp"/>
-                            <field name="vat" string="Mã số thuế"/>
-                            <field name="address" string="Địa chỉ"/>
+                            <field name="customer_name"/>
+                            <field name="customer_code"/>
+                            <field name="vat"/>
+                            <field name="address"/>
                             <field name="start_credit" sum="total_start_credit"/>
                             <field name="start_debit" sum="total_start_debit"/>
                             <field name="ps_credit" sum="total_ps_credit"/>
@@ -50,14 +50,14 @@
                 </page>
                 <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_thu_usd')]}">
                     <field name="beta_line3_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_thu_usd')]}">
-                        <tree create="0" edit="0" delete="0">
+                        <tree>
                             <field name="partner_id" invisible="1"/>
                             <field name="parent_id" invisible="1"/>
                             <field name="is_foreign_currency" invisible="1"/>
-                            <field name="customer_name" string="Mã khách hàng"/>
-                            <field name="customer_code" string="Tên khách hàng"/>
-                            <field name="vat" string="Mã số thuế"/>
-                            <field name="address" string="Địa chỉ"/>
+                            <field name="customer_name"/>
+                            <field name="customer_code"/>
+                            <field name="vat"/>
+                            <field name="address"/>
                             <field name="account_id" string="Tài khoản công nợ"/>
                             <field name="start_credit_nt" sum="total_start_credit"/>
                             <field name="start_credit" sum="total_start_credit"/>
@@ -76,14 +76,14 @@
                 </page>
                 <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_tra_usd')]}">
                     <field name="beta_line4_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_tra_usd')]}">
-                        <tree create="0" edit="0" delete="0">
+                        <tree>
                             <field name="partner_id" invisible="1"/>
                             <field name="parent_id" invisible="1"/>
                             <field name="is_foreign_currency" invisible="1"/>
-                            <field name="customer_name" string="Mã nhà cung cấp"/>
-                            <field name="customer_code" string="Tên nhà cung cấp"/>
-                            <field name="vat" string="Mã số thuế"/>
-                            <field name="address" string="Địa chỉ"/>
+                            <field name="customer_name"/>
+                            <field name="customer_code"/>
+                            <field name="vat"/>
+                            <field name="address"/>
                             <field name="account_id" string="Tài khoản công nợ"/>
                             <field name="start_credit_nt" sum="total_start_credit"/>
                             <field name="start_credit" sum="total_start_credit"/>

@@ -8,8 +8,8 @@ class BetaReportLine3(models.TransientModel):
     _description = "Tong Hop Cong No Phai Thu USD"
     _inherit = ["report.line.mixin"]
 
-    customer_name = fields.Char(string="Tên nhà cung cấp", default="")
-    customer_code = fields.Char(string="Mã nhà cung cấp", default="")
+    customer_name = fields.Char(string="Tên khách hàng", default="")
+    customer_code = fields.Char(string="Mã khách hàng", default="")
     address = fields.Char(string="Địa chỉ", default="")
     vat = fields.Char(string="Mã số thuế", default="")
 

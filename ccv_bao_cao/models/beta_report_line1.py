@@ -21,7 +21,7 @@ class BetaReportLine1(models.TransientModel):
                 customer_group = []
                 category_ids = record.partner_id.category_id.mapped('name')
                 if category_ids:
-                    customer_group = [category_name for category_name in category_ids if category_name in 'KH -']
+                    customer_group = [category_name for category_name in category_ids if 'KH -' in category_name]
                 record.customer_group = customer_group[0].split(' - ')[1] if customer_group else ""
             else:
                 record.customer_name = ""
