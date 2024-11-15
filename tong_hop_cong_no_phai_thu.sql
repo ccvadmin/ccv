@@ -165,7 +165,7 @@ BEGIN
     INTO sum_start_credit, sum_start_debit, sum_ps_debit, sum_ps_credit;
 
     -- Thêm Partner đã hoàn thành tính toán vào bảng
-    IF sum_start_credit != 0 AND sum_start_debit != 0 AND sum_ps_debit != 0 AND sum_ps_credit != 0 THEN
+    IF sum_start_credit != 0 OR sum_start_debit != 0 OR sum_ps_debit != 0 OR sum_ps_credit != 0 THEN
             INSERT INTO beta_report_line1 (
                 parent_id, create_uid, write_uid, -- bắt buộc
                 partner_id, account_id, start_credit, start_debit, ps_credit, ps_debit
