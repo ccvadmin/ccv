@@ -1,8 +1,12 @@
 class LibaryReport:
-    def number_to_words_vn(num):
+    def __init__(self):
+        pass
+
+    def number_to_words_vn(self, num, label):
         units = ["", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"]
         tens = ["", "mười", "hai mươi", "ba mươi", "bốn mươi", "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"]
         big_units = ["", "nghìn", "triệu", "tỷ", "nghìn tỷ", "triệu tỷ"]
+
         def convert_part(num):
             if num == 0:
                 return ""
@@ -24,8 +28,10 @@ class LibaryReport:
                 else:
                     result += " " + units[ones]
             return result.strip()
+
         if num == 0:
             return "Không"
+
         num_str = str(num)
         result = ""
         unit_index = 0
@@ -33,9 +39,12 @@ class LibaryReport:
             part = num_str[-3:]
             num_str = num_str[:-3]
             part_value = int(part)
-            
             if part_value != 0:
                 part_result = convert_part(part_value)
                 result = f"{part_result} {big_units[unit_index]} " + result
             unit_index += 1
-        return result.strip() + " đồng"
+
+        result = result.strip()
+        result = result[0].upper() + result[1:] if result else result
+        
+        return "%s %s" % (result, label)

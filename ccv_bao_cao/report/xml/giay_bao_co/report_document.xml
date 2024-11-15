@@ -2,12 +2,13 @@
 <odoo>
 <data>
     <template id="ccv_bao_cao.giay_bao_co_document">
-        <t t-call="ccv_bao_cao.ccv_header">
-            <div class="page" style="font-size: 14px;font-family: Times New Roman; padding-top: 20px;">
+        <t t-call="web.external_layout">
+            <div class="page" style="font-size: 14px;font-family: Times New Roman; padding-top: 20px; page-break-before: always;">
                 <div class="col-xs-12" style="text-align: center; font-size: 20px;">
                     <strong>Giấy Báo Có</strong>
                 </div>
-                <t t-set="line_id" t-value="doc.get_account_payment()"/>
+                <t t-set="doc_id" t-value="doc.id"/>
+                <t t-set="val" t-value="data[doc_id]"/>
                 <div class="row">
                     <table class="table table-sm fixed" style="border: solid 1px;width: 100%; margin-top: 10px;">
                         <col width="12%"/>
@@ -20,25 +21,25 @@
                         <col width="14%"/>
                         <tr>
                             <td style="text-align: left; vertical-align: middle;" colspan="6">
-                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Nguời nộp tiền: <t t-esc="doc.partner_id.name"/></div>
-                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Địa chỉ: <t t-esc="doc.partner_id.contact_address_complete"/></div>
-                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Lý do: <t t-esc="doc.ref"/></div>
+                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Nguời nộp tiền: <t t-esc="val['partner_name']"/></div>
+                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Địa chỉ: <t t-esc="val['partner_address']"/></div>
+                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Lý do: <t t-esc="val['ref']"/></div>
                             </td>
                             <td style="text-align: left; vertical-align: middle;" colspan="2">
-                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Số: <t t-esc="doc.name"/></div>
-                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Ngày: <t t-esc="doc.convert_print(doc.date)"/></div>
-                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Tài khoản: <t t-esc="line_id.account_id.code"/></div>
+                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Số: <t t-esc="val['name']"/></div>
+                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Ngày: <t t-esc="val['date']"/></div>
+                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Tài khoản: <t t-esc="val['account_debit_code']"/></div>
                             </td>
                         </tr>
                         <tr>
                             <td style="text-align: left; vertical-align: middle;" colspan="8">
-                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Số tài khoản đơn vị thụ hưởng: <t t-if="doc.partner_bank_id"><strong><t t-esc="doc.partner_bank_id.acc_number"/></strong></t></div>
-                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Tại ngân hàng: <t t-if="doc.partner_bank_id"><strong><t t-esc="doc.partner_bank_id.bank_id.name"/></strong></t></div>
+                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Số tài khoản đơn vị thụ hưởng: <strong><t t-esc="val['acc_number']"/></strong></div>
+                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Tại ngân hàng: <strong><t t-esc="val['bank_name']"/></strong></div>
                                 <div class="row rowp" style="text-align: left;padding-top: 10px;">
-                                        <div class="col-8">Số tiền: <strong><t t-esc="doc.convert_vnd(doc.amount)"/></strong></div>
-                                        <div class="col-4">Loại tiền: <t t-esc="doc.currency_id.name"/></div>
+                                        <div class="col-8">Số tiền: <strong><t t-esc="val['amount_nt']"/></strong></div>
+                                        <div class="col-4">Loại tiền: <t t-esc="val['currency_nt_name']"/></div>
                                 </div>
-                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Số tiền bằng chữ: <strong><t t-esc="doc.convert_money(doc.amount)"/><t t-esc="doc.currency_id.currency_unit_label"/></strong></div>
+                                <div class="row rowp" style="text-align: left;padding-top: 10px;">Số tiền bằng chữ: <strong><t t-esc="val['amount_label']"/></strong></div>
                             </td>
                         </tr>
                         <tr>
@@ -46,10 +47,10 @@
                                 <strong>Diễn giải</strong>
                             </td>
                             <td style="text-align: center; vertical-align: middle;" colspan="2">
-                                <strong>Số tiền nguyên tệ (<t t-esc="doc.currency_id.name"/>)</strong>
+                                <strong>Số tiền nguyên tệ (<t t-esc="val['currency_nt_name']"/>)</strong>
                             </td>
                             <td style="text-align: center; vertical-align: middle;" colspan="2">
-                                <strong>Số tiền (VND)</strong>
+                                <strong>Số tiền (<t t-esc="val['currency_name']"/>)</strong>
                             </td>
                             <td style="text-align: center; vertical-align: middle;">
                                 <strong>Ghi nợ</strong>
@@ -59,36 +60,26 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; vertical-align: middle;" colspan="2">
-                                <t t-esc="doc.ref"/>
+                            <td class="text-start" style="vertical-align: middle;" colspan="2">
+                                <t t-esc="val['ref']"/>
                             </td>
-                            <td style="text-align: right; vertical-align: middle;" colspan="2">
-                                <t t-esc="doc.convert_vnd(doc.amount)"/>
+                            <td class="text-center" style="vertical-align: middle;" colspan="2">
+                                <t t-esc="val['amount_nt']"/>
                             </td>
-                            <td style="text-align: right; vertical-align: middle;" colspan="2">
-                                <t t-if="doc.currency_id.name == 'VND'">
-                                    <t t-esc="doc.convert_vnd(doc.amount)"/>
-                                </t>
-                                <t t-else="">
-                                    <t t-if="len(doc.currency_id.rate_ids) &gt; 0">
-                                        <t t-esc="doc.convert_vnd(doc.amount * doc.currency_id.rate_ids[0].inverse_company_rate)"/>
-                                    </t>
-                                    <t t-else="">
-                                        Chưa có tỷ giá
-                                    </t>
-                                </t>
+                            <td class="text-center" style="vertical-align: middle;" colspan="2">
+                                <t t-esc="val['amount']"/>
                             </td>
-                            <td style="text-align: left; vertical-align: middle;">
-                                <t t-esc="line_id.account_id.code"/>
+                            <td class="text-center" style="vertical-align: middle;">
+                                <t t-esc="val['account_debit_code']"/>
                             </td>
-                            <td style="text-align: left; vertical-align: middle;">
-                                <t t-esc="line_id.move_id.line_ids.filtered(lambda x: x != line_id)[0].account_id.code"/>
+                            <td class="text-center" style="vertical-align: middle;">
+                                <t t-esc="val['account_credit_code']"/>
                             </td>
                         </tr>
-                        <t t-if="len(doc.currency_id.rate_ids) &gt; 0">
+                        <t t-if="val['currency_rate'] &gt; 0">
                             <tr>
                                 <td style="text-align: left; vertical-align: middle;" colspan="8">
-                                    Tỷ giá quy đổi: <t t-esc="doc.convert_vnd(doc.currency_id.rate_ids[0].inverse_company_rate)"/>
+                                    Tỷ giá quy đổi: <t t-esc="val['currency_rate']"/>
                                 </td>
                             </tr>
                         </t>

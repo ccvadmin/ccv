@@ -1,13 +1,56 @@
 from odoo import models, api
-import io
-import base64
-import xlsxwriter
 
+from ..libary_report import LibaryReport
+
+libary_report = LibaryReport()
 
 class GiayBaoCoReport(models.AbstractModel):
     _name = 'report.ccv_bao_cao.giay_bao_co_report'
     _description = 'Giấy Báo Có Report'
     _inherit = "report.report_xlsx.abstract"
+
+    def generate_prepare_value(self, docids):
+        docs = self.env['account.payment'].browse(docids)
+        data = {}
+
+        for doc in docs:
+            partner_id = doc.partner_id
+            partner_bank_id = doc.partner_bank_id
+            line_ids = doc.move_id.line_ids
+            currency_id = doc.currency_id
+            currency_vn_id = currency_id
+            amount = doc.amount
+            currency_name = currency_vn_id.name
+            currency_rate = 0
+            if currency_id.name != 'VND':
+                amount *= currency_id.inverse_rate
+                currency_vn_id = self.env.company.currency_id
+                currency_name = currency_vn_id.name
+                currency_rate = currency_id.inverse_rate
+            doc_data = {
+                'name': doc.name,
+                'date': doc.date,
+                'partner_name': partner_id.name,
+                'partner_address': partner_id.street or '',
+                'ref': doc.ref or '',
+                'acc_number': partner_bank_id.acc_number if partner_bank_id else '',
+                'bank_name': partner_bank_id.bank_id.name if partner_bank_id else '',
+
+                'amount_nt': currency_id.format(doc.amount),
+                'currency_nt_name': currency_id.name,
+                'amount_label': libary_report.number_to_words_vn(int(doc.amount), currency_id.currency_unit_label),
+
+                'amount': currency_vn_id.format(amount),
+                'currency_name': currency_name,
+                'currency_rate': currency_rate,
+
+                'account_credit_code': line_ids.filtered(lambda l:l.debit == 0)[0].account_id.code,
+                'account_debit_code': line_ids.filtered(lambda l:l.credit == 0)[0].account_id.code,
+            }
+
+            data[doc.id] = doc_data
+        
+        return docs, data
 
     @api.model
     def generate_xlsx_report(self, workbook, data, objects):
@@ -56,9 +99,10 @@ class GiayBaoCoReport(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        docs = self.env['account.move'].browse(docids)
+        docs, data = self.generate_prepare_value(docids)
         return {
             'doc_ids': docids,
-            'doc_model': 'account.move',
+            'doc_model': 'account.payment',
             'docs': docs,
+            'data': data,
         }

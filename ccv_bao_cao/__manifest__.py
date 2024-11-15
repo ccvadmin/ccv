@@ -16,7 +16,8 @@
 
         ##########  Config Report   ##########
         'report/report_header.xml',
-        'report/bao_cao_ccv_report.xml',
+        'report/bao_cao_ccv_report_excel.xml',
+        'report/bao_cao_ccv_report_pdf.xml',
 
         ##########      Views       ##########
         
