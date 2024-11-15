@@ -2,7 +2,7 @@
 <odoo>
     <report
         id="tong_hop_cong_no_phai_tra_report"
-        model="alpha.report"
+        model="report.line.mixin"
         string="Tổng hợp công nợ phải trả"
         report_type="xlsx"
         name="ccv_bao_cao.tong_hop_cong_no_phai_tra"
@@ -11,7 +11,7 @@
     />
     <report
         id="tong_hop_cong_no_phai_thu_report"
-        model="alpha.report"
+        model="report.line.mixin"
         string="Tổng hợp công nợ phải thu"
         report_type="xlsx"
         name="ccv_bao_cao.tong_hop_cong_no_phai_thu"
@@ -20,7 +20,7 @@
     />
     <report
         id="tong_hop_cong_no_phai_tra_usd_report"
-        model="alpha.report"
+        model="report.line.mixin"
         string="Tổng hợp công nợ phải trả USD"
         report_type="xlsx"
         name="ccv_bao_cao_usd.tong_hop_cong_no_phai_tra_usd"
@@ -29,7 +29,7 @@
     />
     <report
         id="tong_hop_cong_no_phai_thu_usd_report"
-        model="alpha.report"
+        model="report.line.mixin"
         string="Tổng hợp công nợ phải thu USD"
         report_type="xlsx"
         name="ccv_bao_cao_usd.tong_hop_cong_no_phai_thu_usd"
