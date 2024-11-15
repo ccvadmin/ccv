@@ -13,21 +13,14 @@ ALL_TYPE = {
 }
 
 ALL_TYPE_NT = {
-    "tong_hop_cong_no_phai_thu_usd": ("Tổng hợp công nợ phải thu USD", 'beta.report.line3', 'beta_line3_ids'),
-    "tong_hop_cong_no_phai_tra_usd": ("Tổng hợp công nợ phải trả USD", 'beta.report.line4', 'beta_line4_ids'),
+    "tong_hop_cong_no_phai_thu_usd"
+    "tong_hop_cong_no_phai_tra_usd"
 }
 
 class AlphaReport(models.TransientModel):
     _inherit = "alpha.report"
 
-    type = fields.Selection(
-        selection_add=[
-            ("tong_hop_cong_no_phai_thu", "Tổng hợp công nợ phải thu"),
-            ("tong_hop_cong_no_phai_tra", "Tổng hợp công nợ phải trả"),
-            ("tong_hop_cong_no_phai_thu_usd", "Tổng hợp công nợ phải thu USD"),
-            ("tong_hop_cong_no_phai_tra_usd", "Tổng hợp công nợ phải trả USD"),
-        ]
-    )
+    type = fields.Selection(selection_add=[(key, value[0])for key,value in ALL_TYPE.items()])
 
     beta_line1_ids = fields.One2many("beta.report.line1",'parent_id', string="Tong hop cong no phai thu")
     beta_line2_ids = fields.One2many("beta.report.line2",'parent_id', string="Tong hop cong no phai tra")
@@ -38,7 +31,7 @@ class AlphaReport(models.TransientModel):
 
     @api.depends("type")
     def _compute_foreign_currency(self):
-        if self.type in ALL_TYPE_NT.keys():
+        if self.type in ALL_TYPE_NT:
             self.is_foreign_currency = True
         else:
             self.is_foreign_currency = False
@@ -137,7 +130,8 @@ class AlphaReport(models.TransientModel):
     def get_row_data_tong_hop_cong_no_phai_thu(self):
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
-        partner_ids = self.env["res.partner"].search([]).mapped('id')
+        # partner_ids = self.env["res.partner"].search([]).mapped('id')
+        partner_ids = list(set(self.env['account.move'].search([]).mapped('partner_id').mapped('id')))
         self.env.cr.execute("delete from beta_report_line1 where parent_id = %s;" % self.id)
         query = [
             "select * from function_tong_hop_cong_no_phai_thu_1_kh('%s','%s', %s,%s,%s,%s)"
@@ -153,7 +147,8 @@ class AlphaReport(models.TransientModel):
     def get_row_data_tong_hop_cong_no_phai_tra(self):
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
-        partner_ids = self.env["res.partner"].search([]).mapped('id')
+        # partner_ids = self.env["res.partner"].search([]).mapped('id')
+        partner_ids = list(set(self.env['account.move'].search([]).mapped('partner_id').mapped('id')))
         self.env.cr.execute("delete from beta_report_line2 where parent_id = %s;" % self.id)
         query = [
             "select * from function_tong_hop_cong_no_phai_tra_1_kh('%s','%s', %s,%s,%s,%s)"
@@ -170,7 +165,8 @@ class AlphaReport(models.TransientModel):
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
         date_currency = self.date_to.strftime("%Y-%m-%d")
-        partner_ids = self.env["res.partner"].search([]).mapped('id')
+        # partner_ids = self.env["res.partner"].search([]).mapped('id')
+        partner_ids = list(set(self.env['account.move'].search([]).mapped('partner_id').mapped('id')))
         self.env.cr.execute("delete from beta_report_line3 where parent_id = %s;" % self.id)
         query = [
             "select * from function_tong_hop_cong_no_phai_thu_usd_1_kh('%s','%s','%s',%s,%s,%s,%s,%s)"
@@ -188,7 +184,8 @@ class AlphaReport(models.TransientModel):
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
         date_currency = self.date_to.strftime("%Y-%m-%d")
-        partner_ids = self.env["res.partner"].search([]).mapped('id')
+        # partner_ids = self.env["res.partner"].search([]).mapped('id')
+        partner_ids = list(set(self.env['account.move'].search([]).mapped('partner_id').mapped('id')))
         self.env.cr.execute("delete from beta_report_line4 where parent_id = %s;" % self.id)
         query = [
             "select * from function_tong_hop_cong_no_phai_tra_usd_1_kh('%s','%s','%s',%s,%s,%s,%s,%s)"
