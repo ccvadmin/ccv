@@ -67,7 +67,7 @@ class tong_hop_cong_no_phai_tra_usd(models.AbstractModel):
         format_company_title.set_align("left")
 
         # Đầu đề
-        sheet.merge_range("A4:K4","TỔNG HỢP CÔNG NỢ PHẢI TRẢ",format1)
+        sheet.merge_range("A4:R4","TỔNG HỢP CÔNG NỢ PHẢI TRẢ",format1)
         sheet.set_row(4, 35)
         sheet.set_row(5, 20)
         account_account = self.env['account.account'].browse(account_id)
@@ -76,8 +76,8 @@ class tong_hop_cong_no_phai_tra_usd(models.AbstractModel):
         if account_account:
             account = account_account.code
             currency = account_account.currency_id.display_name if account_account.currency_id else "Chưa xác định"
-        sheet.merge_range("A5:K5","Tài khoản: %s; Loại tiền: USD; Từ ngày %s đến ngày %s" % (account,date_start,date_end),format21)
-        sheet.merge_range("C2:K2","Công ty TNHH Con Cò Vàng - Mã số thuế: 0305995751", format_company_title)
+        sheet.merge_range("A5:R5","Tài khoản: %s; Loại tiền: USD; Từ ngày %s đến ngày %s" % (account,date_start,date_end),format21)
+        sheet.merge_range("C2:R2","Công ty TNHH Con Cò Vàng - Mã số thuế: 0305995751", format_company_title)
         sheet.insert_image('A1', get_module_resource('ccv_bao_cao', r'static/src/img', 'logo.png'), {'x_offset': 0, 'y_offset': 0,"x_scale": 0.22, "y_scale": 0.22})
 
         # Bảng

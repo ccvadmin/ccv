@@ -48,7 +48,7 @@ class AlphaReport(models.TransientModel):
 
     def action_print_report(self):
         if self.type in ALL_TYPE.keys():
-            return getattr(self, self.type + "_report")()
+            return self.beta_action_export_report()
         return super(AlphaReport, self).action_print_report()
 
     ##########################################
@@ -83,43 +83,44 @@ class AlphaReport(models.TransientModel):
     ############  HÀM XUẤT REPORT  ############
     ###########################################
 
-    # TODO: Dynamic hóa
-
-    def tong_hop_cong_no_phai_thu_report(self):
-        data = {
+    def generate_prepare_value_tong_hop_cong_no_phai_thu(self):
+        return {
             "account_id"    : self.account_id.id,
             "date_start"    : self.date_from.strftime("%d/%m/%Y"),
             "date_end"      : self.date_to.strftime("%d/%m/%Y"),
             "data"          : getattr(self, "get_data_export_" + self.type)(),
         }
-        return self.env.ref("ccv_bao_cao.tong_hop_cong_no_phai_thu_report").report_action(None, data=data)
-
-    def tong_hop_cong_no_phai_tra_report(self):
-        data = {
+    
+    def generate_prepare_value_tong_hop_cong_no_phai_tra(self):
+        return {
             "account_id"    : self.account_id.id,
             "date_start"    : self.date_from.strftime("%d/%m/%Y"),
             "date_end"      : self.date_to.strftime("%d/%m/%Y"),
             "data"          : getattr(self, "get_data_export_" + self.type)(),
         }
-        return self.env.ref("ccv_bao_cao.tong_hop_cong_no_phai_tra_report").report_action(None, data=data)
-
-    def tong_hop_cong_no_phai_thu_usd_report(self):
-        data = {
+    
+    def generate_prepare_value_tong_hop_cong_no_phai_thu_usd(self):
+        return {
             "account_id"    : self.account_id.id,
             "date_start"    : self.date_from.strftime("%d/%m/%Y"),
             "date_end"      : self.date_to.strftime("%d/%m/%Y"),
             "data"          : getattr(self, "get_data_export_" + self.type)(),
         }
-        return self.env.ref("ccv_bao_cao.tong_hop_cong_no_phai_thu_usd_report").report_action(None, data=data)
-
-    def tong_hop_cong_no_phai_tra_usd_report(self):
-        data = {
+    
+    def generate_prepare_value_tong_hop_cong_no_phai_tra_usd(self):
+        return {
             "account_id"    : self.account_id.id,
             "date_start"    : self.date_from.strftime("%d/%m/%Y"),
             "date_end"      : self.date_to.strftime("%d/%m/%Y"),
             "data"          : getattr(self, "get_data_export_" + self.type)(),
         }
-        return self.env.ref("ccv_bao_cao.tong_hop_cong_no_phai_tra_usd_report").report_action(None, data=data)
+
+    def generate_prepare_value(self):
+        return getattr(self, "generate_prepare_value_%s" % self.type)()
+
+    def beta_action_export_report(self):
+        data = self.generate_prepare_value()
+        return self.env.ref("ccv_bao_cao.%s_report" % self.type).report_action(None, data=data)
 
     ###########################################
     ###############  RUN QUERY  ###############

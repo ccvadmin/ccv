@@ -70,7 +70,7 @@ class tong_hop_cong_no_phai_thu_usd(models.AbstractModel):
 
         # Đầu đề
         title = "TỔNG HỢP CÔNG NỢ PHẢI THU"
-        sheet.merge_range("A4:J4", title, format1)
+        sheet.merge_range("A4:R4", title, format1)
         sheet.set_row(4, 35)
         sheet.set_row(5, 20)
         account_account = self.env["account.account"].browse(account_id)
@@ -80,9 +80,9 @@ class tong_hop_cong_no_phai_thu_usd(models.AbstractModel):
             account = account_account.code
             currency = (account_account.currency_id.display_name if account_account.currency_id else "Chưa xác định")
         sub_title = "Tài khoản: %s; Loại tiền: USD; Từ ngày %s đến ngày %s" % (account,date_start,date_end,)
-        sheet.merge_range("A5:J5", sub_title, format21)
+        sheet.merge_range("A5:R5", sub_title, format21)
         sub_title = "Công ty TNHH Con Cò Vàng - Mã số thuế: 0305995751"
-        sheet.merge_range("C2:J2", sub_title, format_company_title)
+        sheet.merge_range("C2:R2", sub_title, format_company_title)
         image_path = get_module_resource("ccv_bao_cao", r"static/src/img", "logo.png")
         image_format = {"x_offset": 0, "y_offset": 0, "x_scale": 0.22, "y_scale": 0.22}
         sheet.insert_image("A1", image_path, image_format)
