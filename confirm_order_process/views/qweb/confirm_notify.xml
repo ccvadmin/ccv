@@ -1,0 +1,12 @@
+<odoo>
+    <template id="order_confirmation_notify_template">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <div class="text-center">
+                    <h1 class="fw-bold"><t t-esc="title"/></h1>
+                    <p class="lead"><t t-esc="message"/></p>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

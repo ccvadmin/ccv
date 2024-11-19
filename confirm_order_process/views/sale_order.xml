@@ -1,0 +1,49 @@
+<odoo>
+    <!-- sale.order inherit form view -->
+    <record id="sale_order" model="ir.ui.view">
+        <field name="name">sale.order.inherit.view.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add your xpath here -->
+            <xpath expr="//header" position="inside">
+                <button name="test_btn" type="object" string="Xác nhận đơn hàng"/>
+                <button name="test_btn1" type="object" string="Xác nhận giao hàng"/>
+                <button name="action_resend_otp" type="object" string="Xác nhận giao hàng"/>
+            </xpath>
+            <xpath expr="//page[@name='other_information']/group[1]" position="before">
+                <group>
+                    <group name="mrp_production" string="Trạng thái sản xuất">
+                        <field name="state_mrp" readonly="1"/>
+                        <field name="state_delivery" readonly="1"/>
+                    </group>
+                    <group></group>
+                </group>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Đơn sản xuất" name="orders">
+                    <field name="mrp_production_ids" readonly="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Đính kèm" name="orders">
+                    <field name="attachment_ids" widget='many2many_images'/>
+                </page>
+                <page string="OTP" name="otp" groups="base.group_system">
+                    <field name="otp_ids" readonly="1" groups="base.group_system">
+                        <tree>
+                            <field name="otp"/>
+                            <field name="phone" optional="show"/>
+                            <field name="email" optional="hide"/>
+                            <field name="date_end"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

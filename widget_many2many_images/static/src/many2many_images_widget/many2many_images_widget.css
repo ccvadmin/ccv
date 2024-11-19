@@ -1,0 +1,5 @@
+@media (min-width: 992px) {
+    .o_attachment.o_attachment_many2many {
+        width: 50%;
+    }
+}
