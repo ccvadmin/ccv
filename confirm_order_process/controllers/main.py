@@ -80,7 +80,7 @@ class MainController(http.Controller):
                         "message": "Đơn Hàng Không Thể Xác Nhận Lúc Này",
                     },
                 )
-            otp_model = request.env['otp.verification'].sudo().search([('sale_order_id.id','=', order.id)])
+            otp_model = request.env['otp.verification'].sudo().search([('sale_order_id.id','=', order.id), ('state','=', 'unverified')])
             if not otp_model:
                 otp_model = request.env['otp.verification'].sudo().create({
                     'sale_order_id': order.id,
@@ -339,7 +339,7 @@ class MainController(http.Controller):
                     },
                 )
             
-            otp_model = request.env['otp.verification'].sudo().search([('sale_order_id.id','=', order.id)])
+            otp_model = request.env['otp.verification'].sudo().search([('sale_order_id.id','=', order.id), ('state','=', 'unverified')])
             if not otp_model:
                 otp_model = request.env['otp.verification'].sudo().create({
                     'sale_order_id': order.id,
@@ -370,8 +370,6 @@ class MainController(http.Controller):
                 "status": order.state == "sale",
                 "token": token,
             }
-
-            # TODO: Gửi OTP nếu cần thiết
 
             return request.render(
                 "confirm_order_process.order_delivery_template", order_data

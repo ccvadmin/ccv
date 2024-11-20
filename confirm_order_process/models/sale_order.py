@@ -27,7 +27,7 @@ class SaleOrder(models.Model):
     
     state_delivery = fields.Selection(selection=[
         ('draft', 'Chưa sẵn sàng giao hàng'),
-        ('sent', 'Đã gửi'),
+        ('sent', 'Đã gửi thông tin xác nhận giao nhận'),
         ('confirm', 'Xác nhận giao hàng'),
         ('done', 'Hoàn thành'),
     ], string="Trạng thái giao hàng", readonly=True)
@@ -49,6 +49,8 @@ class SaleOrder(models.Model):
         string='OTP',
     )
 
+    public_url = fields.Char(compute="_compute_generate_public_url")
+
     count_try_submit = fields.Integer('Số lần submit', default=0)
 
     @api.depends("mrp_production_ids")
@@ -65,6 +67,20 @@ class SaleOrder(models.Model):
                 order.state_mrp = 'done'
             else:
                 order.state_mrp = ''
+    
+    @api.depends('state', 'state_delivery', 'state_mrp')
+    def _compute_generate_public_url(self):
+        key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
+        text = "%s | %s | %s" % (get_timestamp(), generate_random_string(20), self.id)
+        token = encode_token(text, key)
+        url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
+        for order in self:
+            order.state = 'sent'
+            if order.state in ['draft', 'sent']:
+                order.public_url = "%s/public/order/confirm-order?token=%s" % (url, urllib.parse.quote(token))
+            elif order.state == 'sale' and order.state_delivery == 'ready' and order.state_mrp == 'done':
+                order.public_url = "%s/public/order/confirm-delivery?token=%s" % (url, urllib.parse.quote(token))
+
 
     ####################################
     # TODO: Chuyển 2 hàm button tích hợp ZALO
@@ -76,20 +92,11 @@ class SaleOrder(models.Model):
     ####################################
 
     def test_btn(self):
-        key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
-        text = "%s | %s | %s" % (get_timestamp(), generate_random_string(20), self.id)
-        token = encode_token(text, key)
-        url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
-        self.state = 'sent'
-        raise UserError("%s/public/order/confirm-order?token=%s" % (url, urllib.parse.quote(token)))
+        raise UserError(self.public_url)
     
     def test_btn1(self):
-        key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
-        text = "%s | %s | %s" % (get_timestamp(), generate_random_string(20), self.id)
-        token = encode_token(text, key)
-        url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
         self.state_delivery = 'sent'
-        raise UserError("%s/public/order/confirm-delivery?token=%s" % (url, urllib.parse.quote(token)))
+        raise UserError(self.public_url)
 
     ####################################
     
@@ -106,9 +113,6 @@ class SaleOrder(models.Model):
             self.action_confirm_delivery()
             if otp_id:
                 otp_id.write({'state': 'verified'})
-
-    def action_sent_delivery(self):
-        self.state_delivery = 'sent'
     
     def action_confirm_delivery(self):
         self.state_delivery = 'confirm'

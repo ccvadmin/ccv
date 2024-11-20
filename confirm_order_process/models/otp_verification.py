@@ -13,7 +13,7 @@ class OtpVerification(models.Model):
     _name = "otp.verification"
     _description = "Otp Verification"
 
-    otp = fields.Text(string="OTP", require=True)
+    otp = fields.Text(string="OTP", required=True)
     state = fields.Selection(
         [
             ("unverified", "Chưa xác nhận"),
@@ -27,9 +27,7 @@ class OtpVerification(models.Model):
     phone = fields.Char()
     email = fields.Char()
     sale_order_id = fields.Many2one("sale.order", string="Đơn bán hàng")
-    date_end = fields.Datetime(
-        string="Ngày hết hạn", default=datetime.now() + timedelta(minutes=5)
-    )
+    date_end = fields.Datetime(string="Ngày hết hạn", default=datetime.now() + timedelta(minutes=5))
 
     @api.constrains("otp")
     def unit_opt_contrains(self):
@@ -78,9 +76,7 @@ class OtpVerification(models.Model):
 
     @api.model
     def update_expired_otps(self):
-        otp_records = self.search(
-            [("state", "=", "unverified"), ("date_end", "<", fields.Datetime.now())]
-        )
+        otp_records = self.search([("state", "=", "unverified"), ("date_end", "<", fields.Datetime.now())])
         otp_records.write({"state": "expired"})
 
     @api.model
