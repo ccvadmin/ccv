@@ -11,7 +11,8 @@
         'account_reports',
     ],
     'data': [
-        'views/search_template_view.xml'
+        'views/account_report_column.xml',
+        'views/search_template_view.xml',
     ],
     'assets': {
         'web.assets_backend': [
