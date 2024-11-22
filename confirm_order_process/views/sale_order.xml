@@ -7,8 +7,6 @@
         <field name="arch" type="xml">
             <!-- Add your xpath here -->
             <xpath expr="//header" position="inside">
-                <button name="test_btn" type="object" string="Xác nhận đơn hàng"/>
-                <button name="test_btn1" type="object" string="Xác nhận giao hàng"/>
                 <button name="action_resend_otp" type="object" string="Xác nhận giao hàng"/>
             </xpath>
             <xpath expr="//page[@name='other_information']/group[1]" position="before">
@@ -29,7 +27,7 @@
                         </tree>
                     </field>
                 </page>
-                <page string="Đính kèm" name="orders">
+                <page string="Ảnh" name="images">
                     <field name="attachment_ids" widget='many2many_images'/>
                 </page>
                 <page string="OTP" name="otp" groups="base.group_system">
@@ -42,6 +40,13 @@
                             <field name="state"/>
                         </tree>
                     </field>
+                </page>
+                <page string="URL" name="url">
+                    <group>
+                        <field name="public_url_cf_order" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
+                        <field name="public_url_cf_delivery" attrs="{'invisible': [('state', '!=', 'sale'),('state_delivery', '!=', 'ready'),('state_mrp', '!=', 'done')]}"/>
+                        <field name="public_url_add_image" attrs="{'invisible': [('state', 'not in', ['sale', 'done'])]}"/>
+                    </group>
                 </page>
             </xpath>
         </field>

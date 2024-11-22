@@ -11,8 +11,13 @@
                         <field name="sale_order_id"/>
                     </group>
                 </page>
-                <page string="Đính kèm" name="orders">
+                <page string="Ảnh" name="images">
                     <field name="attachment_ids" widget='many2many_images'/>
+                </page>
+                <page string="URL" name="url">
+                    <group>
+                        <field name="public_url_add_image"/>
+                    </group>
                 </page>
             </xpath>
         </field>

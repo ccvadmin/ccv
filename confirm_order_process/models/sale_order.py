@@ -49,7 +49,9 @@ class SaleOrder(models.Model):
         string='OTP',
     )
 
-    public_url = fields.Char(compute="_compute_generate_public_url")
+    public_url_cf_order = fields.Char(string="Link xác nhận đơn hàng", compute="_compute_generate_public_url_cf_order")
+    public_url_cf_delivery = fields.Char(string="Link xác nhận giao hàng", compute="_compute_generate_public_url_cf_delivery")
+    public_url_add_image = fields.Char(string="Link thêm hình ảnh", compute="_compute_generate_public_url_add_image")
 
     count_try_submit = fields.Integer('Số lần submit', default=0)
 
@@ -67,19 +69,44 @@ class SaleOrder(models.Model):
                 order.state_mrp = 'done'
             else:
                 order.state_mrp = ''
-    
+
+    @api.depends('state')
+    def _compute_generate_public_url_cf_order(self):
+        key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
+        text = "%s | %s | %s | %s" % (get_timestamp(), generate_random_string(20), self._name, self.id)
+        text = "%s | %s | %s" % (get_timestamp(), generate_random_string(20), self.id)
+        token = encode_token(text, key)
+        url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
+        for order in self:
+            if order.state in ['draft', 'sent']:
+                order.state = 'sent'
+                order.public_url_cf_order = "%s/public/order/confirm-order?token=%s" % (url, urllib.parse.quote(token))
+            else:
+                order.public_url_cf_order = ""
+
     @api.depends('state', 'state_delivery', 'state_mrp')
-    def _compute_generate_public_url(self):
+    def _compute_generate_public_url_cf_delivery(self):
         key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
         text = "%s | %s | %s" % (get_timestamp(), generate_random_string(20), self.id)
         token = encode_token(text, key)
         url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
         for order in self:
-            order.state = 'sent'
-            if order.state in ['draft', 'sent']:
-                order.public_url = "%s/public/order/confirm-order?token=%s" % (url, urllib.parse.quote(token))
-            elif order.state == 'sale' and order.state_delivery == 'ready' and order.state_mrp == 'done':
-                order.public_url = "%s/public/order/confirm-delivery?token=%s" % (url, urllib.parse.quote(token))
+            if order.state == 'sale' and order.state_delivery == 'ready' and order.state_mrp == 'done':
+                order.public_url_cf_delivery = "%s/public/order/confirm-delivery?token=%s" % (url, urllib.parse.quote(token))
+            else:
+                order.public_url_cf_delivery = ""
+
+    @api.depends('state')
+    def _compute_generate_public_url_add_image(self):
+        key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
+        text = "%s | %s | %s | %s" % (get_timestamp(), generate_random_string(20), self._name, self.id)
+        token = encode_token(text, key)
+        url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
+        for order in self:
+            if order.state in ['sale', 'done']:
+                order.public_url_add_image = "%s/public/upload_files_to_order?token=%s" % (url, urllib.parse.quote(token))
+            else:
+                order.public_url_add_image = ""
 
 
     ####################################

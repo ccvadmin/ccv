@@ -1,11 +1,6 @@
 <odoo>
     <template id="order_confirmation_template">
         <t t-call="website.layout">
-        <t t-set="meta_title" t-value="'Order Confirmation'"/>
-
-        <head>
-            <title>Xác nhận đơn hàng - <t t-esc="order_id"/> | <t t-esc="customer_name"/></title>
-        </head>
         <style>
             #template.container *{
                 font-family: 'Times New Roman', Times, serif;

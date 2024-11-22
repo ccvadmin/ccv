@@ -47,15 +47,15 @@
                         t-on-click="() => closeRenameModal()">
                         <span aria-hidden="true">&#215;</span>
                     </button>
-                    <h5 class="modal-title" id="renameModalLabel">Rename Attachment</h5>
+                    <h5 class="modal-title" id="renameModalLabel">Đổi tên</h5>
                 </div>
                 <div class="modal-body">
-                    <label for="newFileName">New File Name:</label>
+                    <label for="newFileName">Tên mới:</label>
                     <input type="text" id="newFileName" class="form-control" />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" t-on-click="() => closeRenameModal()">Close</button>
-                    <button type="button" class="btn btn-primary" t-on-click="() => saveRename()">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" t-on-click="() => closeRenameModal()">Đóng</button>
+                    <button type="button" class="btn btn-primary" t-on-click="() => saveRename()">Lưu</button>
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
                 </a>
 
                 <button class="btn btn-warning m-2" t-on-click="() => openRenameModal(file)">
-                    <i class="fa fa-pencil" aria-hidden="true"></i> Rename
+                    <i class="fa fa-pencil" aria-hidden="true"></i> Đổi tên
                 </button>
 
                 <div t-if="editable" class="progress o_attachment_progress_bar">
