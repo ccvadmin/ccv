@@ -99,6 +99,62 @@
             </tree>
         </field>
     </record>
+    <record id="chi_tiet_cong_no_phai_tra_usd_beta_view_tree" model="ir.ui.view">
+        <field name="name">beta.view.tree.tra</field>
+        <field name="model">beta.report.line5</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0" delete="0">
+                <field name="move_id" string="Số chứng từ"/>
+                <field name="date" string="Ngày chứng từ"/>
+                <field name="invoice_date"/>
+                <field name="reference"/>
+                <field name="product_uom_quantity"/>
+                <field name="price_unit"/>
+                <field name="note"/>
+                <field name="account_id"/>
+                <field name="account_dest_id"/>
+                <field name="is_foreign_currency" invisible="1"/>
+                <field name="ps_credit_nt" sum="total_ps_credit"/>
+                <field name="ps_credit" sum="total_ps_credit"/>
+                <field name="ps_debit_nt" sum="total_ps_debit"/>
+                <field name="ps_debit" sum="total_ps_debit"/>
+                <field name="end_credit_nt"/>
+                <field name="end_credit"/>
+                <field name="end_debit_nt"/>
+                <field name="end_debit"/>
+                <field name="uom_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="chi_tiet_cong_no_phai_thu_usd_beta_view_tree" model="ir.ui.view">
+        <field name="name">beta.view.tree.thu</field>
+        <field name="model">beta.report.line6</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0" delete="0">
+                <field name="move_id" string="Số chứng từ"/>
+                <field name="date" string="Ngày chứng từ"/>
+                <field name="invoice_date"/>
+                <field name="reference"/>
+                <field name="product_uom_quantity"/>
+                <field name="price_unit"/>
+                <field name="note"/>
+                <field name="account_id"/>
+                <field name="account_dest_id"/>
+                <field name="is_foreign_currency" invisible="1"/>
+                <field name="ps_credit_nt" sum="total_ps_credit"/>
+                <field name="ps_credit" sum="total_ps_credit"/>
+                <field name="ps_debit_nt" sum="total_ps_debit"/>
+                <field name="ps_debit" sum="total_ps_debit"/>
+                <field name="end_credit_nt"/>
+                <field name="end_credit"/>
+                <field name="end_debit_nt"/>
+                <field name="end_debit"/>
+                <field name="default_code"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="action_tong_hop_cong_no_phai_thu_beta_view_tree" model="ir.actions.act_window">
         <field name="name">Tổng hợp công nợ phải thu</field>
         <field name="res_model">beta.report.line1</field>
@@ -125,5 +181,19 @@
         <field name="res_model">beta.report.line4</field>
         <field name="view_mode">tree</field>
         <field name="view_id" ref="ccv_bao_cao.tong_hop_cong_no_phai_tra_usd_beta_view_tree"/>
+    </record>
+
+    <record id="action_chi_tiet_cong_no_phai_tra_usd_beta_view_tree" model="ir.actions.act_window">
+        <field name="name">Chi tiết công nợ phải trả USD</field>
+        <field name="res_model">beta.report.line5</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="ccv_bao_cao.chi_tiet_cong_no_phai_tra_usd_beta_view_tree"/>
+    </record>
+
+    <record id="action_chi_tiet_cong_no_phai_thu_usd_beta_view_tree" model="ir.actions.act_window">
+        <field name="name">Chi tiết công nợ phải thu USD</field>
+        <field name="res_model">beta.report.line6</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="ccv_bao_cao.chi_tiet_cong_no_phai_thu_usd_beta_view_tree"/>
     </record>
 </odoo>

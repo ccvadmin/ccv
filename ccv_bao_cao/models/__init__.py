@@ -7,3 +7,5 @@ from . import beta_report_line1
 from . import beta_report_line2
 from . import beta_report_line3
 from . import beta_report_line4
+from . import beta_report_line5
+from . import beta_report_line6

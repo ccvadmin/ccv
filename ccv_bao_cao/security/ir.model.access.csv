@@ -4,3 +4,5 @@ access_beta.report.line1,access.beta_report_line1,model_beta_report_line1,base.g
 access_beta.report.line2,access.beta_report_line2,model_beta_report_line2,base.group_user,1,1,1,1
 access_beta.report.line3,access.beta_report_line3,model_beta_report_line3,base.group_user,1,1,1,1
 access_beta.report.line4,access.beta_report_line4,model_beta_report_line4,base.group_user,1,1,1,1
+access_beta.report.line5,access.beta_report_line5,model_beta_report_line5,base.group_user,1,1,1,1
+access_beta.report.line6,access.beta_report_line6,model_beta_report_line6,base.group_user,1,1,1,1
