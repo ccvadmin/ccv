@@ -206,16 +206,7 @@ begin
                am.ref as reference,
                aml.quantity as product_uom_qty,
                aml.price_unit as price_unit,
-               (
-                CASE WHEN aml.debit = 0
-                    THEN aml.name
-                    ELSE 
-                        CASE WHEN product_id is NULL
-                            THEN aml.name
-                        ELSE (SELECT CONCAT('[', pp.default_code, '] ', pt.name->>'vi_VN') FROM product_product pp JOIN product_template pt ON pp.product_tmpl_id = pt.id WHERE pp.id = aml.product_id)
-                    END
-                END
-                ) AS note,
+               aml.name as note,
                aml.account_id as account_dest_id,
                (
                 CASE WHEN aml.debit = 0

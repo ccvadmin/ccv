@@ -207,20 +207,10 @@ begin
             , am.date
 			, am.invoice_date
             , tam.move_origin_id as move_id
-            -- , vs.name as reference
-            , '' as reference
+            , vs.name as reference
             , aml.quantity as product_uom_qty
             , aml.price_unit as price_unit
-            , (
-				CASE WHEN aml.debit = 0
-					THEN aml.name
-					ELSE 
-						CASE WHEN product_id is NULL
-							THEN aml.name
-						ELSE (SELECT CONCAT('[', pp.default_code, '] ', pt.name->>'vi_VN') FROM product_product pp JOIN product_template pt ON pp.product_tmpl_id = pt.id WHERE pp.id = aml.product_id)
-					END
-				END
-			) AS note
+            , aml.name as note
 			, (
 				CASE WHEN aml.debit = 0
 					THEN 0
@@ -264,7 +254,7 @@ begin
         left join product_product pp on pp.id = aml.product_id
         left join account_move am on am.id = aml.move_id
         inner join tmp_account_move tam on tam.move_id = am.id
-        -- left join viettel_sinvoice vs on vs.invoice_id = am.id
+        left join viettel_sinvoice vs on vs.invoice_id = am.id
         LEFT JOIN tong_hop_cong_no_currency thc_usd ON thc_usd.id = 2  -- USD rate
         where
             p_account_id != aml.account_id
