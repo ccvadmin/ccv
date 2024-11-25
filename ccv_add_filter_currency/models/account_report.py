@@ -38,20 +38,22 @@ class AccountReport(models.Model):
 
         company_currency = self.env.company.currency_id
         currency = company_currency
-        currency_id = [currency['id'] for currency in options['currency_options'] if currency['selected']]
         rate = 1
-        if len(currency_id) > 0:
-            currency = self.env['res.currency'].browse(int(currency_id[0]))
-            if currency.id != company_currency.id:
-                rate = currency.rate
+        if options.get('currency_options', False):
+            currency_id = [currency['id'] for currency in options['currency_options'] if currency['selected']]
+            if len(currency_id) > 0:
+                currency = self.env['res.currency'].browse(int(currency_id[0]))
+                if currency.id != company_currency.id:
+                    rate = currency.rate
 
-        currency_nt_id = [currency['id'] for currency in options['currency_nt_options'] if currency['selected']]
-        currency_nt = company_currency
         rate_nt = 1
-        if len(currency_nt_id) > 0:
-            currency_nt = self.env['res.currency'].browse(int(currency_nt_id[0]))
-            if currency_nt.id != company_currency.id:
-                rate_nt = currency_nt.rate
+        if options.get('currency_nt_options', False):
+            currency_nt_id = [currency['id'] for currency in options['currency_nt_options'] if currency['selected']]
+            currency_nt = company_currency
+            if len(currency_nt_id) > 0:
+                currency_nt = self.env['res.currency'].browse(int(currency_nt_id[0]))
+                if currency_nt.id != company_currency.id:
+                    rate_nt = currency_nt.rate
 
         index_update = []
         index_update1 = []
@@ -60,32 +62,32 @@ class AccountReport(models.Model):
                 index_update.append(count)
             elif column_option.get("figure_type") == "monetary" and column_option.get("expression_label") in NOT_APPLY_KEYS:
                 index_update1.append(count)
+        if index_update or index_update1:
+            for line in lines:
+                columns = line['columns']
+                updated_columns = []
+                for column_index, column in enumerate(columns):
+                    new_obj = {'name': column.get('name', ''), 'no_format': column.get('no_format', '0'), 'class': column.get('class', '')}
+                    if column_index in index_update and column.get('no_format') is not None:
+                        no_format_value = float(new_obj['no_format'] * rate) if isinstance(new_obj['no_format'], (int, float)) else 0.0
+                        name = currency.format(no_format_value)
+                        new_obj.update({
+                            "name": name,
+                            "no_format": no_format_value
+                        })
+                        updated_columns.append(new_obj)
+                    elif column_index in index_update1 and column.get('no_format') is not None:
+                        no_format_value = float(new_obj['no_format'] * rate_nt) if isinstance(new_obj['no_format'], (int, float)) else 0.0
+                        name = currency_nt.format(no_format_value)
+                        new_obj.update({
+                            "name": name,
+                            "no_format": no_format_value
+                        })
+                        updated_columns.append(new_obj)
+                    else:
+                        updated_columns.append(column)
+                line['columns'] = updated_columns
 
-        for line in lines:
-            columns = line['columns']
-            updated_columns = []
-
-            for column_index, column in enumerate(columns):
-                new_obj = {'name': column.get('name'), 'no_format': column.get('no_format'), 'class': column.get('class')}
-                if column_index in index_update and column.get('no_format') is not None:
-                    no_format_value = float(new_obj['no_format'] * rate) if isinstance(new_obj['no_format'], (int, float)) else 0.0
-                    name = currency.format(no_format_value)
-                    new_obj.update({
-                        "name": name,
-                        "no_format": no_format_value
-                    })
-                    updated_columns.append(new_obj)
-                elif column_index in index_update1 and column.get('no_format') is not None:
-                    no_format_value = float(new_obj['no_format'] * rate_nt) if isinstance(new_obj['no_format'], (int, float)) else 0.0
-                    name = currency_nt.format(no_format_value)
-                    new_obj.update({
-                        "name": name,
-                        "no_format": no_format_value
-                    })
-                    updated_columns.append(new_obj)
-                else:
-                    updated_columns.append(column)
-            line['columns'] = updated_columns
         return lines
 
 
