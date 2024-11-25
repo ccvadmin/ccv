@@ -1,9 +1,27 @@
 from odoo import models, fields, api, _
 import logging
+import datetime
 
 _logger = logging.getLogger(__name__)
 
 NOT_APPLY_KEYS = ['foreign_balance']
+
+def is_date(self, value):
+    if isinstance(value, datetime.date):
+        return value
+    if isinstance(value, str):
+        try:
+            return datetime.datetime.strptime(value, "%d/%m/%Y").date()
+        except ValueError:
+            return fields.Date.context_today(self)
+    return fields.Date.context_today(self)
+
+def compute(self, currency, line_name):
+    cur_date = is_date(self, line_name)
+    company = self.env.company
+    currency_rates = currency._get_rates(company, cur_date)
+    last_rate = self.env['res.currency.rate'].sudo()._get_last_rates_for_companies(company)
+    return (currency_rates.get(currency.id) or 1.0) / last_rate[company]
 
 class AccountReport(models.Model):
     _inherit = 'account.report'
@@ -35,40 +53,47 @@ class AccountReport(models.Model):
     def _get_lines(self, options, all_column_groups_expression_totals=None):
         self.ensure_one()
         lines = super(AccountReport, self)._get_lines(options, all_column_groups_expression_totals)
-
-        company_currency = self.env.company.currency_id
-        currency = company_currency
-        rate = 1
-        if options.get('currency_options', False):
-            currency_id = [currency['id'] for currency in options['currency_options'] if currency['selected']]
-            if len(currency_id) > 0:
-                currency = self.env['res.currency'].browse(int(currency_id[0]))
-                if currency.id != company_currency.id:
-                    rate = currency.rate
-
-        rate_nt = 1
-        if options.get('currency_nt_options', False):
-            currency_nt_id = [currency['id'] for currency in options['currency_nt_options'] if currency['selected']]
-            currency_nt = company_currency
-            if len(currency_nt_id) > 0:
-                currency_nt = self.env['res.currency'].browse(int(currency_nt_id[0]))
-                if currency_nt.id != company_currency.id:
-                    rate_nt = currency_nt.rate
+        currency_env = self.env['res.currency']
 
         index_update = []
         index_update1 = []
+        index_update2 = []
+
         for count, column_option in enumerate(options['columns']):
-            if column_option.get("figure_type") == "monetary" and column_option.get("expression_label") not in NOT_APPLY_KEYS:
+            if column_option.get("figure_type") == "monetary" and column_option.get("expression_label") in ['amount_currency']:
+                index_update2.append(count)
+            elif column_option.get("figure_type") == "monetary" and column_option.get("expression_label") not in NOT_APPLY_KEYS:
                 index_update.append(count)
             elif column_option.get("figure_type") == "monetary" and column_option.get("expression_label") in NOT_APPLY_KEYS:
                 index_update1.append(count)
-        if index_update or index_update1:
+        if (index_update or index_update1):
             for line in lines:
+                line_name = line.get('name', '')
+                company_currency = self.env.company.currency_id
+                currency = company_currency
+
+                rate = 1
+                if options.get('currency_options', False):
+                    currency_id = [currency['id'] for currency in options['currency_options'] if currency['selected']]
+                    if len(currency_id) > 0:
+                        currency = currency_env.browse(int(currency_id[0]))
+                        if currency.id != company_currency.id:
+                            rate = compute(self, currency, line_name)
+
+                rate_nt = 1
+                if options.get('currency_nt_options', False):
+                    currency_nt_id = [currency['id'] for currency in options['currency_nt_options'] if currency['selected']]
+                    currency_nt = company_currency
+                    if len(currency_nt_id) > 0:
+                        currency_nt = currency_env.browse(int(currency_nt_id[0]))
+                        if currency_nt.id != company_currency.id:
+                            rate_nt = compute(self, currency_nt, line_name)
+
                 columns = line['columns']
                 updated_columns = []
                 for column_index, column in enumerate(columns):
                     new_obj = {'name': column.get('name', ''), 'no_format': column.get('no_format', '0'), 'class': column.get('class', '')}
-                    if column_index in index_update and column.get('no_format') is not None:
+                    if column_index in index_update and column.get('no_format') is not None and rate != 1:
                         no_format_value = float(new_obj['no_format'] * rate) if isinstance(new_obj['no_format'], (int, float)) else 0.0
                         name = currency.format(no_format_value)
                         new_obj.update({
@@ -76,7 +101,7 @@ class AccountReport(models.Model):
                             "no_format": no_format_value
                         })
                         updated_columns.append(new_obj)
-                    elif column_index in index_update1 and column.get('no_format') is not None:
+                    elif column_index in index_update1 and column.get('no_format') is not None and rate_nt != 1:
                         no_format_value = float(new_obj['no_format'] * rate_nt) if isinstance(new_obj['no_format'], (int, float)) else 0.0
                         name = currency_nt.format(no_format_value)
                         new_obj.update({
@@ -87,7 +112,6 @@ class AccountReport(models.Model):
                     else:
                         updated_columns.append(column)
                 line['columns'] = updated_columns
-
         return lines
 
 
