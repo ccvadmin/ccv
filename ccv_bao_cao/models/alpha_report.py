@@ -129,6 +129,7 @@ class AlphaReport(models.TransientModel):
             "date_end"      : self.date_to.strftime("%d/%m/%Y"),
             "data"          : getattr(self, "get_data_export_" + self.type)(),
         }
+    
     def generate_prepare_value_chi_tiet_cong_no_phai_thu_usd(self):
         return {
             "account_id"    : self.account_id.code,
@@ -188,13 +189,13 @@ class AlphaReport(models.TransientModel):
     def get_row_data_tong_hop_cong_no_phai_thu_usd(self):
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
-        date_currency = self.date_to.strftime("%Y-%m-%d")
+        # date_currency = self.date_to.strftime("%Y-%m-%d")
         # partner_ids = self.env["res.partner"].search([]).mapped('id')
         partner_ids = list(set(self.env['account.move'].search([]).mapped('partner_id').mapped('id')))
         self.env.cr.execute("delete from beta_report_line3 where parent_id = %s;" % self.id)
         query = [
-            "select * from function_tong_hop_cong_no_phai_thu_usd_1_kh('%s','%s','%s',%s,%s,%s,%s,%s)"
-            % (date_start, date_end, date_currency, self.env.user.company_id.id, self.account_id.id, partner_id, self.env.user.id, self.id)
+            "select * from function_tong_hop_cong_no_phai_thu_usd_1_kh('%s','%s',%s,%s,%s,%s,%s)"
+            % (date_start, date_end, self.env.user.company_id.id, self.account_id.id, partner_id, self.env.user.id, self.id)
             for partner_id in partner_ids
         ]
         self.env.cr.execute("; ".join(query))
@@ -207,13 +208,13 @@ class AlphaReport(models.TransientModel):
     def get_row_data_tong_hop_cong_no_phai_tra_usd(self):
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
-        date_currency = self.date_to.strftime("%Y-%m-%d")
+        # date_currency = self.date_to.strftime("%Y-%m-%d")
         # partner_ids = self.env["res.partner"].search([]).mapped('id')
         partner_ids = list(set(self.env['account.move'].search([]).mapped('partner_id').mapped('id')))
         self.env.cr.execute("delete from beta_report_line4 where parent_id = %s;" % self.id)
         query = [
-            "select * from function_tong_hop_cong_no_phai_tra_usd_1_kh('%s','%s','%s',%s,%s,%s,%s,%s)"
-            % (date_start, date_end, date_currency, self.env.user.company_id.id, self.account_id.id, partner_id, self.env.user.id, self.id)
+            "select * from function_tong_hop_cong_no_phai_tra_usd_1_kh('%s','%s',%s,%s,%s,%s,%s)"
+            % (date_start, date_end, self.env.user.company_id.id, self.account_id.id, partner_id, self.env.user.id, self.id)
             for partner_id in partner_ids
         ]
         self.env.cr.execute("; ".join(query))
