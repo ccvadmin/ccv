@@ -7,13 +7,10 @@
         - 13/11/2024 : Thêm điều kiện không tạo khi không có giá trị
 */
 
-DROP TABLE IF EXISTS report_tong_hop_cong_no_phai_tra_usd;
-
 DROP FUNCTION IF EXISTS public.function_tong_hop_cong_no_phai_tra_usd_1_kh;
 CREATE OR REPLACE FUNCTION public.function_tong_hop_cong_no_phai_tra_usd_1_kh(
     p_date_from timestamp without time zone,
     p_date_to timestamp without time zone,
-    date_currency date,
     p_company_id integer,
     p_account_id integer,
     p_partner_id integer,
@@ -39,27 +36,6 @@ DECLARE
     sum_ps_credit_nt DECIMAL;
 BEGIN
     WITH
-    -- Lấy Tiền tệ
-    tong_hop_cong_no_currency AS (
-        SELECT c.id,
-            COALESCE((SELECT r.rate FROM res_currency_rate r
-                    WHERE r.currency_id = c.id AND r.name <= date_currency
-                        AND (r.company_id IS NULL OR r.company_id = p_company_id)
-                ORDER BY r.company_id, r.name DESC
-                    LIMIT 1), 1.0) AS rate
-        FROM res_currency c
-        WHERE c.id = 2
-        UNION
-        SELECT c.id,
-            COALESCE((SELECT r.rate FROM res_currency_rate r
-                    WHERE r.currency_id = c.id AND r.name <= date_currency
-                        AND (r.company_id IS NULL OR r.company_id = p_company_id)
-                ORDER BY r.company_id, r.name DESC
-                    LIMIT 1), 1.0) AS rate
-        FROM res_currency c
-        WHERE c.id = 23
-    ),
-
     -- lấy dữ liệu tài khoản, khách hàng
     account_partner AS (
         SELECT DISTINCT aml.account_id, aml.partner_id
@@ -79,7 +55,7 @@ BEGIN
                         THEN 0
                         ELSE    CASE WHEN aml.currency_id = 2
                                     THEN aml.amount_currency
-                                    ELSE aml.amount_currency * thc_usd.rate
+                                    ELSE aml.amount_currency * (SELECT rate FROM get_currency_rate(aml.date, p_company_id))
                                 END
                     END
                 ) FROM account_move_line aml
@@ -92,7 +68,7 @@ BEGIN
                         THEN 0
                         ELSE    CASE WHEN aml.currency_id = 23
                                     THEN aml.amount_currency
-                                    ELSE aml.amount_currency / thc_usd.rate
+                                    ELSE aml.amount_currency / (SELECT rate FROM get_currency_rate(aml.date, p_company_id))
                                 END
                     END
                 ) FROM account_move_line aml
@@ -105,7 +81,7 @@ BEGIN
                         THEN 0
                         ELSE    CASE WHEN aml.currency_id = 2
                                     THEN aml.amount_currency * -1
-                                    ELSE aml.amount_currency * -1 * thc_usd.rate
+                                    ELSE aml.amount_currency * -1 * (SELECT rate FROM get_currency_rate(aml.date, p_company_id))
                                 END
                     END
                 ) FROM account_move_line aml
@@ -118,7 +94,7 @@ BEGIN
                         THEN 0
                         ELSE    CASE WHEN aml.currency_id = 23
                                     THEN aml.amount_currency * -1
-                                    ELSE aml.amount_currency * -1 / thc_usd.rate
+                                    ELSE aml.amount_currency * -1 / (SELECT rate FROM get_currency_rate(aml.date, p_company_id))
                                 END
                     END
                 ) FROM account_move_line aml
@@ -127,7 +103,6 @@ BEGIN
                   AND aml.date < p_date_from
                   AND aml.parent_state = 'posted') AS start_credit_vnd
         FROM account_partner tcc
-        LEFT JOIN tong_hop_cong_no_currency thc_usd ON thc_usd.id = 2  -- USD rate
     ),
 
     -- lấy hóa đơn (in_invoice)
@@ -214,7 +189,7 @@ BEGIN
                         THEN 0
                         ELSE    CASE WHEN aml.currency_id = 2
                                     THEN aml.amount_currency
-                                    ELSE aml.amount_currency * thc_usd.rate
+                                    ELSE aml.amount_currency * (SELECT rate FROM get_currency_rate(aml.date, p_company_id))
                                 END
                     END
                 ) AS debit_usd,
@@ -223,7 +198,7 @@ BEGIN
                         THEN 0
                         ELSE    CASE WHEN aml.currency_id = 2
                                     THEN aml.amount_currency * -1
-                                    ELSE aml.amount_currency * -1 * thc_usd.rate
+                                    ELSE aml.amount_currency * -1 * (SELECT rate FROM get_currency_rate(aml.date, p_company_id))
                                 END
                     END
                 ) AS credit_usd,
@@ -232,7 +207,7 @@ BEGIN
                         THEN 0
                         ELSE    CASE WHEN aml.currency_id = 23
                                     THEN aml.amount_currency
-                                    ELSE aml.amount_currency / thc_usd.rate
+                                    ELSE aml.amount_currency / (SELECT rate FROM get_currency_rate(aml.date, p_company_id))
                                 END
                     END
                 ) AS debit_vnd,
@@ -241,14 +216,13 @@ BEGIN
                         THEN 0
                         ELSE    CASE WHEN aml.currency_id = 23
                                     THEN aml.amount_currency * -1
-                                    ELSE aml.amount_currency * -1 / thc_usd.rate
+                                    ELSE aml.amount_currency * -1 / (SELECT rate FROM get_currency_rate(aml.date, p_company_id))
                                 END
                     END
                 ) AS credit_vnd
         FROM account_move_line aml
         LEFT JOIN account_move am ON am.id = aml.move_id
         INNER JOIN account_partner2 taa ON taa.move_id = am.id
-        LEFT JOIN tong_hop_cong_no_currency thc_usd ON thc_usd.id = 2  -- USD rate
         WHERE p_account_id != aml.account_id
           AND p_partner_id = aml.partner_id
           AND am.state = 'posted'
