@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="account_move_stock_landed_costs_form_inherit" model="ir.ui.view">
+        <field name="name">account.move.stock.landed.costs.form.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="stock_landed_costs.account_view_move_form_inherited"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_type']" position='attributes'>
+                <attribute name="groups"></attribute>
+            </xpath>
+            <xpath expr="//field[@name='is_landed_costs_line']" position='attributes'>
+                <attribute name="groups"></attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
