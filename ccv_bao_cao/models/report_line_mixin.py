@@ -7,21 +7,22 @@ class BetaLineTongHopCongNo(models.TransientModel):
     _name = "report.line.mixin"
     _description = "Report Mixin"
     
+    parent_id           = fields.Many2one('alpha.report', readonly=True)
+    
     partner_id          = fields.Many2one('res.partner', string="Khách hàng", readonly=True)
     account_id          = fields.Many2one('account.account', string="Tài khoản", readonly=True)
     account_dest_id     = fields.Many2one('account.account', string="Tài khoản đích", readonly=True)
-    parent_id           = fields.Many2one('alpha.report', readonly=True)
     # employee_id         = fields.Many2one("hr.employee", string="Nhân viên")
-    # move_id             = fields.Many2one(string="Số chứng từ")
+    move_id             = fields.Many2one('account.move', string="Số chứng từ")
     # partner_ids         = fields.Many2many(string="Khách hàng / Đối tác")
-    # product_id          = fields.Many2one("product.product", string="Sản phẩm")
+    product_id          = fields.Many2one("product.product", string="Sản phẩm")
     # product_tmpl_id     = fields.Many2one("product.template", string="Sản phẩm (template)")
-    # uom_id              = fields.Many2one("uom.uom", string="ĐVT")
+    uom_id              = fields.Many2one("uom.uom", string="ĐVT")
 
     # Tiền gốc (Local currency)
     # price_subtotal      = fields.Float(string="Đơn giá trước thuế", default=0, digits=(16, 0))
     # price_tax           = fields.Float(string="Đơn giá thuế", default=0, digits=(16, 0))
-    # price_unit          = fields.Float(string="Đơn giá", default=0, digits=(16, 0))
+    price_unit          = fields.Float(string="Đơn giá", default=0, digits=(16, 0))
     # amount_payment      = fields.Float(string="Đã thanh toán", default=0, digits=(16, 0))
     # amount_tax          = fields.Float(string="Tiền thuế", default=0, digits=(16, 0))
     # amount_total        = fields.Float(string="Tổng tiền", default=0, digits=(16, 0))
@@ -42,9 +43,15 @@ class BetaLineTongHopCongNo(models.TransientModel):
     end_credit_nt       = fields.Float(string="Có cuối kỳ (Ngoại tệ)", compute="_compute_end_balance_nt", store=True, digits=(16, 2))
     end_debit_nt        = fields.Float(string="Nợ cuối kỳ (Ngoại tệ)", compute="_compute_end_balance_nt", store=True, digits=(16, 2))
 
+    date                = fields.Date(string="Ngày")
+    invoice_date        = fields.Date(string="Ngày hóa đơn")
+    reference           = fields.Char(string="Số hóa đơn")
+    note                = fields.Char(string="Diễn giải")
+
     # Số lượng
-    # inventory_quantity  = fields.Float("Số lượng kiểm kê", default=0, digits=(16, 3))
-    # diff_quantity       = fields.Float("Chênh lệch", default=0, digits=(16, 3))
+    # inventory_quantity    = fields.Float("Số lượng kiểm kê", default=0, digits=(16, 3))
+    # diff_quantity         = fields.Float("Chênh lệch", default=0, digits=(16, 3))
+    product_uom_quantity    = fields.Float("Số lượng", default=0, digits=(16, 3))
 
     # Char
 

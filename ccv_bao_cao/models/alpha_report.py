@@ -10,12 +10,16 @@ ALL_TYPE = {
     "tong_hop_cong_no_phai_tra": ("Tổng hợp công nợ phải trả", 'beta.report.line2', 'beta_line2_ids'),
     "tong_hop_cong_no_phai_thu_usd": ("Tổng hợp công nợ phải thu USD", 'beta.report.line3', 'beta_line3_ids'),
     "tong_hop_cong_no_phai_tra_usd": ("Tổng hợp công nợ phải trả USD", 'beta.report.line4', 'beta_line4_ids'),
+    "chi_tiet_cong_no_phai_tra_usd": ("Chi tiết công nợ phải trả USD", 'beta.report.line5', 'beta_line5_ids'),
+    "chi_tiet_cong_no_phai_thu_usd": ("Chi tiết công nợ phải thu USD", 'beta.report.line6', 'beta_line6_ids'),
 }
 
-ALL_TYPE_NT = {
-    "tong_hop_cong_no_phai_thu_usd"
-    "tong_hop_cong_no_phai_tra_usd"
-}
+ALL_TYPE_NT = [
+    "tong_hop_cong_no_phai_thu_usd",
+    "tong_hop_cong_no_phai_tra_usd",
+    "chi_tiet_cong_no_phai_tra_usd",
+    "chi_tiet_cong_no_phai_thu_usd",
+]
 
 class AlphaReport(models.TransientModel):
     _inherit = "alpha.report"
@@ -26,6 +30,8 @@ class AlphaReport(models.TransientModel):
     beta_line2_ids = fields.One2many("beta.report.line2",'parent_id', string="Tong hop cong no phai tra")
     beta_line3_ids = fields.One2many("beta.report.line3",'parent_id', string="Tong hop cong no phai thu USD")
     beta_line4_ids = fields.One2many("beta.report.line4",'parent_id', string="Tong hop cong no phai tra USD")
+    beta_line5_ids = fields.One2many("beta.report.line5",'parent_id', string="Chi tiết công nợ phai tra USD")
+    beta_line6_ids = fields.One2many("beta.report.line6",'parent_id', string="Chi tiết cong no phai thu USD")
 
     is_foreign_currency = fields.Boolean("Ngoại tệ", compute="_compute_foreign_currency")
 
@@ -114,6 +120,24 @@ class AlphaReport(models.TransientModel):
             "date_end"      : self.date_to.strftime("%d/%m/%Y"),
             "data"          : getattr(self, "get_data_export_" + self.type)(),
         }
+    
+    def generate_prepare_value_chi_tiet_cong_no_phai_tra_usd(self):
+        return {
+            "account_id"    : self.account_id.code,
+            "partner_id"    : self.partner_id.name,
+            "date_start"    : self.date_from.strftime("%d/%m/%Y"),
+            "date_end"      : self.date_to.strftime("%d/%m/%Y"),
+            "data"          : getattr(self, "get_data_export_" + self.type)(),
+        }
+    
+    def generate_prepare_value_chi_tiet_cong_no_phai_thu_usd(self):
+        return {
+            "account_id"    : self.account_id.code,
+            "partner_id"    : self.partner_id.name,
+            "date_start"    : self.date_from.strftime("%d/%m/%Y"),
+            "date_end"      : self.date_to.strftime("%d/%m/%Y"),
+            "data"          : getattr(self, "get_data_export_" + self.type)(),
+        }
 
     def generate_prepare_value(self):
         return getattr(self, "generate_prepare_value_%s" % self.type)()
@@ -165,13 +189,13 @@ class AlphaReport(models.TransientModel):
     def get_row_data_tong_hop_cong_no_phai_thu_usd(self):
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
-        date_currency = self.date_to.strftime("%Y-%m-%d")
+        # date_currency = self.date_to.strftime("%Y-%m-%d")
         # partner_ids = self.env["res.partner"].search([]).mapped('id')
         partner_ids = list(set(self.env['account.move'].search([]).mapped('partner_id').mapped('id')))
         self.env.cr.execute("delete from beta_report_line3 where parent_id = %s;" % self.id)
         query = [
-            "select * from function_tong_hop_cong_no_phai_thu_usd_1_kh('%s','%s','%s',%s,%s,%s,%s,%s)"
-            % (date_start, date_end, date_currency, self.env.user.company_id.id, self.account_id.id, partner_id, self.env.user.id, self.id)
+            "select * from function_tong_hop_cong_no_phai_thu_usd_1_kh('%s','%s',%s,%s,%s,%s,%s)"
+            % (date_start, date_end, self.env.user.company_id.id, self.account_id.id, partner_id, self.env.user.id, self.id)
             for partner_id in partner_ids
         ]
         self.env.cr.execute("; ".join(query))
@@ -184,13 +208,13 @@ class AlphaReport(models.TransientModel):
     def get_row_data_tong_hop_cong_no_phai_tra_usd(self):
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
-        date_currency = self.date_to.strftime("%Y-%m-%d")
+        # date_currency = self.date_to.strftime("%Y-%m-%d")
         # partner_ids = self.env["res.partner"].search([]).mapped('id')
         partner_ids = list(set(self.env['account.move'].search([]).mapped('partner_id').mapped('id')))
         self.env.cr.execute("delete from beta_report_line4 where parent_id = %s;" % self.id)
         query = [
-            "select * from function_tong_hop_cong_no_phai_tra_usd_1_kh('%s','%s','%s',%s,%s,%s,%s,%s)"
-            % (date_start, date_end, date_currency, self.env.user.company_id.id, self.account_id.id, partner_id, self.env.user.id, self.id)
+            "select * from function_tong_hop_cong_no_phai_tra_usd_1_kh('%s','%s',%s,%s,%s,%s,%s)"
+            % (date_start, date_end, self.env.user.company_id.id, self.account_id.id, partner_id, self.env.user.id, self.id)
             for partner_id in partner_ids
         ]
         self.env.cr.execute("; ".join(query))
@@ -198,6 +222,29 @@ class AlphaReport(models.TransientModel):
         self.beta_line4_ids._compute_end_balance()
         self.beta_line4_ids._compute_end_balance_nt()
         self.beta_line4_ids._compute_info()
+        return result
+
+    def get_row_data_chi_tiet_cong_no_phai_tra_usd(self):
+        date_start = self.date_from.strftime("%Y%m%d")
+        date_end = self.date_to.strftime("%Y%m%d")
+        query = "select * from function_chi_tiet_cong_no_phai_tra_usd('%s','%s',%s,%s,%s,%s)" \
+            % (date_start, date_end, self.env.user.company_id.id, self.account_id.id, self.partner_id.id, self.id)
+        self.env.cr.execute(query)
+        result = self.env.cr.fetchall()
+        self.beta_line5_ids._compute_end_balance()
+        self.beta_line5_ids._compute_end_balance_nt()
+        return result
+
+    def get_row_data_chi_tiet_cong_no_phai_thu_usd(self):
+        date_start = self.date_from.strftime("%Y%m%d")
+        date_end = self.date_to.strftime("%Y%m%d")
+        query = "select * from function_chi_tiet_cong_no_phai_thu_usd('%s','%s',%s,%s,%s,%s)" \
+            % (date_start, date_end, self.env.user.company_id.id, self.account_id.id, self.partner_id.id, self.id)
+        self.env.cr.execute(query)
+        result = self.env.cr.fetchall()
+        self.beta_line6_ids._compute_end_balance()
+        self.beta_line6_ids._compute_end_balance_nt()
+        self.beta_line6_ids._compute_info()
         return result
 
     ##########################################
@@ -482,3 +529,135 @@ class AlphaReport(models.TransientModel):
             },
             "lines": lines,
         }
+
+    def get_data_export_chi_tiet_cong_no_phai_tra_usd(self):
+        sum_ps_credit_usd       = sum(self.beta_line5_ids.mapped("ps_credit_nt"))
+        sum_ps_debit_usd        = sum(self.beta_line5_ids.mapped("ps_debit_nt"))
+        sum_ps_credit_vnd       = sum(self.beta_line5_ids.mapped("ps_credit"))
+        sum_ps_debit_vnd        = sum(self.beta_line5_ids.mapped("ps_debit"))
+
+        lines = []
+        count = 1
+        for data in self.beta_line5_ids:
+            move_id                 = data.move_id.display_name if data.move_id else ""
+            date                    = data.date                 if data.date else ""
+            invoice_date            = data.invoice_date         if data.invoice_date else ""
+            reference               = data.reference            if data.reference else ""
+            product_uom_quantity    = data.product_uom_quantity if data.product_uom_quantity else 0
+            price_unit              = data.price_unit           if data.price_unit else 0
+            note                    = data.note                 if data.note else ""
+            uom_id                  = data.uom_id.display_name  if data.uom_id else ""
+            account_id              = data.account_id.code      if data.account_id else ""
+            account_dest_id         = data.account_dest_id.code if data.account_dest_id else ""
+            ps_debit_usd            = data.ps_debit_nt
+            ps_debit_vnd            = data.ps_debit
+            ps_credit_usd           = data.ps_credit_nt
+            ps_credit_vnd           = data.ps_credit
+            end_debit_usd           = data.end_debit_nt
+            end_debit_vnd           = data.end_debit
+            end_credit_usd          = data.end_credit_nt
+            end_credit_vnd          = data.end_credit
+            vals = {
+                "no"                  : count,
+                "move_id"             : move_id,
+                "date"                : date,
+                "invoice_date"        : invoice_date,
+                "reference"           : reference,
+                "product_uom_quantity": product_uom_quantity,
+                "price_unit"          : price_unit,
+                "note"                : note,
+                "uom_id"              : uom_id,
+                "account_id"          : account_id,
+                "account_dest_id"     : account_dest_id,
+                "ps_debit_usd"        : round(ps_debit_usd, 2),
+                "ps_debit_vnd"        : round(ps_debit_vnd),
+                "ps_credit_usd"       : round(ps_credit_usd, 2),
+                "ps_credit_vnd"       : round(ps_credit_vnd),
+                "end_debit_usd"       : round(end_debit_usd, 2),
+                "end_debit_vnd"       : round(end_debit_vnd),
+                "end_credit_usd"      : round(end_credit_usd, 2),
+                "end_credit_vnd"      : round(end_credit_vnd),
+            }
+            count += 1
+            lines.append(vals)
+        return {
+            "sum": {
+                "sum_ps_credit_vnd"     : f"{round(sum_ps_credit_vnd):,}",
+                "sum_ps_debit_vnd"      : f"{round(sum_ps_debit_vnd):,}",
+                # "sum_end_credit_vnd"    : f"{round(sum_end_credit_vnd):,}",
+                # "sum_end_debit_vnd"     : f"{round(sum_end_debit_vnd):,}",
+                "sum_ps_credit_usd"     : f"{round(sum_ps_credit_usd, 2):,}",
+                "sum_ps_debit_usd"      : f"{round(sum_ps_debit_usd, 2):,}",
+                # "sum_end_credit_usd"    : f"{round(sum_end_credit_usd, 2):,}",
+                # "sum_end_debit_usd"     : f"{round(sum_end_debit_usd, 2):,}",
+            },
+            "lines": lines,
+        }
+
+    def get_data_export_chi_tiet_cong_no_phai_thu_usd(self):
+        sum_ps_credit_usd       = sum(self.beta_line6_ids.mapped("ps_credit_nt"))
+        sum_ps_debit_usd        = sum(self.beta_line6_ids.mapped("ps_debit_nt"))
+        sum_ps_credit_vnd       = sum(self.beta_line6_ids.mapped("ps_credit"))
+        sum_ps_debit_vnd        = sum(self.beta_line6_ids.mapped("ps_debit"))
+
+        lines = []
+        count = 1
+        for data in self.beta_line6_ids:
+            move_id                 = data.move_id.display_name if data.move_id else ""
+            date                    = data.date                 if data.date else ""
+            invoice_date            = data.invoice_date         if data.invoice_date else ""
+            reference               = data.reference            if data.reference else ""
+            product_uom_quantity    = data.product_uom_quantity if data.product_uom_quantity else 0
+            price_unit              = data.price_unit           if data.price_unit else 0
+            note                    = data.note                 if data.note else ""
+            default_code            = data.default_code         if data.default_code else ""
+            account_id              = data.account_id.code      if data.account_id else ""
+            account_dest_id         = data.account_dest_id.code if data.account_dest_id else ""
+            ps_debit_usd            = data.ps_debit_nt
+            ps_debit_vnd            = data.ps_debit
+            ps_credit_usd           = data.ps_credit_nt
+            ps_credit_vnd           = data.ps_credit
+            end_debit_usd           = data.end_debit_nt
+            end_debit_vnd           = data.end_debit
+            end_credit_usd          = data.end_credit_nt
+            end_credit_vnd          = data.end_credit
+            vals = {
+                "no"                  : count,
+                "move_id"             : move_id,
+                "date"                : date,
+                "invoice_date"        : invoice_date,
+                "reference"           : reference,
+                "product_uom_quantity": product_uom_quantity,
+                "price_unit"          : price_unit,
+                "note"                : note,
+                "default_code"        : default_code,
+                "account_id"          : account_id,
+                "account_dest_id"     : account_dest_id,
+                "ps_debit_usd"        : round(ps_debit_usd, 2),
+                "ps_debit_vnd"        : round(ps_debit_vnd),
+                "ps_credit_usd"       : round(ps_credit_usd, 2),
+                "ps_credit_vnd"       : round(ps_credit_vnd),
+                "end_debit_usd"       : round(end_debit_usd, 2),
+                "end_debit_vnd"       : round(end_debit_vnd),
+                "end_credit_usd"      : round(end_credit_usd, 2),
+                "end_credit_vnd"      : round(end_credit_vnd),
+            }
+            count += 1
+            lines.append(vals)
+        return {
+            "sum": {
+                "sum_ps_credit_vnd"     : f"{round(sum_ps_credit_vnd):,}",
+                "sum_ps_debit_vnd"      : f"{round(sum_ps_debit_vnd):,}",
+                # "sum_end_credit_vnd"    : f"{round(sum_end_credit_vnd):,}",
+                # "sum_end_debit_vnd"     : f"{round(sum_end_debit_vnd):,}",
+                "sum_ps_credit_usd"     : f"{round(sum_ps_credit_usd, 2):,}",
+                "sum_ps_debit_usd"      : f"{round(sum_ps_debit_usd, 2):,}",
+                # "sum_end_credit_usd"    : f"{round(sum_end_credit_usd, 2):,}",
+                # "sum_end_debit_usd"     : f"{round(sum_end_debit_usd, 2):,}",
+            },
+            "lines": lines,
+        }
+
+
+
+

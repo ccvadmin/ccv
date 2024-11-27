@@ -1,9 +1,12 @@
 from odoo import models, fields, api, _
 import logging
+import datetime
 
 _logger = logging.getLogger(__name__)
 
 NOT_APPLY_KEYS = ['foreign_balance']
+GET_LAST_VALUE_KEYS = ['balance']
+GET_LAST_VALUE_NT_KEYS = ['foreign_balance']
 
 class AccountReport(models.Model):
     _inherit = 'account.report'
@@ -32,60 +35,236 @@ class AccountReport(models.Model):
             for opt in options['currency_options']:
                 opt['selected'] = opt['id'] in previously_selected_ids
 
+    def _identify_currency_indices(self, options):
+        monetary_index, last_val_index, last_val_nt_index = [], [], []
+        index_update, index_update1, index_update2 = [], [], []
+        for count, column_option in enumerate(options["columns"]):
+            if column_option.get("figure_type") == "monetary":
+                monetary_index.append(count)
+                if column_option.get("expression_label") in GET_LAST_VALUE_KEYS:
+                    last_val_index.append(count)
+                elif column_option.get("expression_label") in GET_LAST_VALUE_NT_KEYS:
+                    last_val_nt_index.append(count)
+                if column_option.get("expression_label") in ['amount_currency']:
+                    index_update2.append(count)
+                elif column_option.get("expression_label") not in NOT_APPLY_KEYS:
+                    index_update.append(count)
+                elif column_option.get("expression_label") in NOT_APPLY_KEYS:
+                    index_update1.append(count)
+        return monetary_index, last_val_index, last_val_nt_index, index_update, index_update1, index_update2
+
+    def _get_selected_currency(self, options, company_currency, currency_env):
+        currency = company_currency
+        if options.get('currency_options', False):
+            currency_id = [currency['id'] for currency in options['currency_options'] if currency['selected']]
+            if len(currency_id) > 0:
+                currency = currency_env.browse(int(currency_id[0]))
+
+        currency_nt = company_currency
+        if options.get('currency_nt_options', False):
+            currency_nt_id = [currency['id'] for currency in options['currency_nt_options'] if currency['selected']]
+            if len(currency_nt_id) > 0:
+                currency_nt = currency_env.browse(int(currency_nt_id[0]))
+
+        return currency, currency_nt
+
+    def _apply_conversion(self, column_obj, rate, currency, column):
+        no_format_value = float(column['no_format'] * rate) if isinstance(column['no_format'], (int, float)) else 0.0
+        column_obj.update({
+            "name": currency.format(no_format_value),
+            "no_format": no_format_value
+        })
+        return column_obj
+    
+    def _apply_conversion_force(self, column_obj, currency, vale):
+        no_format_value = float(vale) if isinstance(vale, (int, float)) else 0.0
+        column_obj.update({
+            "name": currency.format(no_format_value),
+            "no_format": no_format_value
+        })
+        return column_obj
+
+    def is_date(self, value):
+        if isinstance(value, datetime.date):
+            return value
+        if isinstance(value, str):
+            try:
+                return datetime.datetime.strptime(value, "%d/%m/%Y").date()
+            except ValueError:
+                return fields.Date.context_today(self)
+        return fields.Date.context_today(self)
+
+    def compute_rate_line(self, currency, line_name):
+        cur_date = self.is_date(line_name)
+        company = self.env.company
+        currency_rates = currency._get_rates(company, cur_date)
+        last_rate = self.env['res.currency.rate'].sudo()._get_last_rates_for_companies(company)
+        return (currency_rates.get(currency.id) or 1.0) / last_rate[company]
+
+    def _process_line(self, index_update, index_update1, last_val_index, last_val_nt_index, monetary_index,
+                currency, currency_nt, line_name, columns, filter_line=[], list_line=[],
+                is_move_line = False, is_move_line_total = False, is_total = False):
+        rate = self.compute_rate_line(currency, line_name)
+        rate_nt = self.compute_rate_line(currency_nt, line_name)
+        updated_columns = []
+        # Xử lý các trường hợp liên quan đến move line
+        index = 0
+        for count, column in enumerate(columns):
+            # Tạo đối tượng column với các thông tin cơ bản từ column
+            column_obj = {'name': column.get('name', ''), 'no_format': column.get('no_format', ''), 'class': column.get('class', '')}
+
+            if is_move_line:
+                # Nếu là move line và cột cần cập nhật, áp dụng tỷ giá tương ứng
+                if count in index_update and column.get('no_format') is not None and rate != 1:
+                    updated_columns.append(self._apply_conversion(column_obj, rate, currency, column))  # Áp dụng tỷ giá chuyển đổi
+                elif count in index_update1 and column.get('no_format') is not None and rate_nt != 1:
+                    updated_columns.append(self._apply_conversion(column_obj, rate_nt, currency_nt, column))  # Áp dụng tỷ giá chuyển đổi
+                else:
+                    updated_columns.append(column_obj)  # Không thay đổi cột nếu không phải trường hợp cần chuyển đổi
+            else:
+                # Nếu không phải move line, kiểm tra nếu cột thuộc loại monetary_index
+                if count in monetary_index:
+                    # Xử lý trường hợp của move line là tổng
+                    if is_move_line_total:
+                        if count in last_val_index:
+                            cur_column = filter_line[-1]['columns'][count]
+                            column_obj = self._apply_conversion_force(column_obj, currency, cur_column.get('no_format', ''))
+                        elif count in last_val_nt_index:
+                            cur_column = filter_line[-1]['columns'][count]
+                            column_obj = self._apply_conversion_force(column_obj, currency_nt, cur_column.get('no_format', ''))
+                        elif count in index_update:
+                            column_obj = self._apply_conversion_force(column_obj, currency, list_line[index])
+                        elif count in index_update1:
+                            column_obj = self._apply_conversion_force(column_obj, currency_nt, list_line[index])
+
+                    # Xử lý trường hợp tổng hết (tổng tất cả các partner)
+                    elif is_total:
+                        if count in index_update or count in last_val_index:
+                            column_obj = self._apply_conversion_force(column_obj, currency, list_line[index])
+                        elif count in index_update1 or count in last_val_nt_index:
+                            column_obj = self._apply_conversion_force(column_obj, currency_nt, list_line[index])
+
+                    updated_columns.append(column_obj)
+                    index += 1
+                else:
+                    updated_columns.append(column_obj)
+
+        return updated_columns
+
+
     def _get_lines(self, options, all_column_groups_expression_totals=None):
         self.ensure_one()
         lines = super(AccountReport, self)._get_lines(options, all_column_groups_expression_totals)
+        currency_env = self.env['res.currency']
+        currency_env = self.env['res.currency']
+        monetary_index, last_val_index, last_val_nt_index, index_update, index_update1, index_update2 = self._identify_currency_indices(options)
 
-        company_currency = self.env.company.currency_id
-        currency = company_currency
-        currency_id = [currency['id'] for currency in options['currency_options'] if currency['selected']]
-        rate = 1
-        if len(currency_id) > 0:
-            currency = self.env['res.currency'].browse(int(currency_id[0]))
-            if currency.id != company_currency.id:
-                rate = currency.rate
+        if (index_update or index_update1):
+            # Xử lý move line
+            for line in lines:
+                id = line.get("id", "")
+                name = line.get("name", "")
+                columns = line['columns']
 
-        currency_nt_id = [currency['id'] for currency in options['currency_nt_options'] if currency['selected']]
-        currency_nt = company_currency
-        rate_nt = 1
-        if len(currency_nt_id) > 0:
-            currency_nt = self.env['res.currency'].browse(int(currency_nt_id[0]))
-            if currency_nt.id != company_currency.id:
-                rate_nt = currency_nt.rate
+                is_main_line = id == 'total~~'
+                is_sub_line = 'total~~' in id and id != 'total~~'
 
-        index_update = []
-        index_update1 = []
-        for count, column_option in enumerate(options['columns']):
-            if column_option.get("figure_type") == "monetary" and column_option.get("expression_label") not in NOT_APPLY_KEYS:
-                index_update.append(count)
-            elif column_option.get("figure_type") == "monetary" and column_option.get("expression_label") in NOT_APPLY_KEYS:
-                index_update1.append(count)
+                has_parent = line.get("parent_id", False)
+                has_monetary = any([True for index_monetary in monetary_index if columns[index_monetary].get('no_format', None) is not None])
 
-        for line in lines:
-            columns = line['columns']
-            updated_columns = []
+                if not has_monetary or not has_parent or is_sub_line or is_main_line:
+                    continue
+                
+                company_currency = self.env.company.currency_id
+                currency, currency_nt = self._get_selected_currency(options, company_currency, currency_env)
+                updated_columns = self._process_line(index_update, index_update1, last_val_index, last_val_nt_index, monetary_index, currency, currency_nt, name, columns, is_move_line=True)
+                line['columns'] = updated_columns
 
-            for column_index, column in enumerate(columns):
-                new_obj = {'name': column.get('name'), 'no_format': column.get('no_format'), 'class': column.get('class')}
-                if column_index in index_update and column.get('no_format') is not None:
-                    no_format_value = float(new_obj['no_format'] * rate) if isinstance(new_obj['no_format'], (int, float)) else 0.0
-                    name = currency.format(no_format_value)
-                    new_obj.update({
-                        "name": name,
-                        "no_format": no_format_value
-                    })
-                    updated_columns.append(new_obj)
-                elif column_index in index_update1 and column.get('no_format') is not None:
-                    no_format_value = float(new_obj['no_format'] * rate_nt) if isinstance(new_obj['no_format'], (int, float)) else 0.0
-                    name = currency_nt.format(no_format_value)
-                    new_obj.update({
-                        "name": name,
-                        "no_format": no_format_value
-                    })
-                    updated_columns.append(new_obj)
-                else:
-                    updated_columns.append(column)
-            line['columns'] = updated_columns
+            # Xử lý move line tổng
+            for line in lines:
+                id = line.get("id", "")
+                name = line.get("name", "")
+                columns = line['columns']
+                is_main_line = id == 'total~~'
+                is_sub_line = 'total~~' in id and id != 'total~~'
+                parent_id = line.get("parent_id", '')
+                has_parent = line.get("parent_id", False)
+                has_monetary = any([True for index_monetary in monetary_index if columns[index_monetary].get('no_format', None) is not None])
+                if not has_monetary or not has_parent or not is_sub_line or is_main_line:
+                    continue
+                company_currency = self.env.company.currency_id
+                currency, currency_nt = self._get_selected_currency(options, company_currency, currency_env)
+                filter_line = [x for x in lines if x.get("parent_id", '') == parent_id and x['id'] != id]
+                if not filter_line:
+                    updated_columns = self._process_line(index_update, index_update1, last_val_index, last_val_nt_index, monetary_index, currency, currency_nt, name, columns, is_move_line=True)
+                    line['columns'] = updated_columns
+                    continue
+                list_line = []
+                for index in monetary_index:
+                    list_line.append(sum([float(x['columns'][index].get('no_format', 0)) if isinstance(x['columns'][index].get('no_format', 0), (int, float)) else 0.0 for x in filter_line]))
+                updated_columns = self._process_line(index_update, index_update1, last_val_index, last_val_nt_index, monetary_index, currency, currency_nt, name, columns, is_move_line_total=True,filter_line=filter_line, list_line=list_line)
+                line['columns'] = updated_columns
+            
+            # Xử lý line tổng (cạnh tên Partner)
+            for line in lines:
+                id = line.get("id", "")
+                name = line.get("name", "")
+                columns = line['columns']
+
+                is_main_line = id == 'total~~'
+                is_sub_line = 'total~~' in id and id != 'total~~'
+
+                parent_id = line.get("parent_id", '')
+                has_parent = line.get("parent_id", False)
+                has_monetary = any([True for index_monetary in monetary_index if columns[index_monetary].get('no_format', None) is not None])
+
+                if not has_monetary or has_parent or is_sub_line or is_main_line:
+                    continue
+                
+                company_currency = self.env.company.currency_id
+                currency, currency_nt = self._get_selected_currency(options, company_currency, currency_env)
+
+                filter_line = [x for x in lines if x.get("parent_id", '') == id and "total~~" not in x['id']]
+                if not filter_line:
+                    updated_columns = self._process_line(index_update, index_update1, last_val_index, last_val_nt_index, monetary_index, currency, currency_nt, name, columns, is_move_line=True)
+                    line['columns'] = updated_columns
+                    continue
+                list_line = []
+                for index in monetary_index:
+                    list_line.append(sum([float(x['columns'][index].get('no_format', 0)) if isinstance(x['columns'][index].get('no_format', 0), (int, float)) else 0.0 for x in filter_line]))
+                updated_columns = self._process_line(index_update, index_update1, last_val_index, last_val_nt_index, monetary_index, currency, currency_nt, name, columns, is_move_line_total=True,filter_line=filter_line, list_line=list_line)
+                line['columns'] = updated_columns
+
+            # Tổng hết
+            for line in lines:
+                id = line.get("id", "")
+                name = line.get("name", "")
+                columns = line['columns']
+
+                is_main_line = id == 'total~~'
+                is_sub_line = 'total~~' in id and id != 'total~~'
+
+                parent_id = line.get("parent_id", '')
+                has_parent = line.get("parent_id", False)
+                has_monetary = any([True for index_monetary in monetary_index if columns[index_monetary].get('no_format', None) is not None])
+
+                if not has_monetary or has_parent or is_sub_line or not is_main_line:
+                    continue
+                
+                company_currency = self.env.company.currency_id
+                currency, currency_nt = self._get_selected_currency(options, company_currency, currency_env)
+
+                filter_line = [x for x in lines if "total~~" in x['id'] and x['id'] != "total~~"]
+                if not filter_line:
+                    filter_line = [x for x in lines if not x.get('parent_id', False) and x['id'] != "total~~"]
+                    if not filter_line:
+                        continue
+                list_line = []
+                for index in monetary_index:
+                    list_line.append(sum([float(x['columns'][index].get('no_format', 0)) if isinstance(x['columns'][index].get('no_format', 0), (int, float)) else 0.0 for x in filter_line]))
+                updated_columns = self._process_line(index_update, index_update1, last_val_index, last_val_nt_index, monetary_index, currency, currency_nt, name, columns, is_total=True,list_line=list_line)
+                line['columns'] = updated_columns
+
         return lines
 
 

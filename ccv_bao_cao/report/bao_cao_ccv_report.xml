@@ -23,7 +23,7 @@
         model="report.line.mixin"
         string="Tổng hợp công nợ phải trả USD"
         report_type="xlsx"
-        name="ccv_bao_cao_usd.tong_hop_cong_no_phai_tra_usd"
+        name="ccv_bao_cao.tong_hop_cong_no_phai_tra_usd"
         file="tong_hop_cong_no_phai_tra_usd"
         attachment_use="False"
     />
@@ -32,8 +32,26 @@
         model="report.line.mixin"
         string="Tổng hợp công nợ phải thu USD"
         report_type="xlsx"
-        name="ccv_bao_cao_usd.tong_hop_cong_no_phai_thu_usd"
+        name="ccv_bao_cao.tong_hop_cong_no_phai_thu_usd"
         file="tong_hop_cong_no_phai_thu_usd"
+        attachment_use="False"
+    />
+    <report
+        id="chi_tiet_cong_no_phai_thu_usd_report"
+        model="report.line.mixin"
+        string="Chi tiết công nợ phải thu USD"
+        report_type="xlsx"
+        name="ccv_bao_cao.chi_tiet_cong_no_phai_thu_usd"
+        file="chi_tiet_cong_no_phai_thu_usd"
+        attachment_use="False"
+    />
+    <report
+        id="chi_tiet_cong_no_phai_tra_usd_report"
+        model="report.line.mixin"
+        string="Chi tiết công nợ phải trả USD"
+        report_type="xlsx"
+        name="ccv_bao_cao.chi_tiet_cong_no_phai_tra_usd"
+        file="chi_tiet_cong_no_phai_tra_usd"
         attachment_use="False"
     />
 </odoo>

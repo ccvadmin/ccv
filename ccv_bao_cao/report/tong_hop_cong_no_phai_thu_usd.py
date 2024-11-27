@@ -23,7 +23,7 @@ def json_format(font_size, font_name="Times New Roman", align="vcenter", right=F
 
 
 class tong_hop_cong_no_phai_thu_usd(models.AbstractModel):
-    _name = "report.ccv_bao_cao_usd.tong_hop_cong_no_phai_thu_usd"
+    _name = "report.ccv_bao_cao.tong_hop_cong_no_phai_thu_usd"
     _inherit = "report.report_xlsx.abstract"
     _description = "Tong Hop Cong No Phai Thu"
 

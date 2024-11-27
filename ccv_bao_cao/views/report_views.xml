@@ -8,6 +8,9 @@
             <xpath expr="//field[@name='type']" position='after'>
                 <field name="is_foreign_currency" invisible="1"/>
             </xpath>
+            <xpath expr="//field[@name='account_id']" position='after'>
+                <field name="partner_id" force_save="1" attrs="{'invisible': [('type', 'not in', ('chi_tiet_cong_no_phai_tra_usd', 'chi_tiet_cong_no_phai_thu_usd'))],'required': [('type', 'in', ('chi_tiet_cong_no_phai_tra_usd', 'chi_tiet_cong_no_phai_thu_usd'))]}"/>
+            </xpath>
             <xpath expr="//notebook" position='inside'>
                 <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_thu')]}">
                     <field name="beta_line1_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'tong_hop_cong_no_phai_thu')]}">
@@ -97,6 +100,56 @@
                             <field name="end_credit" sum="total_end_credit"/>
                             <field name="end_debit_nt" sum="total_end_debit"/>
                             <field name="end_debit" sum="total_end_debit"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'chi_tiet_cong_no_phai_tra_usd')]}">
+                    <field name="beta_line5_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'chi_tiet_cong_no_phai_tra_usd')]}">
+                        <tree create="0" edit="0" delete="0">
+                            <field name="move_id" string="Số chứng từ"/>
+                            <field name="date" string="Ngày chứng từ"/>
+                            <field name="invoice_date"/>
+                            <field name="reference"/>
+                            <field name="product_uom_quantity"/>
+                            <field name="price_unit"/>
+                            <field name="note"/>
+                            <field name="account_id"/>
+                            <field name="account_dest_id"/>
+                            <field name="is_foreign_currency" invisible="1"/>
+                            <field name="ps_credit_nt" sum="total_ps_credit"/>
+                            <field name="ps_credit" sum="total_ps_credit"/>
+                            <field name="ps_debit_nt" sum="total_ps_debit"/>
+                            <field name="ps_debit" sum="total_ps_debit"/>
+                            <field name="end_credit_nt"/>
+                            <field name="end_credit"/>
+                            <field name="end_debit_nt"/>
+                            <field name="end_debit"/>
+                            <field name="uom_id"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Chi tiết" attrs="{'invisible': [('type', '!=', 'chi_tiet_cong_no_phai_thu_usd')]}">
+                    <field name="beta_line6_ids" nolabel="1" readonly="1" attrs="{'invisible': [('type', '!=', 'chi_tiet_cong_no_phai_thu_usd')]}">
+                        <tree create="0" edit="0" delete="0">
+                            <field name="move_id" string="Số chứng từ"/>
+                            <field name="date" string="Ngày chứng từ"/>
+                            <field name="invoice_date"/>
+                            <field name="reference"/>
+                            <field name="product_uom_quantity"/>
+                            <field name="price_unit"/>
+                            <field name="note"/>
+                            <field name="account_id"/>
+                            <field name="account_dest_id"/>
+                            <field name="is_foreign_currency" invisible="1"/>
+                            <field name="ps_credit_nt" sum="total_ps_credit"/>
+                            <field name="ps_credit" sum="total_ps_credit"/>
+                            <field name="ps_debit_nt" sum="total_ps_debit"/>
+                            <field name="ps_debit" sum="total_ps_debit"/>
+                            <field name="end_credit_nt"/>
+                            <field name="end_credit"/>
+                            <field name="end_debit_nt"/>
+                            <field name="end_debit"/>
+                            <field name="default_code"/>
                         </tree>
                     </field>
                 </page>

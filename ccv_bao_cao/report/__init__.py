@@ -5,3 +5,5 @@ from . import tong_hop_cong_no_phai_tra
 from . import tong_hop_cong_no_phai_tra_usd
 from . import tong_hop_cong_no_phai_thu
 from . import tong_hop_cong_no_phai_thu_usd
+from . import chi_tiet_cong_no_phai_tra_usd
+from . import chi_tiet_cong_no_phai_thu_usd
