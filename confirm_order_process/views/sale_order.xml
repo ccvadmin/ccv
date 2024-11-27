@@ -1,0 +1,54 @@
+<odoo>
+    <!-- sale.order inherit form view -->
+    <record id="sale_order" model="ir.ui.view">
+        <field name="name">sale.order.inherit.view.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add your xpath here -->
+            <xpath expr="//header" position="inside">
+                <button name="action_resend_otp" type="object" string="Xác nhận giao hàng"/>
+            </xpath>
+            <xpath expr="//page[@name='other_information']/group[1]" position="before">
+                <group>
+                    <group name="mrp_production" string="Trạng thái sản xuất">
+                        <field name="state_mrp" readonly="1"/>
+                        <field name="state_delivery" readonly="1"/>
+                    </group>
+                    <group></group>
+                </group>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Đơn sản xuất" name="orders">
+                    <field name="mrp_production_ids" readonly="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Ảnh" name="images">
+                    <field name="attachment_ids" widget='many2many_images'/>
+                </page>
+                <page string="OTP" name="otp" groups="base.group_system">
+                    <field name="otp_ids" readonly="1" groups="base.group_system">
+                        <tree>
+                            <field name="otp"/>
+                            <field name="phone" optional="show"/>
+                            <field name="email" optional="hide"/>
+                            <field name="date_end"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="URL" name="url">
+                    <group>
+                        <field name="public_url_cf_order" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
+                        <field name="public_url_cf_delivery" attrs="{'invisible': [('state', '!=', 'sale'),('state_delivery', '!=', 'ready'),('state_mrp', '!=', 'done')]}"/>
+                        <field name="public_url_add_image" attrs="{'invisible': [('state', 'not in', ['sale', 'done'])]}"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
