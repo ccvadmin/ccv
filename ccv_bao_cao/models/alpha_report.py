@@ -2,6 +2,7 @@ from odoo import models, fields, api
 import logging
 import datetime
 from odoo.modules.module import get_module_resource
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -21,6 +22,12 @@ ALL_TYPE_NT = [
     "chi_tiet_cong_no_phai_thu_usd",
 ]
 
+contrainst = {
+    'account_id': "Tài khoản",
+    'date_from': "Ngày bắt đầu",
+    'date_to': "Ngày kết thúc",
+    'partner_id': "Khách hàng",
+}
 class AlphaReport(models.TransientModel):
     _inherit = "alpha.report"
 
@@ -152,7 +159,13 @@ class AlphaReport(models.TransientModel):
 
     # TODO: Dynamic hóa
 
+    def check_invalid(self, keys = []):
+        for key in keys:
+            if not getattr(self, key, False):
+                raise UserError("Vui lòng chọn %s!!!" % contrainst.get(key, ""))
+
     def get_row_data_tong_hop_cong_no_phai_thu(self):
+        self.check_invalid(['date_from', 'date_to', 'account_id'])
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
         # partner_ids = self.env["res.partner"].search([]).mapped('id')
@@ -166,10 +179,10 @@ class AlphaReport(models.TransientModel):
         self.env.cr.execute("; ".join(query))
         result = self.env.cr.fetchall()
         self.beta_line1_ids._compute_end_balance()
-        self.beta_line1_ids._compute_info()
         return result
 
     def get_row_data_tong_hop_cong_no_phai_tra(self):
+        self.check_invalid(['date_from', 'date_to', 'account_id'])
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
         # partner_ids = self.env["res.partner"].search([]).mapped('id')
@@ -183,10 +196,10 @@ class AlphaReport(models.TransientModel):
         self.env.cr.execute("; ".join(query))
         result = self.env.cr.fetchall()
         self.beta_line2_ids._compute_end_balance()
-        self.beta_line2_ids._compute_info()
         return result
 
     def get_row_data_tong_hop_cong_no_phai_thu_usd(self):
+        self.check_invalid(['date_from', 'date_to', 'account_id'])
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
         # date_currency = self.date_to.strftime("%Y-%m-%d")
@@ -202,10 +215,10 @@ class AlphaReport(models.TransientModel):
         result = self.env.cr.fetchall()
         self.beta_line3_ids._compute_end_balance()
         self.beta_line3_ids._compute_end_balance_nt()
-        self.beta_line3_ids._compute_info()
         return result
 
     def get_row_data_tong_hop_cong_no_phai_tra_usd(self):
+        self.check_invalid(['date_from', 'date_to', 'account_id'])
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
         # date_currency = self.date_to.strftime("%Y-%m-%d")
@@ -221,10 +234,10 @@ class AlphaReport(models.TransientModel):
         result = self.env.cr.fetchall()
         self.beta_line4_ids._compute_end_balance()
         self.beta_line4_ids._compute_end_balance_nt()
-        self.beta_line4_ids._compute_info()
         return result
 
     def get_row_data_chi_tiet_cong_no_phai_tra_usd(self):
+        self.check_invalid(['date_from', 'date_to', 'account_id', 'partner_id'])
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
         query = "select * from function_chi_tiet_cong_no_phai_tra_usd('%s','%s',%s,%s,%s,%s)" \
@@ -236,6 +249,7 @@ class AlphaReport(models.TransientModel):
         return result
 
     def get_row_data_chi_tiet_cong_no_phai_thu_usd(self):
+        self.check_invalid(['date_from', 'date_to', 'account_id', 'partner_id'])
         date_start = self.date_from.strftime("%Y%m%d")
         date_end = self.date_to.strftime("%Y%m%d")
         query = "select * from function_chi_tiet_cong_no_phai_thu_usd('%s','%s',%s,%s,%s,%s)" \
@@ -244,7 +258,6 @@ class AlphaReport(models.TransientModel):
         result = self.env.cr.fetchall()
         self.beta_line6_ids._compute_end_balance()
         self.beta_line6_ids._compute_end_balance_nt()
-        self.beta_line6_ids._compute_info()
         return result
 
     ##########################################
@@ -657,7 +670,3 @@ class AlphaReport(models.TransientModel):
             },
             "lines": lines,
         }
-
-
-
-

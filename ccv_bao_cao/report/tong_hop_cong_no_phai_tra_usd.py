@@ -212,4 +212,4 @@ class tong_hop_cong_no_phai_tra_usd(models.AbstractModel):
         prod_row = prod_row + 5
         sheet.merge_range(f"A{prod_row}:E{prod_row}","Nguyễn Thùy Linh", footer_font_size_title)
         sheet.merge_range(f"F{prod_row}:J{prod_row}","Trương Quốc Tuấn", footer_font_size_title)
-        sheet.merge_range(f"K{prod_row}:R{prod_row}","CCCC",  footer_font_size_title)
+        sheet.merge_range(f"K{prod_row}:R{prod_row}","",  footer_font_size_title)
