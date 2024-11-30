@@ -8,7 +8,6 @@
         - 13/11/2024 : Thêm điều kiện không tạo khi không có giá trị
 */
 
-DROP TABLE IF EXISTS report_tong_hop_cong_no_phai_thu;
 DROP FUNCTION IF EXISTS function_tong_hop_cong_no_phai_thu_1_kh;
 CREATE OR REPLACE FUNCTION public.function_tong_hop_cong_no_phai_thu_1_kh(
     p_date_from timestamp without time zone,
@@ -30,6 +29,9 @@ DECLARE
     sum_start_debit DECIMAL;
     sum_ps_debit DECIMAL;
     sum_ps_credit DECIMAL;
+    p_customer_name VARCHAR;
+    p_customer_code VARCHAR;
+    p_customer_group VARCHAR;
 BEGIN
     -- Sử dụng WITH để thay thế các bảng tạm
     WITH 
@@ -147,7 +149,6 @@ BEGIN
         FROM account_move_line aml
         LEFT JOIN account_move am ON am.id = aml.move_id
         INNER JOIN tmp_account_move tam ON tam.move_id = am.id
-        LEFT JOIN viettel_sinvoice vs ON vs.invoice_id = am.id
         WHERE p_account_id != aml.account_id
           AND p_partner_id = aml.partner_id
           AND am.state = 'posted'
@@ -155,24 +156,43 @@ BEGIN
                    WHEN am.invoice_date IS NOT NULL THEN am.invoice_date
                    ELSE am.date
                  END, tam.move_origin_id
+    ),
+    lay_thong_tin_kh AS (
+        SELECT name AS customer_name
+            , code_contact AS customer_code
+            , (
+                SELECT REGEXP_REPLACE(rpc.name->>'vi_VN', '^KH - ', '')
+                from res_partner_category rpc
+                    left join res_partner_res_partner_category_rel rpcl on rpc.id=rpcl.category_id
+                    left join res_partner rpp on rpcl.partner_id=rpp.id
+                where rpcl.partner_id=p_partner_id
+                    and rpc.name->>'vi_VN' like 'KH -%' LIMIT 1
+                ) AS customer_group
+        FROM res_partner rp
+        where rp.id=p_partner_id
     )
 
     SELECT
         (SELECT dk.start_credit FROM so_du_dau_ky_khach_hang dk WHERE dk.partner_id = p_partner_id LIMIT 1) AS start_credit_val,
         (SELECT dk.start_debit FROM so_du_dau_ky_khach_hang dk WHERE dk.partner_id = p_partner_id LIMIT 1) AS start_debit_val,
         (SELECT SUM(ps.debit) FROM phat_sinh_trong_ky_khach_hang ps LIMIT 1) AS total_debit_val,
-        (SELECT SUM(ps.credit) FROM phat_sinh_trong_ky_khach_hang ps LIMIT 1) AS total_credit_val
-    INTO sum_start_credit, sum_start_debit, sum_ps_debit, sum_ps_credit;
+        (SELECT SUM(ps.credit) FROM phat_sinh_trong_ky_khach_hang ps LIMIT 1) AS total_credit_val,
+        (SELECT customer_name FROM lay_thong_tin_kh ps LIMIT 1) AS customer_name,
+        (SELECT customer_code FROM lay_thong_tin_kh ps LIMIT 1) AS customer_code,
+        (SELECT customer_group FROM lay_thong_tin_kh ps LIMIT 1) AS customer_group
+    INTO sum_start_credit, sum_start_debit, sum_ps_debit, sum_ps_credit, p_customer_name, p_customer_code, p_customer_group;
 
     -- Thêm Partner đã hoàn thành tính toán vào bảng
     IF sum_start_credit != 0 OR sum_start_debit != 0 OR sum_ps_debit != 0 OR sum_ps_credit != 0 THEN
             INSERT INTO beta_report_line1 (
                 parent_id, create_uid, write_uid, -- bắt buộc
-                partner_id, account_id, start_credit, start_debit, ps_credit, ps_debit
+                partner_id, account_id, start_credit, start_debit, ps_credit, ps_debit,
+                customer_name, customer_code, customer_group
             )
             VALUES ( 
                 p_id, p_user_id, p_user_id, -- bắt buộc
-                p_partner_id, p_account_id, sum_start_credit, sum_start_debit, sum_ps_debit, sum_ps_credit
+                p_partner_id, p_account_id, sum_start_credit, sum_start_debit, sum_ps_debit, sum_ps_credit,
+                p_customer_name, p_customer_code, p_customer_group
             );
     END IF;
 

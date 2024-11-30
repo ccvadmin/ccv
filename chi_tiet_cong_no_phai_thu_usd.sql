@@ -218,6 +218,7 @@ begin
             , aml.account_id as account_dest_id
             , aml.product_uom_id as uom_id
             , pp.id as product_id
+            , pp.default_code as default_code
         from account_move_line aml
         left join product_product pp on pp.id = aml.product_id
         left join account_move am on am.id = aml.move_id
@@ -245,6 +246,7 @@ begin
         , end_debit_nt, end_credit_nt
         , product_uom_quantity, price_unit, uom_id
 		, product_id
+        , default_code
     )
 	SELECT
         p_id, _p_user_id, _p_user_id,
@@ -256,7 +258,7 @@ begin
         rs.end_credit_vnd, rs.end_debit_vnd,
         rs.end_credit_usd, rs.end_debit_usd,
         NULL::numeric, NULL::numeric, NULL::integer,
-		NULL::integer
+		NULL::integer, NULL::varchar
     FROM tmp_dau_ky rs
     UNION ALL
     select
@@ -269,7 +271,7 @@ begin
 		, 0 , 0
         , 0 , 0
         , rs.product_uom_qty, rs.price_unit, rs.uom_id
-		, rs.product_id
+		, rs.product_id , rs.default_code
     from tmp_phat_sinh_trong_ky rs;
 
     -- Kết quả trả về

@@ -33,6 +33,10 @@ DECLARE
     sum_start_debit_nt DECIMAL;
     sum_ps_debit_nt DECIMAL;
     sum_ps_credit_nt DECIMAL;
+    p_customer_name VARCHAR;
+    p_customer_code VARCHAR;
+    p_address VARCHAR;
+    p_vat VARCHAR;
 BEGIN
     -- Sử dụng WITH để thay thế các bảng tạm
     WITH 
@@ -228,7 +232,6 @@ BEGIN
         FROM account_move_line aml
         LEFT JOIN account_move am ON am.id = aml.move_id
         INNER JOIN tmp_account_move tam ON tam.move_id = am.id
-        LEFT JOIN viettel_sinvoice vs ON vs.invoice_id = am.id
         WHERE p_account_id != aml.account_id
           AND p_partner_id = aml.partner_id
           AND am.state = 'posted'
@@ -245,7 +248,15 @@ BEGIN
     ps_debit_usd AS (SELECT SUM(debit_usd) as ps_debit_usd FROM phat_sinh_trong_ky_khach_hang ps),
     ps_credit_usd AS (SELECT SUM(credit_usd) as ps_credit_usd FROM phat_sinh_trong_ky_khach_hang ps),
     ps_debit_vnd AS (SELECT SUM(debit_vnd) as ps_debit_vnd FROM phat_sinh_trong_ky_khach_hang ps),
-    ps_credit_vnd AS (SELECT SUM(credit_vnd) as ps_credit_vnd FROM phat_sinh_trong_ky_khach_hang ps)
+    ps_credit_vnd AS (SELECT SUM(credit_vnd) as ps_credit_vnd FROM phat_sinh_trong_ky_khach_hang ps),
+    lay_thong_tin_kh AS (
+        SELECT name AS customer_name
+            , code_contact AS customer_code
+            , street as address
+            , vat as vat
+        FROM res_partner rp
+        where rp.id=p_partner_id
+    )
 
     -- Thêm Partner đã hoàn thành tính toán vào bảng
     SELECT
@@ -256,8 +267,12 @@ BEGIN
         (SELECT p.start_debit_vnd FROM start_debit_vnd p LIMIT 1) AS start_debit_val,
         (SELECT p.start_credit_vnd FROM start_credit_vnd p LIMIT 1) AS start_credit_val,
         (SELECT p.ps_debit_vnd FROM ps_debit_vnd p LIMIT 1) AS ps_debit_val,
-        (SELECT p.ps_credit_vnd FROM ps_credit_vnd p LIMIT 1) AS ps_credit_val
-    INTO sum_start_debit_nt, sum_start_credit_nt, sum_ps_debit_nt, sum_ps_credit_nt, sum_start_debit, sum_start_credit, sum_ps_debit, sum_ps_credit;
+        (SELECT p.ps_credit_vnd FROM ps_credit_vnd p LIMIT 1) AS ps_credit_val,
+        (SELECT customer_name FROM lay_thong_tin_kh ps LIMIT 1) AS customer_name,
+        (SELECT customer_code FROM lay_thong_tin_kh ps LIMIT 1) AS customer_code,
+        (SELECT address FROM lay_thong_tin_kh ps LIMIT 1) AS address,
+        (SELECT vat FROM lay_thong_tin_kh ps LIMIT 1) AS vat
+    INTO sum_start_debit_nt, sum_start_credit_nt, sum_ps_debit_nt, sum_ps_credit_nt, sum_start_debit, sum_start_credit, sum_ps_debit, sum_ps_credit, p_customer_name, p_customer_code, p_address, p_vat;
 
     -- Thêm Partner đã hoàn thành tính toán vào bảng
     IF sum_start_credit != 0 OR sum_start_debit != 0 OR sum_ps_debit != 0 OR sum_ps_credit != 0 THEN
@@ -265,12 +280,14 @@ BEGIN
                 parent_id, create_uid, write_uid, -- bắt buộc
                 partner_id, account_id,
                 start_debit_nt, start_credit_nt, ps_credit_nt, ps_debit_nt,
-                start_debit, start_credit, ps_credit, ps_debit
+                start_debit, start_credit, ps_credit, ps_debit,
+                customer_name, customer_code, address, vat
             ) VALUES(
                 p_id, p_user_id, p_user_id, -- bắt buộc
                 p_partner_id, p_account_id,
                 sum_start_debit_nt, sum_start_credit_nt, sum_ps_debit_nt, sum_ps_credit_nt,
-                sum_start_debit, sum_start_credit, sum_ps_debit, sum_ps_credit
+                sum_start_debit, sum_start_credit, sum_ps_debit, sum_ps_credit,
+        p_customer_name, p_customer_code, p_address, p_vat
             );
     END IF;
 
