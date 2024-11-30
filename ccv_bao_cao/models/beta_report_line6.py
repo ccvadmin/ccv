@@ -65,10 +65,10 @@ class BetaReportLine6(models.TransientModel):
                 current_balance += record.ps_debit_nt
             compute_balance(record, current_balance)
             
-    @api.depends('product_id')
-    def _compute_info(self):
-        for record in self:
-            val = ""
-            if getattr(record, 'product_id', False):
-                val = getattr(record.product_id, 'default_code', "")
-            record.default_code = val
+    # @api.depends('product_id')
+    # def _compute_info(self):
+    #     for record in self:
+    #         val = ""
+    #         if getattr(record, 'product_id', False):
+    #             val = getattr(record.product_id, 'default_code', "")
+    #         record.default_code = val

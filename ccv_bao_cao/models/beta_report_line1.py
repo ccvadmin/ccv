@@ -12,18 +12,18 @@ class BetaReportLine1(models.TransientModel):
     customer_code = fields.Char(string="Mã khách hàng", default="")
     customer_group = fields.Char(string="Mã nhóm khách hàng", default="")
 
-    @api.depends('partner_id')
-    def _compute_info(self):
-        for record in self:
-            if record.partner_id:
-                record.customer_name = record.partner_id.name
-                record.customer_code = record.partner_id.code_contact
-                customer_group = []
-                category_ids = record.partner_id.category_id.mapped('name')
-                if category_ids:
-                    customer_group = [category_name for category_name in category_ids if 'KH -' in category_name]
-                record.customer_group = customer_group[0].split(' - ')[1] if customer_group else ""
-            else:
-                record.customer_name = ""
-                record.customer_code = ""
-                record.customer_group = ""
+    # @api.depends('partner_id')
+    # def _compute_info(self):
+    #     for record in self:
+    #         if record.partner_id:
+    #             record.customer_name = record.partner_id.name
+    #             record.customer_code = record.partner_id.code_contact
+    #             customer_group = []
+    #             category_ids = record.partner_id.category_id.mapped('name')
+    #             if category_ids:
+    #                 customer_group = [category_name for category_name in category_ids if 'KH -' in category_name]
+    #             record.customer_group = customer_group[0].split(' - ')[1] if customer_group else ""
+    #         else:
+    #             record.customer_name = ""
+    #             record.customer_code = ""
+    #             record.customer_group = ""
