@@ -1,0 +1,70 @@
+from datetime import datetime
+from odoo import fields
+
+class LibraryReport:
+    def __init__(self):
+        pass
+
+    def convert_money(self, amount):
+        units = ['', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín']
+        tens = ['', 'mười', 'hai mươi', 'ba mươi', 'bốn mươi', 'năm mươi', 'sáu mươi', 'bảy mươi', 'tám mươi', 'chín mươi']
+        thousands = ['', 'nghìn', 'triệu', 'tỷ']
+
+        try:
+            cur_amount = int(float(amount))
+        except ValueError:
+            return "Invalid amount"
+
+        def number_to_text(num):
+            if num == 0:
+                return 'không'
+            
+            num = str(num)
+            length = len(num)
+            result = []
+            
+            groups = [num[max(0, length - 3*(i+1)): length - 3*i] for i in range((length // 3) + 1)]
+            groups.reverse()
+            print(num, groups)
+            
+            for idx, group in enumerate(groups):
+                n = int(group)
+                group_result = []
+                
+                if n >= 100:
+                    group_result.append(units[n // 100] + " trăm")
+                    n %= 100
+                if n >= 20:
+                    group_result.append(tens[n // 10])
+                    n %= 10
+                elif n >= 10:
+                    group_result.append('mười')
+                    n %= 10
+                if n > 0:
+                    group_result.append(units[n])
+                
+                if group_result:
+                    result.append(" ".join(group_result) + " " + thousands[len(groups) - idx - 1])
+            
+            return " ".join(result).strip()
+        
+        label = number_to_text(cur_amount).strip()
+
+        return label[:1].upper() + label[1:].lower()
+
+    def convert_vnd(self, amount):
+        return f"{amount:,.0f}"
+
+    def convert_date(self, date):
+        if date:
+            return fields.Date.to_string(date)
+        return ''
+
+    def convert_print(self, date_value):
+        if not date_value:
+            return ""
+        if isinstance(date_value, datetime):
+            date_value = date_value.date()
+        if isinstance(date_value, fields.Date):
+            date_value = datetime.strptime(str(date_value), '%Y-%m-%d').date()
+        return date_value.strftime('%d/%m/%Y')

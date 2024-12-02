@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="default_ccv_bao_cao_director" model="ir.config_parameter">
+        <field name="key">ccv_bao_cao.director</field>
+        <field name="value">Nguyễn Kim Thoa</field>
+    </record>
+    <record id="default_ccv_bao_cao_chief_accountant" model="ir.config_parameter">
+        <field name="key">ccv_bao_cao.chief_accountant</field>
+        <field name="value">Trương Quốc Tuấn</field>
+    </record>
+    <record id="default_ccv_bao_cao_head_of_department" model="ir.config_parameter">
+        <field name="key">ccv_bao_cao.head_of_department</field>
+        <field name="value">Hoàng Mai Đức</field>
+    </record>
+</odoo>
