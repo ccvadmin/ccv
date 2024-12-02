@@ -18,7 +18,7 @@ class HrExpenseSheet(models.Model):
         try:
             cur_amount = int(float(amount))
         except ValueError:
-            return "Invalid amount"
+            return ""
 
         def number_to_text(num):
             if num == 0:
@@ -30,7 +30,6 @@ class HrExpenseSheet(models.Model):
             
             groups = [num[max(0, length - 3*(i+1)): length - 3*i] for i in range((length // 3) + 1)]
             groups.reverse()
-            print(num, groups)
             
             for idx, group in enumerate(groups):
                 n = int(group)
@@ -87,6 +86,7 @@ class HrExpenseSheet(models.Model):
                 'partner_bank_id': self.partner_bank_id.id
             })
         return res
+
     def _prepare_bill_vals(self):
         res = super(HrExpenseSheet, self)._prepare_bill_vals()
         if self.partner_bank_id:
@@ -94,3 +94,6 @@ class HrExpenseSheet(models.Model):
                 'partner_bank_id': self.partner_bank_id.id
             })
         return res
+
+    def get_convert_money_total_amount(self):
+        return self.convert_money(self.total_amount)

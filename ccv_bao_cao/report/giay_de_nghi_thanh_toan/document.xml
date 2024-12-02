@@ -2,7 +2,13 @@
 <odoo>
 <template id="ccv_bao_cao.giay_de_nghi_thanh_toan_document">
     <t t-call="ccv_bao_cao.ccv_header_img">
-        <div class="page" style="font-size: 16px;font-family: Times New Roman">
+    <style>
+        .page>*{
+            font-size: 16px;
+            font-family: Times New Roman !important;
+        }
+    </style>
+    <div class="page" style="font-size: 16px;font-family: Times New Roman">
     <t t-if="doc.state in ['approve', 'post']">
             <div class="col-xs-12" style="text-align: center; font-size: 20px;">
                 <strong>
@@ -10,44 +16,54 @@
                 </strong>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 2px">
-                <span>Kính gởi: &amp;nbsp;&amp;nbsp; <strong class="fw-bolder">BAN LÃNH ĐẠO</strong></span>
+                <div class="col-12">
+                    <span>Kính gởi: <strong class="fw-bolder">BAN LÃNH ĐẠO</strong></span>
+                </div>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 2px">
-                <span>Họ và tên người đề nghị thanh toán: &amp;nbsp;&amp;nbsp; <t t-esc="doc.employee_id.name" />
-                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
-                    &amp;nbsp;&amp;nbsp;&amp;nbsp;
-                    Bộ phận: &amp;nbsp;&amp;nbsp;
-                    <t t-if="doc.employee_id.department_id">
-                        <t t-esc="doc.employee_id.department_id.name" />
-                    </t>
-                </span>
+                <div class="col-7">
+                    <span>Họ và tên người đề nghị thanh toán: <t t-esc="doc.employee_id.name" /></span>
+                </div>
+                <div class="col-5">
+                    <span>
+                        Bộ phận: 
+                        <t t-if="doc.employee_id.department_id">
+                            <t t-esc="doc.employee_id.department_id.name" />
+                        </t>
+                    </span>
+                </div>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 2px">
-                <span>Nội dung thanh toán: &amp;nbsp;&amp;nbsp; <t t-esc="doc.name" /></span>
+                <div class="col-12">
+                    <span>Nội dung thanh toán: <t t-esc="doc.name" /></span>
+                </div>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 2px">
-                <span>
-                    Tên Đơn vị/Cá nhân Thụ Hưởng: &amp;nbsp;&amp;nbsp;
-                    <t t-if="doc.partner_bank_id">
-                        <t t-esc="doc.partner_bank_id.partner_id.name" />
-                    </t>
-                </span>
+                <div class="col-12">
+                    <span>
+                        Tên Đơn vị/Cá nhân Thụ Hưởng:                         <t t-if="doc.partner_bank_id">
+                            <t t-esc="doc.partner_bank_id.partner_id.name" />
+                        </t>
+                    </span>
+                </div>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 2px">
-                <span>
-                    STK: &amp;nbsp;&amp;nbsp;
-                    <t t-if="doc.partner_bank_id">
-                        <t t-esc="doc.partner_bank_id.acc_number" />
-                    </t>
-                </span>
+                <div class="col-12">
+                    <span>
+                        STK:                         <t t-if="doc.partner_bank_id">
+                            <t t-esc="doc.partner_bank_id.acc_number" />
+                        </t>
+                    </span>
+                </div>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 2px">
-                <span>
-                    Tại Ngân hàng: &amp;nbsp;&amp;nbsp;
-                    <t t-if="doc.partner_bank_id">
-                        <t t-esc="doc.partner_bank_id.bank_id.name" />
-                    </t>
-                </span>
+                <div class="col-12">
+                    <span>
+                        Tại Ngân hàng:                         <t t-if="doc.partner_bank_id">
+                            <t t-esc="doc.partner_bank_id.bank_id.name" />
+                        </t>
+                    </span>
+                </div>
             </div>
             <div class="row">
                 <table class="table table-sm" style="border: solid 1px; width: 100%; margin-top: 10px;">
@@ -116,16 +132,18 @@
                 </table>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 4px">
-                <span>Số tiền bằng chữ: &amp;nbsp;&amp;nbsp;<t t-esc="doc.convert_money(doc.total_amount)"/>&amp;nbsp;đồng./.</span>
+                <span>Số tiền bằng chữ: <t t-esc="doc.get_convert_money_total_amount()"/>&amp;nbsp;đồng./.</span>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 4px">
-            <span>
-                Hình thức thanh toán:
-                <input style="margin-left: 12px" type="checkbox" t-att-checked="doc.payment_type == 'cash'"/>
-                <label>Tiền mặt</label>
-                <input style="margin-left: 12px" type="checkbox" t-att-checked="doc.payment_type == 'bank'"/>
-                <label>Chuyển khoản</label>
-            </span>
+                <div class="col-12">
+                    <span>
+                        Hình thức thanh toán:
+                        <input style="margin-left: 12px" type="checkbox" t-att-checked="doc.payment_type == 'cash'"/>
+                        <label>Tiền mặt</label>
+                        <input style="margin-left: 12px" type="checkbox" t-att-checked="doc.payment_type == 'bank'"/>
+                        <label>Chuyển khoản</label>
+                    </span>
+                </div>
             </div>
             <div class="" style="text-align: end;">
                 <t t-set="approval_date" t-value="datetime.datetime.today()" />
@@ -207,7 +225,7 @@
     <t t-else="">
         <h3 class="text-center">Không thể xuất, kiểm tra lại trạng thái của phiếu</h3>
     </t>
-        </div>
+    </div>
     </t>
 </template>
 </odoo>
