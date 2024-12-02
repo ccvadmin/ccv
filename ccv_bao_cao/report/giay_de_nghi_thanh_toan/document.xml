@@ -21,10 +21,12 @@
                 </div>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 2px">
-                <div class="col-7">
+                <div class="col-12">
                     <span>Họ và tên người đề nghị thanh toán: <t t-esc="doc.employee_id.name" /></span>
                 </div>
-                <div class="col-5">
+            </div>
+            <div class="row" style="padding-top: 10px; margin-left: 2px">
+                <div class="col-12">
                     <span>
                         Bộ phận: 
                         <t t-if="doc.employee_id.department_id">
@@ -132,7 +134,9 @@
                 </table>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 4px">
-                <span>Số tiền bằng chữ: <t t-esc="doc.get_convert_money_total_amount()"/>&amp;nbsp;đồng./.</span>
+                <div class="col-12">
+                    <span>Số tiền bằng chữ: <t t-esc="doc.convert_money(doc.total_amount)"/>&amp;nbsp;đồng./.</span>
+                </div>
             </div>
             <div class="row" style="padding-top: 10px; margin-left: 4px">
                 <div class="col-12">

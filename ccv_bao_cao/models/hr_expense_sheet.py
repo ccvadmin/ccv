@@ -15,20 +15,14 @@ class HrExpenseSheet(models.Model):
         tens = ['', 'mười', 'hai mươi', 'ba mươi', 'bốn mươi', 'năm mươi', 'sáu mươi', 'bảy mươi', 'tám mươi', 'chín mươi']
         thousands = ['', 'nghìn', 'triệu', 'tỷ']
 
-        try:
-            cur_amount = int(float(amount))
-        except ValueError:
-            return ""
-
         def number_to_text(num):
             if num == 0:
                 return 'không'
-            
-            num = str(num)
-            length = len(num)
+            cur_num = str(int(float(num)))
+            length = len(cur_num)
             result = []
             
-            groups = [num[max(0, length - 3*(i+1)): length - 3*i] for i in range((length // 3) + 1)]
+            groups = [cur_num[max(0, length - 3*(i+1)): length - 3*i] for i in range((length // 3) + 1) if cur_num[max(0, length - 3*(i+1)): length - 3*i]]
             groups.reverse()
             
             for idx, group in enumerate(groups):
@@ -52,7 +46,7 @@ class HrExpenseSheet(models.Model):
             
             return " ".join(result).strip()
         
-        label = number_to_text(cur_amount).strip()
+        label = number_to_text(amount).strip()
 
         return label[:1].upper() + label[1:].lower()
 
@@ -95,5 +89,4 @@ class HrExpenseSheet(models.Model):
             })
         return res
 
-    def get_convert_money_total_amount(self):
-        return self.convert_money(self.total_amount)
+    
