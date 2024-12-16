@@ -20,23 +20,25 @@ class MrpProduction(models.Model):
     sale_order_id = fields.Many2one(
         comodel_name='sale.order',
         string='Đơn bán hàng',
+        domain="[('state','!=','done')]",
+        store=True,
     )
-
-    attachment_ids = fields.Many2many(
-        'ir.attachment',
-        string='Đính kèm',
-    )
-
-    public_url_add_image = fields.Char(string="Link thêm hình ảnh", compute="_compute_generate_public_url_add_image")
     
-    api.depends('sale_order_id.state')
-    def _compute_generate_public_url_add_image(self):
-        key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
-        text = "%s | %s | %s | %s" % (get_timestamp(), generate_random_string(20), self._name, self.id)
-        token = encode_token(text, key)
-        url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
-        for order in self:
-            if order.state in ['sale', 'done']:
-                order.public_url_add_image = "%s/public/upload_files_to_order?token=%s" % (url, urllib.parse.quote(token))
+    @api.depends(
+        'move_raw_ids.state', 'move_raw_ids.quantity_done', 'move_finished_ids.state',
+        'workorder_ids.state', 'product_qty', 'qty_producing', 'sale_order_id')
+    def _compute_state(self):
+        super(MrpProduction, self)._compute_state()
+        for mrp in self:
+            productions = self.env['mrp.production'].search([('sale_order_id', '=', mrp.sale_order_id.id)])
+            state_list = productions.mapped('state')
+            if any([state for state in state_list if state in ["draft", "confirmed"]]):
+                mrp.sale_order_id.state_mrp = 'draft'
+            elif any([state for state in state_list if state in ["progress", "to_close"]]):
+                mrp.sale_order_id.state_mrp = 'progress'
+            elif any([state for state in state_list if state in ["cancel"]]):
+                mrp.sale_order_id.state_mrp = 'cancel'
+            elif any([state for state in state_list if state in ["done"]]):
+                mrp.sale_order_id.state_mrp = 'done'
             else:
-                order.public_url_add_image = ""
+                mrp.sale_order_id.state_mrp = ''

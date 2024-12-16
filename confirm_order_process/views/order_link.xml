@@ -1,0 +1,53 @@
+<odoo>
+    <!-- order_link_tree_view inherit form view -->
+    <record id="order_link_tree_view" model="ir.ui.view">
+        <field name="name">order.link.view.tree</field>
+        <field name="model">order.link</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="type"/>
+                <field name="url"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <!-- order_link_tree_view inherit form view -->
+    <record id="order_link_form_view" model="ir.ui.view">
+        <field name="name">order.link.view.form</field>
+        <field name="model">order.link</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" class="o_field_statusbar" options="{'clickable': '1'}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="type"/>
+                        <field name="url" widget="CopyClipboardChar"/>
+                    </group>
+                    <group>
+                        <field name="sale_order_id" invisible="1"/>
+                        <field name="sale_order_name" attrs="{'invisible': [('sale_order_id','=','False')]}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- model.name action window -->
+    <record id="order_link_action" model="ir.actions.act_window">
+        <field name="name">Đường dẫn xác nhận</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">order.link</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'group_by': 'sale_order_name'}</field>
+    </record>
+    <menuitem id="order_link_menu_act" name="Đường dẫn xác nhận" parent="sale.sale_order_menu" action="order_link_action" sequence="25"/>
+</odoo>

@@ -11,4 +11,5 @@
             'widget_many2many_images/static/src/**/*',
         ],
     },
+    'license': 'LGPL-3',
 }

@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_otp.access_otp_verification_group_name,otp.access_otp_verification.group_name,model_otp_verification,base.group_system,1,1,1,1
 access_otp.user_ip_history_group_name,otp.user_ip_history.group_name,model_user_ip_history,base.group_system,1,1,1,1
+access_otp.order_link_group_name,otp.order_link.group_name,model_order_link,base.group_user,1,1,1,1
+access_otp.user_ip_history_daily_group_name,otp.user_ip_history_daily.group_name,model_user_ip_history_daily,base.group_user,1,1,1,1

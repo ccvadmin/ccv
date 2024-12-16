@@ -9,7 +9,7 @@
                     <div class="row">
                         <t t-foreach="attachments" t-as="attachment">
                             <div class="col d-flex justify-content-center">
-                                <img t-att-src="'/web/content/' + str(attachment.id) + '?download=true'" style="min-height:200px; max-width:200px;"/>
+                                <img t-att-src="attachment['url']" style="min-height:200px; max-width:200px;"/>
                             </div>
                         </t>
                     </div>
@@ -21,7 +21,7 @@
         <t t-call="website.layout">
             <div class="container mt16">
                 <h2 class="text-center">Tải lên nhiều ảnh cho đơn hàng</h2>
-                <form t-att-action="'/public/upload_files_to_order?token=' + str(token)" method="POST" enctype="multipart/form-data">
+                <form t-att-action="urlpost" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                     <div class="form-group row">
                         <label for="order_name" class="col-sm-2 col-form-label">Đơn hàng</label>
@@ -46,47 +46,46 @@
             </div>
         </t>
         <script type="text/javascript">
-            function previewImages(event) {
+            async function previewImages(event) {
                 var files = event.target.files;
-                var output = document.querySelector('#image_preview&gt;.row');
-        
-                for (var i = 0; i &lt; files.length; i++) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        // Tạo thumbnail cho ảnh
-                        var img = document.createElement('img');
-                        img.classList.add('img-thumbnail');
-                        img.src = e.target.result;
-                        img.style.maxWidth = "400px";
-                        img.style.maxHeight = "200px";
+                var output = document.querySelector('#image_preview .row');
 
-                        // Tạo input tên cho ảnh
-                        var nameInput = document.createElement('input');
-                        nameInput.classList.add('form-control');
-                        nameInput.type = 'text';
-                        nameInput.name = 'image_names[]';  // Đảm bảo sử dụng mảng để gửi nhiều tên ảnh
-                        nameInput.required = '1';  // Đảm bảo sử dụng mảng để gửi nhiều tên ảnh
-                        nameInput.placeholder = 'Tên ảnh';  // Placeholder cho mỗi trường nhập tên
-                        nameInput.classList.add('mt-2');
-        
-                        // Tạo form group cho ảnh và input tên
-                        var nameGroup = document.createElement('div');
-                        nameGroup.classList.add('col-4');
-                        nameGroup.classList.add('mt-2');
-                        
-                        // Tạo div chứa ảnh và input tên trong cùng một cột
-                        var div = document.createElement('div');
-                        div.classList.add('text-center');
-                        div.appendChild(img);
-                        div.appendChild(nameInput);
-                        nameGroup.appendChild(div);
-        
-                        // Thêm nhóm ảnh và input tên vào phần hiển thị
-                        output.appendChild(nameGroup);
-                    };
-                    reader.readAsDataURL(files[i]);
+                for (let i = 0; i &lt; files.length; i++) {
+                    await new Promise((resolve) =&gt; {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            var img = document.createElement('img');
+                            img.classList.add('img-thumbnail');
+                            img.src = e.target.result;
+                            img.style.maxWidth = "400px";
+                            img.style.maxHeight = "200px";
+
+                            var nameInput = document.createElement('input');
+                            nameInput.classList.add('form-control');
+                            nameInput.type = 'text';
+                            nameInput.name = files[i].name;
+                            nameInput.required = true;
+                            nameInput.placeholder = 'Tên ảnh';
+                            nameInput.classList.add('mt-2');
+
+                            var nameGroup = document.createElement('div');
+                            nameGroup.classList.add('col-sm');
+                            nameGroup.classList.add('mt-2');
+
+                            var div = document.createElement('div');
+                            div.classList.add('text-center');
+                            div.appendChild(img);
+                            div.appendChild(nameInput);
+                            nameGroup.appendChild(div);
+                            output.appendChild(nameGroup);
+
+                            resolve();
+                        };
+                        reader.readAsDataURL(files[i]);
+                    });
                 }
             }
+
         </script>
     </template>
     

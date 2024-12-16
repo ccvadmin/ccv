@@ -13,7 +13,7 @@ class OtpVerification(models.Model):
     _name = "otp.verification"
     _description = "Otp Verification"
 
-    otp = fields.Text(string="OTP", required=True)
+    otp = fields.Text(string="OTP", required=True, readonly=True)
     state = fields.Selection(
         [
             ("unverified", "Chưa xác nhận"),
@@ -23,11 +23,12 @@ class OtpVerification(models.Model):
         ],
         string="Trạng thái",
         default="unverified",
+        readonly=True,
     )
-    phone = fields.Char()
-    email = fields.Char()
-    sale_order_id = fields.Many2one("sale.order", string="Đơn bán hàng")
-    date_end = fields.Datetime(string="Ngày hết hạn", default=datetime.now() + timedelta(minutes=5))
+    phone = fields.Char(string="Điện thoại", readonly=True)
+    email = fields.Char(readonly=True)
+    sale_order_id = fields.Many2one("sale.order", string="Đơn bán hàng", readonly=True)
+    date_end = fields.Datetime(string="Ngày hết hạn", default=datetime.now() + timedelta(minutes=5), readonly=True)
 
     @api.constrains("otp")
     def unit_opt_contrains(self):
@@ -89,6 +90,10 @@ class OtpVerification(models.Model):
             msg = "OTP đã bị từ chối!"
         elif self.state in ["verified"]:
             msg = "OTP đã xác nhận!"
+        _logger.info("RUN")
+        _logger.info(msg)
+        _logger.info(self.date_end <= datetime.now())
+        _logger.info(self.state)
         if self.state not in ["verified", "rejected", "expired"]:
             return False, msg
         return True, msg

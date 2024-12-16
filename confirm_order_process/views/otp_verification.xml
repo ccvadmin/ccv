@@ -1,0 +1,48 @@
+<odoo>
+    <!-- otp_verification_tree_view inherit form view -->
+    <record id="otp_verification_tree_view" model="ir.ui.view">
+        <field name="name">otp.verification.view.tree</field>
+        <field name="model">otp.verification</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sale_order_id"/>
+                <field name="otp"/>
+                <field name="date_end"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <!-- otp_verification_tree_view inherit form view -->
+    <record id="otp_verification_form_view" model="ir.ui.view">
+        <field name="name">otp.verification.view.form</field>
+        <field name="model">otp.verification</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="sale_order_id"/>
+                        <field name="otp"/>
+                    </group>
+                    <group>
+                        <field name="phone"/>
+                        <field name="email"/>
+                        <field name="date_end"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!-- model.name action window -->
+    <record id="otp_verification_action" model="ir.actions.act_window">
+        <field name="name">OTP</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">otp.verification</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'group_by': 'sale_order_id'}</field>
+    </record>
+    <menuitem id="otp_verification_menu_act" name="Mã OTP" parent="sale.menu_sale_config" action="otp_verification_action" sequence="1"/>
+</odoo>

@@ -154,44 +154,35 @@
                     <t t-foreach="images" t-as="image">
                         <div class="col-lg-3 col-md-4 col-12 mb-4">
                             <figure>
-                                <img t-att-src="'/web/image/ir.attachment/' + str(image.id) + '/datas'" class="img-fluid" t-att-alt="image.name" data-toggle="modal" t-att-data-target="'#imageModal' + str(image.id)"/>
-                                <figcaption class="text-center"><t t-esc="image.name"/></figcaption>
+                                <img t-att-src="str(image['url'])" class="img-fluid" t-att-alt="image['name']" data-toggle="modal" t-att-data-target="'#imageModal' + str(image['id'])"/>
+                                <figcaption class="text-center"><t t-esc="image['name']"/></figcaption>
                             </figure>
                         </div>
                     </t>
                 </div>
             </div>
             <t t-foreach="images" t-as="image">
-                <div class="modal fade" t-att-id="'imageModal' + str(image.id)" tabindex="-1" role="dialog"
-                    t-att-aria-labelledby="'imageModalLabel' + str(image.id)"
+                <div class="modal fade" t-att-id="'imageModal' + str(image['id'])" tabindex="-1" role="dialog"
+                    t-att-aria-labelledby="'imageModalLabel' + str(image['id'])"
                     aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" t-att-id="'imageModalLabel' + str(image.id)"><t t-esc="image.name"/></h5>
+                                <h5 class="modal-title" t-att-id="'imageModalLabel' + str(image['id'])"><t t-esc="image['name']"/></h5>
                                 <button type="button" class="close" data-dismiss="modal"
                                     aria-label="Close">
                                     <span aria-hidden="true">&#215;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <img
-                                    t-att-src="'/web/image/ir.attachment/' + str(image.id) + '/datas'"
-                                    class="img-fluid"
-                                    t-att-alt="image.name"/>
+                                <img t-att-src="str(image['url'])" class="img-fluid" t-att-alt="image['name']"/>
                             </div>
                         </div>
                     </div>
                 </div>
             </t>
-            
-            <script src="/confirm_order_process/static/src/js/jquery.slim.min.js"
-                integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-                crossorigin="anonymous"></script>
-            <script
-                src="/confirm_order_process/static/src/js/bootstrap.bundle.min.js"
-                integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
-                crossorigin="anonymous"></script>
+            <script src="/confirm_order_process/static/src/js/jquery.slim.min.js"></script>
+            <script src="/confirm_order_process/static/src/js/bootstrap.bundle.min.js"></script>
         </t>
     </template>
 </odoo>

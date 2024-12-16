@@ -19,16 +19,11 @@
                 </group>
             </xpath>
             <xpath expr="//notebook" position="inside">
-                <page string="Đơn sản xuất" name="orders">
-                    <field name="mrp_production_ids" readonly="1">
-                        <tree>
-                            <field name="name"/>
-                            <field name="state"/>
-                        </tree>
-                    </field>
+                <page string="Ảnh đơn hàng" name="images">
+                    <field name="sale_attachment_ids" widget='many2many_images'/>
                 </page>
-                <page string="Ảnh" name="images">
-                    <field name="attachment_ids" widget='many2many_images'/>
+                <page string="Ảnh sản xuất" name="images">
+                    <field name="mrp_attachment_ids" widget='many2many_images'/>
                 </page>
                 <page string="OTP" name="otp" groups="base.group_system">
                     <field name="otp_ids" readonly="1" groups="base.group_system">
@@ -42,11 +37,22 @@
                     </field>
                 </page>
                 <page string="URL" name="url">
+                    <button icon="fa-refresh" type="object" string="Làm mới URL" help="Khi link lỗi, thử lại với nút này" name="action_reset_public_url"/>
                     <group>
-                        <field name="public_url_cf_order" attrs="{'invisible': [('state', 'not in', ['draft', 'sent'])]}"/>
-                        <field name="public_url_cf_delivery" attrs="{'invisible': [('state', '!=', 'sale'),('state_delivery', '!=', 'ready'),('state_mrp', '!=', 'done')]}"/>
-                        <field name="public_url_add_image" attrs="{'invisible': [('state', 'not in', ['sale', 'done'])]}"/>
+                        <field name="public_url_cf_order" widget="CopyClipboardChar"/>
+                        <field name="public_url_cf_delivery" widget="CopyClipboardChar"/>
+                        <field name="public_url_add_image" widget="CopyClipboardChar"/>
                     </group>
+                </page>
+                <page string="Link" name="link">
+                    <field name="order_link_ids" readonly="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="type"/>
+                            <field name="url"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
                 </page>
             </xpath>
         </field>

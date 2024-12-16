@@ -20,7 +20,7 @@
 
     <menuitem id="menu_user_ip_history_daily"
               name="Lịch sử IP người dùng (Tổng hợp)"
-              parent="sale.menu_sale_order"
+              parent="sale.sale_order_menu"
               action="action_user_ip_history_daily"
               groups="base.group_system"/>
 </odoo>

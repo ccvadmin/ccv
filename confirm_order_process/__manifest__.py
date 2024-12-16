@@ -8,7 +8,7 @@
     'category': 'Sales',
     'description': """Confirm Order Process""",
     'depends': [
-        'base','website','sale', 'mrp',
+        'base','website','sale_management', 'mrp',
     ],
     'data': [
         'sercurity/ir.model.access.csv',
@@ -23,6 +23,8 @@
         "views/mrp_production.xml",
         "views/sale_order.xml",
         "views/user_ip_history_view.xml",
+        "views/order_link.xml",
+        "views/otp_verification.xml",
     ],
     'installable': True,
     'license': 'LGPL-3',

@@ -32,7 +32,7 @@
                         <span aria-hidden="true">&#215;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body text-center">
                     <img id="modalImage" class="img-fluid" src="" alt="Image Preview"/>
                 </div>
             </div>
@@ -43,11 +43,11 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
+                    <h5 class="modal-title" id="renameModalLabel">Đổi tên</h5>
                     <button type="button" class="btn btn-danger close" data-dismiss="modal" aria-label="Close"
                         t-on-click="() => closeRenameModal()">
                         <span aria-hidden="true">&#215;</span>
                     </button>
-                    <h5 class="modal-title" id="renameModalLabel">Đổi tên</h5>
                 </div>
                 <div class="modal-body">
                     <label for="newFileName">Tên mới:</label>
@@ -65,7 +65,6 @@
     <t t-set="editable" t-value="!props.readonly"/>
     <div t-attf-class="o_attachment o_attachment_many2many d-inline-block #{ editable ? 'o_attachment_editable' : '' } #{upload ? 'o_attachment_uploading' : ''}" t-att-title="file.name">
         <div class="o_attachment_wrap">
-            <t t-set="ext" t-value="getExtension(file)"/>
             <div class="o_image_box float-start w-100" t-att-data-tooltip="file.name">
                 <div>
                     <span class="o_image o_hover w-100" t-att-data-mimetype="file.mimetype" t-att-data-ext="ext" role="img"
@@ -97,8 +96,31 @@
             </div>
 
             <div class="o_attachment_uploaded"><i class="text-success fa fa-check" role="img" aria-label="Uploaded" title="Uploaded"/></div>
-            <div t-if="editable" class="o_attachment_delete" t-on-click.stop="() => this.onFileRemove(file.id)"><span class="text-white" role="img" aria-label="Delete" title="Delete">×</span></div>
+            <div t-if="editable" class="o_attachment_delete" t-on-click.stop="() => this.openDeleteConfirmModal(file)">
+                <span class="text-white" role="img" aria-label="Delete" title="Delete">×</span>
+            </div>
         </div>
     </div>
+    <!-- Modal xác nhận xóa -->
+    <div id="deleteConfirmModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Xác nhận xóa</h5>
+                    <button type="button" class="btn btn-danger close" data-dismiss="modal" aria-label="Close" t-on-click="() => closeDeleteConfirmModal()">
+                        <span aria-hidden="true">&#215;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn xóa tệp này không?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" t-on-click="() => closeDeleteConfirmModal()">Hủy</button>
+                    <button type="button" class="btn btn-danger" t-on-click="() => confirmDelete()">Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </t>
 </templates>

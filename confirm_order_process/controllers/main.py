@@ -7,6 +7,7 @@ from odoo.http import request
 import time
 import base64
 from werkzeug.utils import secure_filename
+import urllib.parse
 
 # Python lib
 from ..lib.const import get_date, get_timestamp, encode_token, decode_token
@@ -41,13 +42,15 @@ class MainController(http.Controller):
                     },
                 )
 
-            time_from_token, public_key, order_id = decoded_data.split(" | ")
+            time_from_token, public_key, order_id = decoded_data.split("|")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
             token_date = datetime.fromtimestamp(time_from_token).date()
 
             if current_date != token_date:
+                order = request.env['sale.order'].sudo().browse(int(order_id))
+                order.order_link_ids.filtered(lambda l: l.type=='order' and l.state=='draft').write({'state':'expired'})
                 return request.render(
                     "confirm_order_process.notify_template",
                     {
@@ -76,16 +79,17 @@ class MainController(http.Controller):
             otp_model = request.env["otp.verification"].sudo().search([("sale_order_id.id", "=", order.id), ("state", "=", "unverified")])
             if not otp_model:
                 otp_model = request.env["otp.verification"].sudo().create(
-                    {
-                        "sale_order_id": order.id,
-                        "phone": order.partner_id.phone,
-                    })
+                {
+                    "sale_order_id": order.id,
+                    "phone": getattr(order.partner_id, 'phone',''),
+                    "email": getattr(order.partner_id, 'email',''),
+                })
                 otp_model.action_send_email()
 
             order_data = {
                 "title": "Xác nhận đơn hàng - %s - %s" % (order_id, order.partner_id.name),
                 "currency": request.env.user.company_id.currency_id.currency_unit_label,
-                "logo": request.env["res.company"].search([], limit=1).logo,
+                "logo": request.env["res.company"].sudo().search([], limit=1).logo,
                 "order_id": order.name,
                 "customer_name": order.partner_id.name,
                 "address": order.partner_id.contact_address,
@@ -127,7 +131,7 @@ class MainController(http.Controller):
                     "confirm_order_process.notify_template",
                     {
                         "title": "Xác Nhận Đơn Hàng Thất Bại",
-                        "message": "Bạn đã vượt quá số lần yêu cầu trong vòng 2 giờ. Vui lòng thử lại sau.",
+                        "message": "Bạn đã vượt quá số lần yêu cầu trong vòng 1 giờ. Vui lòng thử lại sau.",
                     },
                 )
             self._log_user_ip(user_ip)
@@ -179,7 +183,7 @@ class MainController(http.Controller):
                     },
                 )
 
-            time_from_token, public_key, order_id = decoded_data.split(" | ")
+            time_from_token, public_key, order_id = decoded_data.split("|")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
@@ -278,13 +282,15 @@ class MainController(http.Controller):
                     },
                 )
 
-            time_from_token, public_key, order_id = decoded_data.split(" | ")
+            time_from_token, public_key, order_id = decoded_data.split("|")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
             token_date = datetime.fromtimestamp(time_from_token).date()
 
             if current_date != token_date:
+                order = request.env['sale.order'].sudo().browse(int(order_id))
+                order.order_link_ids.filtered(lambda l: l.type=='delivery' and l.state=='draft').write({'state':'expired'})
                 return request.render(
                     "confirm_order_process.notify_template",
                     {
@@ -303,7 +309,7 @@ class MainController(http.Controller):
                     },
                 )
 
-            if order.state != "sale":
+            if not(order.state == "sale" and order.state_mrp == 'done' and order.state_delivery == 'draft'):
                 return request.render(
                     "confirm_order_process.notify_template",
                     {
@@ -312,31 +318,23 @@ class MainController(http.Controller):
                     },
                 )
 
-            otp_model = (
-                request.env["otp.verification"]
-                .sudo()
-                .search(
+            otp_model = request.env["otp.verification"].sudo().search(
                     [("sale_order_id.id", "=", order.id), ("state", "=", "unverified")]
                 )
-            )
             if not otp_model:
-                otp_model = (
-                    request.env["otp.verification"]
-                    .sudo()
-                    .create(
-                        {
-                            "sale_order_id": order.id,
-                            "phone": order.partner_id.phone,
-                        }
-                    )
-                )
+                otp_model = request.env["otp.verification"].sudo().create(
+                {
+                    "sale_order_id": order.id,
+                    "phone": getattr(order.partner_id, 'phone',''),
+                    "email": getattr(order.partner_id, 'email',''),
+                })
                 otp_model.action_send_email()
 
             # Dữ liệu trả về cho template
             order_data = {
                 "title": "Xác nhận đơn hàng - %s - %s" % (order_id, order.partner_id.name),
                 "currency": request.env.user.company_id.currency_id.currency_unit_label,
-                "logo": request.env["res.company"].search([], limit=1).logo,
+                "logo": request.env["res.company"].sudo().search([], limit=1).logo,
                 "order_id": order.name,
                 "customer_name": order.partner_id.name,
                 "address": order.partner_id.contact_address,
@@ -352,7 +350,7 @@ class MainController(http.Controller):
                     }
                     for line in order.order_line
                 ],
-                "images": order.attachment_ids,
+                "images": [self.get_attachment(attachment) for attachment in order.mrp_attachment_ids],
                 "status": order.state == "sale",
                 "token": token,
             }
@@ -380,7 +378,7 @@ class MainController(http.Controller):
                     "confirm_order_process.notify_template",
                     {
                         "title": "Xác Nhận Giao Hàng Thất Bại",
-                        "message": "Bạn đã vượt quá số lần yêu cầu trong vòng 2 giờ. Vui lòng thử lại sau.",
+                        "message": "Bạn đã vượt quá số lần yêu cầu trong vòng 1 giờ. Vui lòng thử lại sau.",
                     },
                 )
             self._log_user_ip(user_ip)
@@ -416,7 +414,7 @@ class MainController(http.Controller):
                     },
                 )
 
-            time_from_token, public_key, order_id = decoded_data.split(" | ")
+            time_from_token, public_key, order_id = decoded_data.split("|")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
@@ -461,11 +459,7 @@ class MainController(http.Controller):
                     },
                 )
 
-            if not (
-                order.state_delivery not in ["done", "confirm"]
-                and order.state == "sale"
-                and order.state_mrp == "done"
-            ):
+            if not(order.state == "sale" and order.state_mrp == 'done' and order.state_delivery == 'draft'):
                 return request.render(
                     "confirm_order_process.notify_template",
                     {
@@ -474,7 +468,7 @@ class MainController(http.Controller):
                     },
                 )
 
-            order.public_confirm()
+            order.public_confirm(opt_id)
             order.send_message_w_trigger("delivery")
 
             return request.render(
@@ -500,10 +494,21 @@ class MainController(http.Controller):
         ip_history_model.create({"user_ip": user_ip, "timestamp": fields.Datetime.now(),})
 
     def _check_ip_request_limit(self, user_ip):
-        two_hours_ago = fields.Datetime.now() - timedelta(hours=2)
-        ip_history_model = request.env["user.ip.history"]
+        two_hours_ago = fields.Datetime.now() - timedelta(hours=1)
+        ip_history_model = request.env["user.ip.history"].sudo()
         recent_requests = ip_history_model.search_count([("user_ip", "=", user_ip), ("timestamp", ">=", two_hours_ago)])
         return recent_requests == 5
+    
+    def get_attachment(self, attachment):
+        data_uri = ""
+        if attachment and attachment.mimetype.startswith('image/'):
+            attachment.generate_access_token()
+            data_uri = '/web/image/%s?access_token=%s' % (attachment.id, attachment.access_token)
+        return {
+            'id' : attachment.id,
+            'name' : attachment.name,
+            'url' : data_uri,
+        }
 
     @http.route("/public/upload_files_to_order",type="http",auth="public",website=True,)
     def upload_files_to_order_page(self, **kwargs):
@@ -527,13 +532,15 @@ class MainController(http.Controller):
                         "message": "Không thể xác thực người dùng",
                     },
                 )
-            time_from_token, public_key, model_name, order_id= decoded_data.split(" | ")
+            time_from_token, public_key, order_id= decoded_data.split("|")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
             token_date = datetime.fromtimestamp(time_from_token).date()
 
             if current_date != token_date:
+                order = request.env['sale.order'].sudo().browse(int(order_id))
+                order.order_link_ids.filtered(lambda l: l.type=='image' and l.state=='draft').write({'state':'expired'})
                 return request.render(
                     "confirm_order_process.notify_template",
                     {
@@ -542,12 +549,11 @@ class MainController(http.Controller):
                     },
                 )
 
-            order = request.env[model_name].browse(int(order_id))
-            
+            order = request.env['sale.order'].sudo().browse(int(order_id))
             order_data = {
-                "title": "Lệnh sản xuất - %s" % order.name if model_name == 'mrp.production' else "Đơn hàng - %s" % order.name,
+                "title": "Đơn hàng - %s" % order.name,
                 "order": order,
-                "token": token,
+                "urlpost": "/public/upload_files_to_order?token=%s" % (urllib.parse.quote(token)),
             }
 
             return request.render(
@@ -577,6 +583,8 @@ class MainController(http.Controller):
                 )
             secret_key_public_user = request.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
             decoded_data = decode_token(token, secret_key_public_user)
+            _logger.info(token)
+            _logger.info(secret_key_public_user)
             if not decoded_data:
                 return request.render(
                     "confirm_order_process.notify_template",
@@ -586,13 +594,15 @@ class MainController(http.Controller):
                     },
                 )
 
-            time_from_token, public_key, model_name, order_id= decoded_data.split(" | ")
+            time_from_token, public_key, order_id= decoded_data.split("|")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
             token_date = datetime.fromtimestamp(time_from_token).date()
 
             if current_date != token_date:
+                order = request.env['sale.order'].sudo().browse(int(order_id))
+                order.order_link_ids.filtered(lambda l: l.type=='image' and l.state=='draft').write({'state':'expired'})
                 return request.render(
                     "confirm_order_process.notify_template",
                     {
@@ -601,45 +611,60 @@ class MainController(http.Controller):
                     },
                 )
 
-            order = request.env[model_name].browse(int(order_id))
+            order = request.env['sale.order'].sudo().browse(int(order_id))
 
             if not order:
                 return request.render(
                     "confirm_order_process.notify_template",
                     {
-                        "title": "Xác Nhận Đơn Hàng Thất Bại",
+                        "title": "Thêm ảnh thất bại",
                         "message": "Đơn hàng không được tìm thấy!",
                     },
                 )
 
             uploaded_files = request.httprequest.files.getlist('files')
-            image_names = kwargs.get('image_names', '').split(',')
 
-            if uploaded_files and image_names:
+            if uploaded_files:
+                if len(uploaded_files) > 5:
+                    return request.render(
+                        "confirm_order_process.notify_template",
+                        {
+                            "title": "Thêm ảnh thất bại",
+                            "message": "Số lượng ảnh vượt quá cho phép!",
+                        },
+                    )
+                is_mrp_images = order.state_mrp == 'done' and order.state == 'sale' and order.state_delivery == 'draft'
+                is_sale_images = order.state_mrp == 'done' and order.state == 'sale' and order.state_delivery == 'confirm'
                 for i, uploaded_file in enumerate(uploaded_files):
                     filename = secure_filename(uploaded_file.filename)
                     file_data = uploaded_file.read()
-
+                    image_name = kwargs.get(filename, '')
                     encoded_file_data = base64.b64encode(file_data).decode('utf-8')
-
-                    attachment = request.env['ir.attachment'].create({
-                        'name': image_names[i].strip() if i < len(image_names) else filename[:-4],
+                    attachment = request.env['ir.attachment'].sudo().create({
+                        'name': image_name.strip() if image_name else filename[:-4],
                         'type': 'binary',
                         'datas': encoded_file_data,
                         # 'datas_fname': filename,
                         'res_model': 'sale.order',
                         'res_id': order.id,
                     })
-
-                    order.write({
-                        'attachment_ids': [(4, attachment.id)]
+                    if is_sale_images:
+                        order.write({'sale_attachment_ids': [(4, attachment.id)]})
+                    else:
+                        order.write({'mrp_attachment_ids': [(4, attachment.id)]})
+                order.order_link_ids.filtered(lambda l: l.type=='image' and l.state=='draft').write({'state':'consume'})
+                if not is_sale_images:
+                    return request.render('confirm_order_process.file_upload_result', {
+                        'message': 'Tải ảnh lên thành công và đã gắn vào đơn hàng!',
+                        'order': order,
+                        'attachments': [self.get_attachment(attachment) for attachment in order.sale_attachment_ids]
                     })
-
-                return request.render('confirm_order_process.file_upload_result', {
-                    'message': 'Tải ảnh lên thành công và đã gắn vào đơn hàng!',
-                    'order': order,
-                    'attachments': order.attachment_ids
-                })
+                else:
+                    return request.render('confirm_order_process.file_upload_result', {
+                        'message': 'Tải ảnh lên thành công và đã gắn vào đơn hàng!',
+                        'order': order,
+                        'attachments': [self.get_attachment(attachment) for attachment in order.mrp_attachment_ids]
+                    })
 
             return request.render('confirm_order_process.file_upload_form', {
                 'message': 'Không có tệp hoặc tên ảnh không hợp lệ!'
@@ -653,6 +678,4 @@ class MainController(http.Controller):
                     "message": "Đường dẫn không hợp lệ",
                 },
             )
-
-
 

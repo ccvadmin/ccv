@@ -6,3 +6,4 @@ from . import sale_order
 from . import mrp_production
 from . import otp_verification
 from . import user_ip_history
+from . import order_link
