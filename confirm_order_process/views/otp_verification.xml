@@ -44,5 +44,4 @@
         <field name="domain">[]</field>
         <field name="context">{'group_by': 'sale_order_id'}</field>
     </record>
-    <menuitem id="otp_verification_menu_act" name="Mã OTP" parent="sale.menu_sale_config" action="otp_verification_action" sequence="1"/>
 </odoo>

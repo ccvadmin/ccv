@@ -18,9 +18,5 @@
         <field name="view_mode">tree</field>
     </record>
 
-    <menuitem id="menu_user_ip_history_daily"
-              name="Lịch sử IP người dùng (Tổng hợp)"
-              parent="sale.sale_order_menu"
-              action="action_user_ip_history_daily"
-              groups="base.group_system"/>
+    
 </odoo>

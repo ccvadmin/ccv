@@ -4,4 +4,8 @@
         <field name="key">confirm_order_process.serect_key_public_user</field>
         <field name="value">False</field>
     </record>
+    <record id="confirm_order_process.image_key_public_user" model="ir.config_parameter">
+        <field name="key">confirm_order_process.image_key_public_user</field>
+        <field name="value">False</field>
+    </record>
 </odoo>

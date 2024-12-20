@@ -60,50 +60,22 @@ class SaleOrder(models.Model):
         string='Order Links'
     )
 
+    order_link_driver_ids = fields.One2many(
+        'order.link',
+        'sale_order_id',
+        string='Driver Links',
+        readonly=True,
+        store=False,
+        compute="_compute_order_link",
+    )
 
-    public_url_cf_order = fields.Char(string="Link xác nhận đơn hàng", compute="_compute_generate_public_url_cf_order")
-    public_url_cf_delivery = fields.Char(string="Link xác nhận giao hàng", compute="_compute_generate_public_url_cf_delivery")
-    public_url_add_image = fields.Char(string="Link thêm hình ảnh", compute="_compute_generate_public_url_add_image")
+    public_url_cf_order = fields.Char(string="Link xác nhận đơn hàng", compute="_compute_order_link")
+    public_url_cf_delivery = fields.Char(string="Link xác nhận giao hàng", compute="_compute_order_link")
+    public_url_add_image = fields.Char(string="Link thêm hình ảnh", compute="_compute_order_link")
+    public_url_tracking_order = fields.Char(string="Link theo dõi giao hàng", compute="_compute_order_link")
+    number_of_vehicles = fields.Integer(string="Số lượng xe", default=1)
 
     count_try_submit = fields.Integer('Số lần submit', default=0)
-
-    # @api.depends('state')
-    # def _compute_generate_public_url_cf_order(self):
-    #     key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
-    #     text = "%s | %s | %s | %s" % (get_timestamp(), generate_random_string(20), self._name, self.id)
-    #     text = "%s | %s | %s" % (get_timestamp(), generate_random_string(20), self.id)
-    #     token = encode_token(text, key)
-    #     url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
-    #     for order in self:
-    #         if order.state in ['draft', 'sent']:
-    #             order.state = 'sent'
-    #             order.public_url_cf_order = "%s/public/order/confirm-order?token=%s" % (url, urllib.parse.quote(token))
-    #         else:
-    #             order.public_url_cf_order = ""
-
-    # @api.depends('state', 'state_delivery', 'state_mrp')
-    # def _compute_generate_public_url_cf_delivery(self):
-    #     key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
-    #     text = "%s | %s | %s" % (get_timestamp(), generate_random_string(20), self.id)
-    #     token = encode_token(text, key)
-    #     url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
-    #     for order in self:
-    #         if order.state == 'sale' and order.state_delivery == 'ready' and order.state_mrp == 'done':
-    #             order.public_url_cf_delivery = "%s/public/order/confirm-delivery?token=%s" % (url, urllib.parse.quote(token))
-    #         else:
-    #             order.public_url_cf_delivery = ""
-
-    # @api.depends('state')
-    # def _compute_generate_public_url_add_image(self):
-    #     key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
-    #     text = "%s | %s | %s | %s" % (get_timestamp(), generate_random_string(20), self._name, self.id)
-    #     token = encode_token(text, key)
-    #     url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
-    #     for order in self:
-    #         if order.state in ['sale', 'done']:
-    #             order.public_url_add_image = "%s/public/upload_files_to_order?token=%s" % (url, urllib.parse.quote(token))
-    #         else:
-    #             order.public_url_add_image = ""
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -135,6 +107,15 @@ class SaleOrder(models.Model):
                             'type': link_type,
                         })]
                     })
+            if order.order_link_driver_ids:
+                link_type = 'follower'
+                order.write({
+                    'order_link_ids' : [(0,0,{
+                        'sale_order_id': order.id,
+                        "name": order.name,
+                        'type': link_type,
+                    })]
+                })
         return res
 
         
@@ -168,65 +149,114 @@ class SaleOrder(models.Model):
                                 'type': link_type,
                             })]
                         })
+            if 'order_link_driver_ids' in vals and order.order_link_driver_ids:
+                link_type = 'follower'
+                order.write({
+                    'order_link_ids' : [(0,0,{
+                        'sale_order_id': order.id,
+                        "name": order.name,
+                        'type': link_type,
+                    })]
+                })
         return res
 
 
     @api.depends('order_link_ids')
-    def _compute_generate_public_url_cf_order(self):
+    def _compute_order_link(self):
+        url_fields = {
+            'order': 'public_url_cf_order',
+            'delivery': 'public_url_cf_delivery',
+            'image': 'public_url_add_image',
+            'follower': 'public_url_tracking_order',
+        }
         for order in self:
-            link = order.order_link_ids.filtered(lambda l: l.type == 'order' and l.state == 'draft')
-            if link:
-                order.public_url_cf_order = link[0].url
-            else:
-                order.public_url_cf_order = ""
-
-    @api.depends('order_link_ids')
-    def _compute_generate_public_url_cf_delivery(self):
-        for order in self:
-            link = order.order_link_ids.filtered(lambda l: l.type == 'delivery' and l.state == 'draft')
-            if link:
-                order.public_url_cf_delivery = link[0].url
-            else:
-                order.public_url_cf_delivery = ""
-
-    @api.depends('order_link_ids')
-    def _compute_generate_public_url_add_image(self):
-        for order in self:
-            link = order.order_link_ids.filtered(lambda l: l.type == 'image' and l.state == 'draft')
-            if link:
-                order.public_url_add_image = link[0].url
-            else:
-                order.public_url_add_image = ""
+            for link_type, field_name in url_fields.items():
+                link = order.order_link_ids.filtered(lambda l: l.type == link_type and l.state == 'draft')
+                setattr(order, field_name, link[0].url if link else "")
+            order_link = self.env['order.link']
+            if order.order_link_ids:
+                order_link = order.order_link_ids.filtered(lambda l: l.type == 'driver')
+            order.order_link_driver_ids = order_link
 
     ####################################
     # TODO: Chuyển 2 hàm button tích hợp ZALO
     # TODO: Tạo form SMS
     # TODO: Tích hợp tạo OTP gửi SMS
-    # Các đường link đã hoàn done, có thể hoạt động
+    # Các đường link đã done, có thể hoạt động
     # Serect key là được reset vào 00:00 hàng ngày
     # Các giao dịch chỉ được thực hiện trong ngày, nếu sang ngày hôm sau phải gửi lại đường link
     ####################################
 
-
     def action_reset_public_url(self):
         for order in self:
-            for link in order.order_link_ids.filtered(lambda l: l.state == 'draft'):
+            types = ('delivery','image','order','follower')
+            order_link_ids = order.order_link_ids.filtered(lambda l: l.type in types and l.state == 'draft')
+            order_link_ids.write({'state': 'expired'})
+            link_type = None
+            if order.state in ['draft', 'sent']:
+                link_type = 'order'
+            elif order.state == 'sale' and order.state_delivery == 'draft' and order.state_mrp == 'done':
+                link_type = 'delivery'
+            if link_type:
                 order.write({
-                    'order_link_ids': [(0, 0, {
+                    'order_link_ids' : [(0,0,{
                         'sale_order_id': order.id,
                         "name": order.name,
-                        'type': link.type,
-                        'url': link._generate_order_url(order),
+                        'type': link_type,
                     })]
+                })
+            if order.state == 'sale' and order.state_delivery in ('draft', 'confirm') and order.state_mrp == 'done':
+                link_type = 'image'
+                order.write({
+                    'order_link_ids' : [(0,0,{
+                        'sale_order_id': order.id,
+                        "name": order.name,
+                        'type': link_type,
+                    })]
+                })
+            if order.order_link_driver_ids.filtered(lambda l: l.state == 'draft'):
+                link_type = 'follower'
+                order.write({
+                    'order_link_ids' : [(0,0,{
+                        'sale_order_id': order.id,
+                        "name": order.name,
+                        'type': link_type,
+                    })]
+                })
+        return
+    
+    def action_create_public_driver_url(self):
+        for order in self:
+            order_links = []
+            size = order.number_of_vehicles - len(order.order_link_ids.filtered(lambda l:l.type == 'driver' and l.state == 'draft'))
+            if order.number_of_vehicles <= 0:
+                raise UserError('Số lượng xe không đúng!!!')
+            if size <= 0:
+                raise UserError('Số lượng đường link đã đủ!!!')
+            partner_id = order.partner_id
+            if partner_id.partner_latitude == 0 or partner_id.partner_longitude == 0:
+                raise UserError('Khách hàng chưa được xác định tọa độ bằng địa chỉ!!!')
+            for i in range(size):
+                location = self.env['sales.order.location'].create({
+                    'order_id': order.id,
+                    'name': f"Vị trí cho đơn {order.name} - Xe {i+1}"
+                })
+                order_links.append((0, 0, {
+                    'sale_order_id': order.id,
+                    'name': order.name,
+                    'type': 'driver',
+                    'location_id': location.id
+                }))
+            if order_links:
+                order.write({
+                    'order_link_ids': order_links,
                 })
         return
 
 
-
-    ####################################
-    
     def action_resend_otp(self):
-        self.otp_ids.filtered(lambda l:l.state=='unverified').action_send_email()
+        # TODO: Chỉnh sang lại dùng Vihat
+        self.otp_ids.filtered(lambda l:l.state=='unverified').action_send_sms()
 
     def public_confirm(self, otp_id):
         for order in self:

@@ -1,0 +1,29 @@
+<odoo>
+    <template id="map_view_template">
+        <script type="text/javascript" src="/confirm_order_process/static/src/js/jquery.min.js"></script>
+        <script type="text/javascript" src="/confirm_order_process/static/src/js/google_map.js"></script>
+        <style>
+            #map {
+                height: 80%;
+                width: 100%;
+            }
+            #info {
+                margin-top: 20px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+        </style>
+        <div id="map"></div>
+        <div id="info">
+            <p>Khoảng cách: <span id="distance">-</span></p>
+            <p>Thời gian đến: <span id="duration">-</span></p>
+        </div>
+        <script type="text/javascript" src="/confirm_order_process/static/src/js/global.js"></script>
+        <t t-if="role == 'driver'">
+            <script type="text/javascript" src="/confirm_order_process/static/src/js/driver.js"></script>
+        </t>
+        <t t-else="">
+            <script type="text/javascript" src="/confirm_order_process/static/src/js/follower.js"></script>
+        </t>
+    </template>
+</odoo>

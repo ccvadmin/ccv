@@ -1,0 +1,39 @@
+<odoo>
+    <record id="tracking_order_config_form_view_inherit" model="ir.ui.view">
+        <field name="name">tracking_order_config.view.form</field>
+        <field name="model">tracking.order.config</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group string="Địa chỉ mặc định">
+                        <field name="src_location"/>
+                        <field name="src_latitude"/>
+                        <field name="src_longitude"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="tracking_order_config_tree_view_inherit" model="ir.ui.view">
+        <field name="name">tracking_order_config.view.tree</field>
+        <field name="model">tracking.order.config</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record id="tracking_order_config_action" model="ir.actions.act_window">
+        <field name="name">Cấu hình</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tracking.order.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context"></field>
+    </record>
+
+</odoo>

@@ -90,21 +90,24 @@ class OtpVerification(models.Model):
             msg = "OTP đã bị từ chối!"
         elif self.state in ["verified"]:
             msg = "OTP đã xác nhận!"
-        _logger.info("RUN")
-        _logger.info(msg)
-        _logger.info(self.date_end <= datetime.now())
-        _logger.info(self.state)
         if self.state not in ["verified", "rejected", "expired"]:
             return False, msg
         return True, msg
+
+    def action_send_sms(self):
+        for record in self:
+            sms_api = self.env['sms.api'].sudo()
+            recipient_number = record.phone
+            message_body = 'OTP: %s' % record.otp
+            sms_api._send_sms([recipient_number], message_body)
 
     def action_send_email(self):
         subject = "OTP"
         body = """
             Đây là OTP của bạn: <strong>%s</strong>
         """ % self.otp
-        to_email = self.env.user.email
-        from_email = self.env.user.email
+        to_email = self.email
+        from_email = self.email
 
         mail_values = {
             "subject": subject,
@@ -114,10 +117,9 @@ class OtpVerification(models.Model):
         }
 
         try:
-            mail = self.env["mail.mail"].create(mail_values)
+            mail = self.env["mail.mail"].sudo().create(mail_values)
             mail.send()
             return True
         except Exception as e:
-            _logger = logging.getLogger(__name__)
             _logger.error(f"Error sending email: {str(e)}")
             return False

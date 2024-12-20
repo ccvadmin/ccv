@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <menuitem
+        id="menu_tracking_order_root"
+            name="Theo dõi đơn hàng"
+            sequence="10"
+            groups="group_sales_confirm_order_user"
+    />
+    <menuitem
+        id="menu_tracking_order_link"
+            name="Đường dẫn"
+            parent="menu_tracking_order_root"
+            action="order_link_action"
+            sequence="10"
+            groups="group_sales_confirm_order_user"
+    />
+    <menuitem
+        id="menu_tracking_order_location"
+            name="Vị trí"
+            parent="menu_tracking_order_root"
+            action="sales_order_location_action"
+            sequence="10"
+            groups="group_sales_confirm_order_user"
+    />
+    <menuitem
+        id="menu_tracking_order_config_root"
+            name="Cấu hình"
+            parent="menu_tracking_order_root"
+            sequence="100"
+            groups="group_sales_confirm_order_manager"
+    />
+    <menuitem
+        id="otp_verification_menu_act"
+            name="Mã OTP"
+            parent="menu_tracking_order_config_root"
+            action="otp_verification_action"
+            sequence="1"
+            groups="group_sales_confirm_order_admin"
+    />
+    <menuitem
+        id="menu_user_ip_history_daily"
+            name="Lịch sử IP người dùng (Tổng hợp)"
+            parent="menu_tracking_order_config_root"
+            action="action_user_ip_history_daily"
+            sequence="10"
+            groups="group_sales_confirm_order_admin"
+    />
+    <menuitem
+        id="menu_tracking_order_config"
+            name="Cấu hình"
+            parent="menu_tracking_order_config_root"
+            action="tracking_order_config_action"
+            sequence="100"
+            groups="group_sales_confirm_order_admin"
+    />
+</odoo>

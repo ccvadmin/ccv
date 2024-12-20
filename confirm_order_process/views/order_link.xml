@@ -19,7 +19,8 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <field name="state" widget="statusbar" class="o_field_statusbar" options="{'clickable': '1'}"/>
+                    <button type='object' string='Hủy' name='action_expired_link' groups="confirm_order_process.group_sales_confirm_order_manager,sales_team.group_sale_salesman"/>
+                    <field name="state" widget="statusbar" class="o_field_statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -34,7 +35,9 @@
                     </group>
                     <group>
                         <field name="sale_order_id" invisible="1"/>
+                        <field name="has_location" invisible="1"/>
                         <field name="sale_order_name" attrs="{'invisible': [('sale_order_id','=','False')]}"/>
+                        <field name="location_id" attrs="{'invisible': [('has_location','=','False')]}"/>
                     </group>
                 </sheet>
             </form>
@@ -49,5 +52,4 @@
         <field name="domain">[]</field>
         <field name="context">{'group_by': 'sale_order_name'}</field>
     </record>
-    <menuitem id="order_link_menu_act" name="Đường dẫn xác nhận" parent="sale.sale_order_menu" action="order_link_action" sequence="25"/>
 </odoo>
