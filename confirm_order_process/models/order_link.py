@@ -100,7 +100,7 @@ class OrderLink(models.Model):
         if not key:
             self.reset_serect_key()
             key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
-        text = "%s|%s|%s" % (get_timestamp(), generate_random_string(20), order.id)
+        text = "%s | %s | %s" % (get_timestamp(), generate_random_string(20), order.id)
         token = encode_token(text, key)
         base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
         return "%s/public/order/confirm-order?token=%s" % (base_url, urllib.parse.quote(token))
@@ -110,7 +110,7 @@ class OrderLink(models.Model):
         if not key:
             self.reset_serect_key()
             key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
-        text = "%s|%s|%s" % (get_timestamp(), generate_random_string(20), order.id)
+        text = "%s | %s | %s" % (get_timestamp(), generate_random_string(20), order.id)
         token = encode_token(text, key)
         base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
         return "%s/public/order/confirm-delivery?token=%s" % (base_url, urllib.parse.quote(token))
@@ -120,7 +120,7 @@ class OrderLink(models.Model):
         if not key:
             self.reset_serect_key()
             key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.serect_key_public_user", False)
-        text = "%s|%s|%s" % (get_timestamp(), generate_random_string(20), order.id)
+        text = "%s | %s | %s" % (get_timestamp(), generate_random_string(20), order.id)
         token = encode_token(text, key)
         base_url = self.env["ir.config_parameter"].sudo().get_param("web.base.url", False)
         return "%s/public/upload_files_to_order?token=%s" % (base_url, urllib.parse.quote(token))
@@ -136,6 +136,6 @@ class OrderLink(models.Model):
             raise UserError("URL chưa gắn với tài xế")
         id = self.location_id.id if self.location_id else order.id
         model = 'sales.order'
-        text = '%s|%s|%s|%s|%s' % (get_timestamp(), generate_random_string(20), role, model, id)
+        text = '%s | %s | %s | %s | %s' % (get_timestamp(), generate_random_string(20), role, model, id)
         token = encode_token(text, key)
         return "%s/public/order/track-journey?token=%s&role=%s&model=%s&id=%s" % (base_url, urllib.parse.quote(token),role,model,id)

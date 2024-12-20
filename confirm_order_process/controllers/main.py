@@ -35,7 +35,7 @@ class MainController(http.Controller):
             if not decoded_data:
                 return self.msg("Không thể xác thực người dùng", "Không thể xác thực người dùng")
 
-            time_from_token, public_key, order_id = decoded_data.split("|")
+            time_from_token, public_key, order_id = decoded_data.split(" | ")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
@@ -133,7 +133,7 @@ class MainController(http.Controller):
             decoded_data = decode_token(token, secret_key_public_user)
             if not decoded_data:
                 return self.msg("Không thể xác thực người dùng", "Không thể xác thực người dùng")
-            time_from_token, public_key, order_id = decoded_data.split("|")
+            time_from_token, public_key, order_id = decoded_data.split(" | ")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
@@ -191,7 +191,7 @@ class MainController(http.Controller):
             if not decoded_data:
                 return self.msg("Không thể xác thực người dùng", "Không thể xác thực người dùng")
 
-            time_from_token, public_key, order_id = decoded_data.split("|")
+            time_from_token, public_key, order_id = decoded_data.split(" | ")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
@@ -298,7 +298,7 @@ class MainController(http.Controller):
             if not decoded_data:
                 return self.msg("Không thể xác thực người dùng", "Không thể xác thực người dùng")
 
-            time_from_token, public_key, order_id = decoded_data.split("|")
+            time_from_token, public_key, order_id = decoded_data.split(" | ")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
@@ -388,7 +388,7 @@ class MainController(http.Controller):
             decoded_data = decode_token(token, secret_key_public_user)
             if not decoded_data:
                 return self.msg("Không thể xác thực người dùng", "Không thể xác thực người dùng")
-            time_from_token, public_key, order_id = decoded_data.split("|")
+            time_from_token, public_key, order_id = decoded_data.split(" | ")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
@@ -430,7 +430,7 @@ class MainController(http.Controller):
             if not decoded_data:
                 return self.msg("Không thể xác thực người dùng", "Không thể xác thực người dùng")
 
-            time_from_token, public_key, order_id = decoded_data.split("|")
+            time_from_token, public_key, order_id = decoded_data.split(" | ")
             time_from_token = float(time_from_token)
 
             current_date = datetime.now().date()
@@ -548,7 +548,7 @@ class MainController(http.Controller):
                     "state": "invalid",
                 }
             else:
-                time_from_token, public_key, role, model, id = decoded_data.split("|")
+                time_from_token, public_key, role, model, id = decoded_data.split(" | ")
                 time_from_token = float(time_from_token)
 
                 if not token:
@@ -725,7 +725,7 @@ class MainController(http.Controller):
                     "state": "invalid",
                 }
             else:
-                time_from_token, public_key, role, model, id = decoded_data.split("|")
+                time_from_token, public_key, role, model, id = decoded_data.split(" | ")
                 time_from_token = float(str(time_from_token))
 
                 if not token:
@@ -829,7 +829,7 @@ class MainController(http.Controller):
             decoded_data = decode_token(token, secret_key_public_user)
             if not decoded_data:
                 return {"status": 3, "message": "Đường dẫn không hợp lệ."}
-            time_from_token, public_key, role, model, id = decoded_data.split("|")
+            time_from_token, public_key, role, model, id = decoded_data.split(" | ")
             time_from_token = float(time_from_token)
             if not token:
                 return self.msg("Tạo map thất bại", "Đường dẫn không hợp lệ.")

@@ -292,7 +292,6 @@ class SaleOrder(models.Model):
                     channel = self.env['mail.channel'].create({
                         'name': 'Confirm Order',
                     })
-                    _logger.info(order.user_id.partner_id.id)
                     channel.add_members(partner_ids=[order.user_id.partner_id.id])
 
                 message = self.env['mail.message'].create({

@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 <t t-if="status">
-                    <form t-att-action="'/public/order/confirm-order?token=' + str(token)" method="post" onsubmit="return validateForm()">
+                    <form t-att-action="'/public/order/confirm-order?token=' + token" method="post" onsubmit="return validateForm()">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         
                         <div class="row align-items-center mt-4">
@@ -101,6 +101,17 @@
                     </form>
                 </t>
                 <script>
+                    const form = document.querySelector('form');
+                    const pathname = window.location.pathname;
+                    const current_url = window.location.search;
+                    const tokenValue = pathname+current_url
+                    if (tokenValue) {
+                        form.action = tokenValue;
+                        console.log(tokenValue)
+                    } else {
+                        console.log('No token parameter found.');
+                    }
+
                     function validateForm() {
                         var otp = document.getElementById('otp').value;
                         if (otp.trim() === '') {
