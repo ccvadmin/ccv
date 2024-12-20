@@ -4,7 +4,7 @@ from odoo import fields, models, api
 from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
 
-from ..lib.const import generate_otp
+from ..const import generate_otp
 
 _logger = logging.getLogger(__name__)
 

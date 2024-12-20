@@ -12,7 +12,7 @@ from werkzeug.utils import secure_filename
 import time
 import base64
 from datetime import datetime, timedelta
-from ..lib.const import get_date, get_timestamp, encode_token, decode_token
+from ..const import get_date, get_timestamp, encode_token, decode_token
 from werkzeug.wrappers import Request, Response
 import json
 

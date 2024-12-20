@@ -9,7 +9,7 @@ from odoo import api, fields, models, _, _lt
 from odoo.exceptions import UserError
 import urllib.parse
 
-from ..lib.const import get_date, get_timestamp, encode_token, decode_token, generate_random_string
+from ..const import get_date, get_timestamp, encode_token, decode_token, generate_random_string
 
 _logger = logging.getLogger(__name__)
 

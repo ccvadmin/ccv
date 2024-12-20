@@ -1,7 +1,7 @@
 from odoo import models, fields, api
 import urllib.parse
 from datetime import datetime
-from ..lib.const import get_date, get_timestamp, encode_token, decode_token, generate_random_string
+from ..const import get_date, get_timestamp, encode_token, decode_token, generate_random_string
 from odoo.exceptions import UserError
 import logging
 
