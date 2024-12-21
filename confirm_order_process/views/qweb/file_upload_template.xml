@@ -1,50 +1,52 @@
 <odoo>
     <template id="file_upload_result" name="File Upload Result">
-        <t t-call="website.layout">
-            <div class="container mt16">
-                <h2>Kết quả tải ảnh</h2>
-                <p><t t-esc="message"/></p>
-                <div>
-                    <h3>Danh sách ảnh đã tải lên:</h3>
-                    <div class="row">
-                        <t t-foreach="attachments" t-as="attachment">
-                            <div class="col d-flex justify-content-center">
-                                <img t-att-src="attachment['url']" style="min-height:200px; max-width:200px;"/>
-                            </div>
-                        </t>
-                    </div>
+        <link rel="stylesheet" href="/confirm_order_process/static/src/css/bootstrap.min.css"></link>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <div class="container mt16">
+            <h2>Kết quả tải ảnh</h2>
+            <p><t t-esc="message"/></p>
+            <div>
+                <h3>Danh sách ảnh đã tải lên:</h3>
+                <div class="row">
+                    <t t-foreach="attachments" t-as="attachment">
+                        <div class="col d-flex justify-content-center">
+                            <img t-att-src="attachment['url']" style="min-height:200px; max-width:200px;"/>
+                        </div>
+                    </t>
                 </div>
             </div>
-        </t>
+        </div>
+        <script src="/confirm_order_process/static/src/js/jquery-3.3.1.slim.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/popper.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/bootstrap.min.js"></script>
     </template>
     <template id="file_upload_form" name="File Upload Form">
-        <t t-call="website.layout">
-            <div class="container mt16">
-                <h2 class="text-center">Tải lên nhiều ảnh cho đơn hàng</h2>
-                <form t-att-action="urlpost" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                    <div class="form-group row">
-                        <label for="order_name" class="col-sm-2 col-form-label">Đơn hàng</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="order_name" t-att-value="order.name" disabled="1"/>
-                        </div>
+        <link rel="stylesheet" href="/confirm_order_process/static/src/css/bootstrap.min.css"></link>
+        <div class="container mt16">
+            <h2 class="text-center">Tải lên nhiều ảnh cho đơn hàng</h2>
+            <form t-att-action="urlpost" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="form-group row">
+                    <label for="order_name" class="col-sm-2 col-form-label">Đơn hàng</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="order_name" t-att-value="order.name" disabled="1"/>
                     </div>
-                    <div class="form-group row mt-3">
-                        <label for="files" class="col-sm-2 col-form-label">Chọn ảnh</label>
-                        <div class="col-sm-10">
-                            <input type="file" class="form-control-file" id="files" name="files" accept="image/*" multiple="multiple" onchange="previewImages(event)" required="required"/>
-                        </div>
+                </div>
+                <div class="form-group row mt-3">
+                    <label for="files" class="col-sm-2 col-form-label">Chọn ảnh</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control-file" id="files" name="files" accept="image/*" multiple="multiple" onchange="previewImages(event)" required="required"/>
                     </div>
-                    <div id="image_preview" class="container row mt-3" style="margin-top: 20px;">
-                        <div class="row">
-                        </div>
+                </div>
+                <div id="image_preview" class="container row mt-3" style="margin-top: 20px;">
+                    <div class="row">
                     </div>
-                    <div class="text-center mt-4 mb-4">
-                        <button class="btn btn-primary text-center p-4 pt-2 pb-2" type="submit">Tải lên</button>
-                    </div>
-                </form>
-            </div>
-        </t>
+                </div>
+                <div class="text-center mt-4 mb-4">
+                    <button class="btn btn-primary text-center p-4 pt-2 pb-2" type="submit">Tải lên</button>
+                </div>
+            </form>
+        </div>
         <script type="text/javascript">
             async function previewImages(event) {
                 var files = event.target.files;
@@ -87,6 +89,9 @@
             }
 
         </script>
+        <script src="/confirm_order_process/static/src/js/jquery-3.3.1.slim.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/popper.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/bootstrap.min.js"></script>
     </template>
     
     

@@ -1,188 +1,190 @@
 <odoo>
     <template id="order_delivery_template">
-        <t t-call="website.layout">
-            <style>
-                #template.container *{
-                font-family: 'Times New Roman', Times, serif;
-                font-size: 14px;
-                }
-            </style>
-            <div id="template" class="container" style="margin: 40px auto;">
-                <div class="text-center">
-                    <img class="img" height="120px" t-att-src="image_data_uri(logo)" alt="Logo" />
+        <link rel="stylesheet" href="/confirm_order_process/static/src/css/bootstrap.min.css"></link>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            #template.container *{
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            }
+        </style>
+        <div id="template" class="container" style="margin: 40px auto;">
+            <div class="text-center">
+                <img class="img" height="120px" t-att-src="image_data_uri(logo)" alt="Logo" />
+            </div>
+            <div class="mt-4">
+                <div class="text-center m-4">
+                    <h3 class="font-weight-bold" style="font-size:26px;">XÁC NHẬN GIAO HÀNG</h3>
                 </div>
+                <div class="row">
+                    <div class="col-md-2 col-12">
+                        <p>Đơn hàng:</p>
+                    </div>
+                    <div class="col-md-10 col-12">
+                        <p class="font-weight-bold">
+                            <t t-esc="order_id" />
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-12">
+                        <p>Tên khách hàng:</p>
+                    </div>
+                    <div class="col-md-10 col-12">
+                        <p class="font-weight-bold">
+                            <t t-esc="customer_name" />
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-12">
+                        <p>Địa chỉ:</p>
+                    </div>
+                    <div class="col-md-10 col-12">
+                        <p class="font-weight-bold">
+                            <t t-esc="address" />
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-12">
+                        <p>Số điện thoại:</p>
+                    </div>
+                    <div class="col-md-10 col-12">
+                        <p class="font-weight-bold">
+                            <t t-esc="phone" />
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-12">
+                        <p>Tổng giá trị đơn hàng:</p>
+                    </div>
+                    <div class="col-md-10 col-12">
+                        <p class="font-weight-bold">
+                            <t t-esc="total_amount" />
+                            <t t-esc="currency" />
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-12">
+                        <p>Mã sản xuất:</p>
+                    </div>
+                    <div class="col-md-10 col-12">
+                        <p class="font-weight-bold">MSC123132, MSX1111111</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-12">
+                        <p>Trạng thái:</p>
+                    </div>
+                    <div class="col-md-10 col-12">
+                        <p class="font-weight-bold">Hoàn thành</p>
+                    </div>
+                </div>
+
                 <div class="mt-4">
-                    <div class="text-center m-4">
-                        <h3 class="fw-bold" style="font-size:26px;">XÁC NHẬN GIAO HÀNG</h3>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-12">
-                            <p>Đơn hàng:</p>
-                        </div>
-                        <div class="col-md-10 col-12">
-                            <p class="fw-bold">
-                                <t t-esc="order_id" />
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-12">
-                            <p>Tên khách hàng:</p>
-                        </div>
-                        <div class="col-md-10 col-12">
-                            <p class="fw-bold">
-                                <t t-esc="customer_name" />
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-12">
-                            <p>Địa chỉ:</p>
-                        </div>
-                        <div class="col-md-10 col-12">
-                            <p class="fw-bold">
-                                <t t-esc="address" />
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-12">
-                            <p>Số điện thoại:</p>
-                        </div>
-                        <div class="col-md-10 col-12">
-                            <p class="fw-bold">
-                                <t t-esc="phone" />
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-12">
-                            <p>Tổng giá trị đơn hàng:</p>
-                        </div>
-                        <div class="col-md-10 col-12">
-                            <p class="fw-bold">
-                                <t t-esc="total_amount" />
-                                <t t-esc="currency" />
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-12">
-                            <p>Mã sản xuất:</p>
-                        </div>
-                        <div class="col-md-10 col-12">
-                            <p class="fw-bold">MSC123132, MSX1111111</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2 col-12">
-                            <p>Trạng thái:</p>
-                        </div>
-                        <div class="col-md-10 col-12">
-                            <p class="fw-bold">Hoàn thành</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <h5 class="text-center fw-bold"
-                            style="font-size: 20px;text-transform: uppercase;">Sản phẩm đã đặt</h5>
-                        <table class="table table-bordered">
-                            <thead>
+                    <h5 class="text-center font-weight-bold"
+                        style="font-size: 20px;text-transform: uppercase;">Sản phẩm đã đặt</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Tên sản phẩm</th>
+                                <th class="text-center">ĐVT</th>
+                                <th class="text-center">Số lượng</th>
+                                <th class="text-center">Đơn giá</th>
+                                <th class="text-center">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="products" t-as="line">
                                 <tr>
-                                    <th class="text-center">Tên sản phẩm</th>
-                                    <th class="text-center">ĐVT</th>
-                                    <th class="text-center">Số lượng</th>
-                                    <th class="text-center">Đơn giá</th>
-                                    <th class="text-center">Thành tiền</th>
+                                    <td>
+                                        <t t-esc="line['name']" />
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-esc="line['product_uom']" />
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-esc="line['quantity']" />
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-esc="line['price_unit']" />
+                                        <t t-esc="currency" />
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-esc="line['price_subtotal']" />
+                                        <t t-esc="currency" />
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="products" t-as="line">
-                                    <tr>
-                                        <td>
-                                            <t t-esc="line['name']" />
-                                        </td>
-                                        <td class="text-center">
-                                            <t t-esc="line['product_uom']" />
-                                        </td>
-                                        <td class="text-center">
-                                            <t t-esc="line['quantity']" />
-                                        </td>
-                                        <td class="text-center">
-                                            <t t-esc="line['price_unit']" />
-                                            <t t-esc="currency" />
-                                        </td>
-                                        <td class="text-center">
-                                            <t t-esc="line['price_subtotal']" />
-                                            <t t-esc="currency" />
-                                        </td>
-                                    </tr>
-                                </t>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <t t-if="status">
-                    <form t-att-action="'/public/order/confirm-delivery?token=' + str(token)"
-                        method="post" onsubmit="return validateForm()">
-                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
-                        <div class="row align-items-center mt-4">
-                            <div class="col-md-2 col-12">
-                                <label for="otp">OTP:</label>
-                            </div>
-                            <div class="col-md-10 col-12">
-                                <input type="text" name="otp" id="otp" class="form-control" />
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary">Xác nhận giao hàng</button>
-                        </div>
-                    </form>
-                </t>
-                <script>
-                    function validateForm() {
-                    var otp = document.getElementById('otp').value;
-                    if (otp.trim() === '') {
-                    alert('Vui lòng nhập mã OTP!');
-                    return false;
-                    }
-                    return true;
-                    }
-                </script>
-                <div class="row mt-4">
-                    <t t-foreach="images" t-as="image">
-                        <div class="col-lg-3 col-md-4 col-12 mb-4">
-                            <figure>
-                                <img t-att-src="str(image['url'])" class="img-fluid" t-att-alt="image['name']" data-toggle="modal" t-att-data-target="'#imageModal' + str(image['id'])"/>
-                                <figcaption class="text-center"><t t-esc="image['name']"/></figcaption>
-                            </figure>
-                        </div>
-                    </t>
+                            </t>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <t t-foreach="images" t-as="image">
-                <div class="modal fade" t-att-id="'imageModal' + str(image['id'])" tabindex="-1" role="dialog"
-                    t-att-aria-labelledby="'imageModalLabel' + str(image['id'])"
-                    aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" t-att-id="'imageModalLabel' + str(image['id'])"><t t-esc="image['name']"/></h5>
-                                <button type="button" class="close" data-dismiss="modal"
-                                    aria-label="Close">
-                                    <span aria-hidden="true">&#215;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <img t-att-src="str(image['url'])" class="img-fluid" t-att-alt="image['name']"/>
-                            </div>
+            <t t-if="status">
+                <form t-att-action="'/public/order/confirm-delivery?token=' + str(token)"
+                    method="post" onsubmit="return validateForm()">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                    <div class="row align-items-center mt-4">
+                        <div class="col-md-2 col-12">
+                            <label for="otp">OTP:</label>
+                        </div>
+                        <div class="col-md-10 col-12">
+                            <input type="text" name="otp" id="otp" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary">Xác nhận giao hàng</button>
+                    </div>
+                </form>
+            </t>
+            <script>
+                function validateForm() {
+                var otp = document.getElementById('otp').value;
+                if (otp.trim() === '') {
+                alert('Vui lòng nhập mã OTP!');
+                return false;
+                }
+                return true;
+                }
+            </script>
+            <div class="row mt-4">
+                <t t-foreach="images" t-as="image">
+                    <div class="col-lg-3 col-md-4 col-12 mb-4">
+                        <figure>
+                            <img t-att-src="str(image['url'])" class="img-fluid" t-att-alt="image['name']" data-toggle="modal" t-att-data-target="'#imageModal' + str(image['id'])"/>
+                            <figcaption class="text-center"><t t-esc="image['name']"/></figcaption>
+                        </figure>
+                    </div>
+                </t>
+            </div>
+        </div>
+        <t t-foreach="images" t-as="image">
+            <div class="modal fade" t-att-id="'imageModal' + str(image['id'])" tabindex="-1" role="dialog"
+                t-att-aria-labelledby="'imageModalLabel' + str(image['id'])"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" t-att-id="'imageModalLabel' + str(image['id'])"><t t-esc="image['name']"/></h5>
+                            <button type="button" class="close" data-dismiss="modal"
+                                aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <img t-att-src="str(image['url'])" class="img-fluid" t-att-alt="image['name']"/>
                         </div>
                     </div>
                 </div>
-            </t>
-            <script src="/confirm_order_process/static/src/js/jquery.slim.min.js"></script>
-            <script src="/confirm_order_process/static/src/js/bootstrap.bundle.min.js"></script>
+            </div>
         </t>
+        <script src="/confirm_order_process/static/src/js/jquery.slim.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/bootstrap.bundle.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/popper.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/bootstrap.min.js"></script>
     </template>
 </odoo>

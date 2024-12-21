@@ -15,7 +15,7 @@
         "sms",
         "contacts",
         "base_geolocalize",
-        "biz_sms_vihat",
+        # "biz_sms_vihat",
         "biz_ccv_account",
         "sales_team",
     ],

@@ -1,12 +1,15 @@
 <odoo>
     <template id="notify_template">
-        <t t-call="website.layout">
-            <div class="container mt-5">
-                <div class="text-center">
-                    <h1 class="fw-bold"><t t-esc="title"/></h1>
-                    <p class="lead"><t t-esc="message"/></p>
-                </div>
+        <link rel="stylesheet" href="/confirm_order_process/static/src/css/bootstrap.min.css"></link>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <div class="container mt-5">
+            <div class="text-center">
+                <h1 class="font-weight-bold"><t t-esc="title"/></h1>
+                <p class="lead"><t t-esc="message"/></p>
             </div>
-        </t>
+        </div>
+        <script src="/confirm_order_process/static/src/js/jquery-3.3.1.slim.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/popper.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/bootstrap.min.js"></script>
     </template>
 </odoo>
