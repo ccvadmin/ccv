@@ -5,9 +5,9 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <!-- <xpath expr="//header" position="inside">
-                <button name="action_resend_otp" type="object" string="Gửi lại OTP"/>
-            </xpath> -->
+            <xpath expr="//header" position="inside">
+                <button name="action_confirm_delivery" type="object" string="Xác nhận giao hàng" attrs="{'invisible': [('state_delivery', '!=', 'confirm')]}"/>
+            </xpath>
             <xpath expr="//page[@name='other_information']/group[1]" position="before">
                 <group>
                     <group name="mrp_production" string="Trạng thái sản xuất">
@@ -34,7 +34,7 @@
                             <field name="public_url_tracking_order" widget="CopyClipboardChar"/>
                         </group>
                     </group>
-                    <group string="Link cho tài xế">
+                    <group string="Link cho tài xế" attrs="{'invisible': [('state_delivery', '!=', 'confirm')]}">
                         <group>
                             <field name="number_of_vehicles"/>
                         </group>

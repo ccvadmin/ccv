@@ -5,7 +5,7 @@ import logging
 import requests
 from datetime import datetime
 import urllib.parse
-from odoo import api, fields, models, _, _lt
+from odoo import api, fields, models, _, _lt, SUPERUSER_ID
 from odoo.exceptions import UserError
 from ..const import get_date, get_timestamp, encode_token, decode_token, generate_random_string
 from datetime import datetime
@@ -69,6 +69,13 @@ class SaleOrder(models.Model):
         compute="_compute_order_link",
     )
 
+    ####################################
+    # TODO: Tích hợp ZALO gửi các đường link bên dưới
+    # Các đường link đã done, có thể hoạt động
+    # Serect key là được reset vào 00:00 hàng ngày
+    # Các giao dịch chỉ được thực hiện trong ngày, nếu sang ngày hôm sau phải gửi lại đường link
+    ####################################
+
     public_url_cf_order = fields.Char(string="Link xác nhận đơn hàng", compute="_compute_order_link")
     public_url_cf_delivery = fields.Char(string="Link xác nhận giao hàng", compute="_compute_order_link")
     public_url_add_image = fields.Char(string="Link thêm hình ảnh", compute="_compute_order_link")
@@ -117,7 +124,6 @@ class SaleOrder(models.Model):
                     })]
                 })
         return res
-
         
     def write(self, vals):
         res = super(SaleOrder, self).write(vals)
@@ -160,7 +166,6 @@ class SaleOrder(models.Model):
                 })
         return res
 
-
     @api.depends('order_link_ids')
     def _compute_order_link(self):
         url_fields = {
@@ -177,15 +182,6 @@ class SaleOrder(models.Model):
             if order.order_link_ids:
                 order_link = order.order_link_ids.filtered(lambda l: l.type == 'driver')
             order.order_link_driver_ids = order_link
-
-    ####################################
-    # TODO: Chuyển 2 hàm button tích hợp ZALO
-    # TODO: Tạo form SMS
-    # TODO: Tích hợp tạo OTP gửi SMS
-    # Các đường link đã done, có thể hoạt động
-    # Serect key là được reset vào 00:00 hàng ngày
-    # Các giao dịch chỉ được thực hiện trong ngày, nếu sang ngày hôm sau phải gửi lại đường link
-    ####################################
 
     def action_reset_public_url(self):
         for order in self:
@@ -253,16 +249,21 @@ class SaleOrder(models.Model):
                 })
         return
 
-
     def action_resend_otp(self):
-        # TODO: Chỉnh sang lại dùng Vihat
         self.otp_ids.filtered(lambda l:l.state=='unverified').action_send_sms()
+
+    def action_confirm(self):
+        res = super(SaleOrder, self).action_confirm()
+        if self.env.su:
+            self = self.with_user(SUPERUSER_ID)
+        for order in self:
+            order.state_delivery = 'draft'
+        return res
 
     def public_confirm(self, otp_id):
         for order in self:
             if order.state in ['draft', 'sent']:
                 order.action_confirm()
-                order.state_delivery = 'draft'
                 if otp_id:
                     otp_id.write({'state': 'verified'})
                 order.order_link_ids.filtered(lambda l: l.type=='order' and l.state=='draft').write({'state':'consume'})
@@ -277,28 +278,37 @@ class SaleOrder(models.Model):
             order.order_link_ids.filtered(lambda l: l.type=='delivery' and l.state=='draft').write({'state':'consume'})
 
     def send_message_w_trigger(self, type='order'):
-        for order in self:
+        channel_env = self.env['mail.channel'].sudo()
+        mail_env = self.env['mail.message'].sudo()
+        this = self.sudo()
+        for order in this.sudo():
             msg = ""
-            if order.user_id and order.user_id.partner_id:
+            if order.user_id:
+                list_partner = []
+                if order.user_id.partner_id:
+                    list_partner.append(order.user_id.partner_id.id)
+                else:
+                    continue
+                if order.sales_assistant_ids:
+                    list_partner += order.sales_assistant_ids.mapped('partner_id').mapped('id')
+                if order.sales_team_captain_id:
+                    if order.sales_team_captain_id.partner_id:
+                        list_partner.append(order.sales_team_captain_id.partner_id.id)
                 if type == "order":
                     msg = f"Đơn {order.name} xác nhận thành công!"
                 elif type == 'delivery':
                     msg = f"Đơn {order.name} xác nhận giao hàng thành công!"
-                channel = self.env['mail.channel'].search([
-                    ('name', '=', 'Confirm Order')
-                ]).filtered(lambda l:order.user_id.partner_id.id in l.channel_member_ids.partner_id.ids)
+                channel = channel_env.search([('name', '=', 'Confirm Order')]).filtered(lambda l:order.user_id.partner_id.id in l.channel_member_ids.partner_id.ids)
 
                 if not channel:
-                    channel = self.env['mail.channel'].create({
-                        'name': 'Confirm Order',
-                    })
-                    channel.add_members(partner_ids=[order.user_id.partner_id.id])
+                    channel = channel_env.create({'name': 'Confirm Order',})
+                    channel.add_members(partner_ids=list_partner)
 
-                message = self.env['mail.message'].create({
+                message = mail_env.create({
                     'subject': 'Đơn %s đã được cập nhật' % (order.name),
                     'body':  "%s\nBạn có thể xem chi tiết <a href='/web#id=%s&model=sale.order&view_type=form'>TẠI ĐÂY</a>." % (msg, order.id),
                     'message_type': 'auto_comment',
-                    'subtype_id': self.env.ref('mail.mt_comment').id,
+                    'subtype_id': this.env.ref('mail.mt_comment').id,
                     'model': 'mail.channel',
                     'res_id': channel[0].id,
                 })

@@ -72,7 +72,7 @@ class MainController(http.Controller):
                         }
                     )
                 )
-                otp_model.action_send_email()
+                otp_model.action_send_sms()
 
             order_data = {
                 "title": "Xác nhận đơn hàng - %s - %s"
@@ -102,16 +102,16 @@ class MainController(http.Controller):
                 "confirm_order_process.order_confirmation_template", order_data
             )
         except Exception as e:
-            _logger.error(f"Error during order confirmation: {e}")
+            _logger.error(f"Order confirmation - Error during: {e}")
             return self.msg("Xác Nhận Đơn Hàng Thất Bại", "Đường dẫn không hợp lệ!")
 
     @http.route("/public/order/confirm-order",type="http",auth="public",website=True,methods=["POST"],)
     def order_confirmation(self, **kwargs):
-        user_ip = request.httprequest.remote_addr
-        if user_ip:
-            if self._check_ip_request_limit(user_ip):
+        name = request.httprequest.remote_addr
+        if name:
+            if self._check_ip_request_limit(name):
                 return self.msg("Xác Nhận Đơn Hàng Thất Bại", "Bạn đã vượt quá số lần yêu cầu trong vòng 1 giờ. Vui lòng thử lại sau.")
-            self._log_user_ip(user_ip)
+            self._log_user_ip(name)
         try:
             token = kwargs.get("token")
             otp = kwargs.get("otp")
@@ -166,12 +166,12 @@ class MainController(http.Controller):
                 return self.msg("Xác Nhận Đơn Hàng Thất Bại", "Có lỗi xảy ra trong quá trình xác nhận đơn hàng.")
 
             order.public_confirm(opt_id)
-            order.send_message_w_trigger()
+            order.sudo().send_message_w_trigger()
 
             return self.msg("Xác Nhận Đơn Hàng Thành Công", f"Đơn hàng {order.name} của bạn đã được xác nhận thành công!")
 
         except Exception as e:
-            _logger.error(f"Error while confirming order: {e}")
+            _logger.error(f"Order confirmation - Error during: {e}")
             return self.msg("Xác Nhận Đơn Hàng Thất Bại", "Có lỗi xảy ra trong quá trình xác nhận đơn hàng.")
 
     @http.route("/public/order/confirm-delivery",type="http",auth="public",website=True,)
@@ -234,7 +234,7 @@ class MainController(http.Controller):
                         }
                     )
                 )
-                otp_model.action_send_email()
+                otp_model.action_send_sms()
 
             # Dữ liệu trả về cho template
             order_data = {
@@ -268,18 +268,17 @@ class MainController(http.Controller):
             return request.render(
                 "confirm_order_process.order_delivery_template", order_data
             )
-
         except Exception as e:
-            _logger.error(f"Error during order delivery confirmation: {e}")
+            _logger.error(f"Delivery confirmation - Error during: {e}")
             return self.msg("Đường dẫn không hợp lệ", "Đường dẫn không hợp lệ.")
 
     @http.route("/public/order/confirm-delivery",type="http",auth="public",website=True,methods=["POST"],)
     def order_delivery(self, **kwargs):
-        user_ip = request.httprequest.remote_addr
-        if user_ip:
-            if self._check_ip_request_limit(user_ip):
+        name = request.httprequest.remote_addr
+        if name:
+            if self._check_ip_request_limit(name):
                 return self.msg("Xác Nhận Giao Hàng Thất Bại", "Bạn đã vượt quá số lần yêu cầu trong vòng 1 giờ. Vui lòng thử lại sau.")
-            self._log_user_ip(user_ip)
+            self._log_user_ip(name)
         try:
             token = kwargs.get("token")
             otp = kwargs.get("otp")
@@ -340,23 +339,23 @@ class MainController(http.Controller):
             return self.msg("Xác Nhận Giao Hàng Thành Công", f"Đơn hàng {order.name} của bạn đã được xác nhận giao thành công!")
 
         except Exception as e:
-            _logger.error(f"Error while confirming order: {e}")
+            _logger.error(f"Delivery confirmation - Error during: {e}")
             return self.msg("Xác Nhận Giao Hàng Thất Bại", "Có lỗi xảy ra trong quá trình xác nhận giao hàng.")
 
-    def _log_user_ip(self, user_ip):
+    def _log_user_ip(self, name):
         ip_history_model = request.env["user.ip.history"].sudo()
         ip_history_model.create(
             {
-                "user_ip": user_ip,
+                "name": name,
                 "timestamp": fields.Datetime.now(),
             }
         )
 
-    def _check_ip_request_limit(self, user_ip):
+    def _check_ip_request_limit(self, name):
         two_hours_ago = fields.Datetime.now() - timedelta(hours=1)
         ip_history_model = request.env["user.ip.history"].sudo()
         recent_requests = ip_history_model.search_count(
-            [("user_ip", "=", user_ip), ("timestamp", ">=", two_hours_ago)]
+            [("name", "=", name), ("timestamp", ">=", two_hours_ago)]
         )
         return recent_requests == 5
 
@@ -411,9 +410,8 @@ class MainController(http.Controller):
 
             return request.render("confirm_order_process.file_upload_form", order_data)
         except Exception as e:
-            _logger.error(f"Error during order confirmation: {e}")
+            _logger.error(f"Upload images - Error during: {e}")
             return self.msg("Đường dẫn không hợp lệ", "Đường dẫn không hợp lệ.")
-
 
     @http.route("/public/upload_files_to_order",type="http",auth="public",website=True,methods=["POST"],)
     def upload_files_to_order(self, **kwargs):
@@ -492,7 +490,7 @@ class MainController(http.Controller):
                 order.order_link_ids.filtered(
                     lambda l: l.type == "image" and l.state == "draft"
                 ).write({"state": "consume"})
-                if not is_sale_images:
+                if is_sale_images:
                     return request.render(
                         "confirm_order_process.file_upload_result",
                         {
@@ -522,7 +520,7 @@ class MainController(http.Controller):
                 {"message": "Không có tệp hoặc tên ảnh không hợp lệ!"},
             )
         except Exception as e:
-            _logger.error(f"Error: {e}")
+            _logger.error(f"Upload images - Error during: {e}")
             return self.msg("Đường dẫn không hợp lệ", "Đường dẫn không hợp lệ.")
 
     @http.route("/public/order/get-location", auth="public", type="http", methods=["GET"])
@@ -804,9 +802,8 @@ class MainController(http.Controller):
                         "message": "Không tìm thấy đơn hàng.",
                         "state": "not_found",
                     }
-
         except Exception as e:
-            _logger.info(e)
+            _logger.error(f"Map - Error during: {e}")
             body = {
                 "status": 3,
                 "message": "Có lỗi xảy ra khi lấy vị trí.",
@@ -866,7 +863,7 @@ class MainController(http.Controller):
                 {"role": role, "map_key": map_key},
             )
         except Exception as e:
-            _logger.error(f"Error: {e}")
+            _logger.error(f"Map - Error during: {e}")
             return self.msg("Tạo map thất bại", "Có lỗi xảy ra trong quá trình tạo map.")
 
     def msg(self, title, message):

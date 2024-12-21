@@ -2,7 +2,7 @@ import logging
 
 from odoo import fields, models, api
 from datetime import datetime, timedelta
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 from ..const import generate_otp
 
@@ -28,7 +28,7 @@ class OtpVerification(models.Model):
     phone = fields.Char(string="Điện thoại", readonly=True)
     email = fields.Char(readonly=True)
     sale_order_id = fields.Many2one("sale.order", string="Đơn bán hàng", readonly=True)
-    date_end = fields.Datetime(string="Ngày hết hạn", default=datetime.now() + timedelta(minutes=5), readonly=True)
+    date_end = fields.Datetime(string="Ngày hết hạn", default=datetime.now() + timedelta(minutes=10), readonly=True)
 
     @api.constrains("otp")
     def unit_opt_contrains(self):
@@ -96,10 +96,22 @@ class OtpVerification(models.Model):
 
     def action_send_sms(self):
         for record in self:
-            sms_api = self.env['sms.api'].sudo()
-            recipient_number = record.phone
-            message_body = 'OTP: %s' % record.otp
-            sms_api._send_sms([recipient_number], message_body)
+            try:
+                sms_env = self.env['sms.sms'].sudo()
+                sever_env = self.env['sms.vi.hat.configuration'].sudo()
+                sms_sever = sever_env.search([('esms_type','=',7)], limit=1)
+                message_body = 'CCV: Mã OTP của bạn: %s. Mã sẽ hết hạn trong 10 phút. Vui lòng chia sẽ mã này.' % record.otp
+                val = {'body' : message_body}
+                if sms_sever:
+                    val.update({'configuration_id' : sms_sever.id})
+                else:
+                    _logger.error('SMS Server OTP chưa được cấu hình!!!')
+                val.update({'number' : record.phone if record.phone else ""})
+                sms_sms = sms_env.create(val)
+                sms_sms.send()
+            except Exception as e:
+                _logger.error('Error during send SMS: %s', e)
+                continue
 
     def action_send_email(self):
         subject = "OTP"
