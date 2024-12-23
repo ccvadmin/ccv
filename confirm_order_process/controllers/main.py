@@ -402,6 +402,7 @@ class MainController(http.Controller):
 
             order = request.env["sale.order"].sudo().browse(int(order_id))
             order_data = {
+                "logo": request.env["res.company"].sudo().search([], limit=1).logo,
                 "title": "Đơn hàng - %s" % order.name,
                 "order": order,
                 "urlpost": "/public/upload_files_to_order?token=%s"

@@ -2,8 +2,19 @@
     <template id="file_upload_result" name="File Upload Result">
         <link rel="stylesheet" href="/confirm_order_process/static/src/css/bootstrap.min.css"></link>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <div class="container mt16">
-            <h2>Kết quả tải ảnh</h2>
+        <style>
+            #template.container *{
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 16px;
+            }
+        </style>
+        <div id="template" class="container" style="margin: 40px auto;">
+            <div class="text-center">
+                <img class="img" height="120px" t-att-src="image_data_uri(logo)" alt="Logo"/>
+            </div>
+            <div class="text-center m-4">
+                <h3 class="font-weight-bold" style="font-size:26px;">KẾT QUẢ TẢI ẢNH</h3>
+            </div>
             <p><t t-esc="message"/></p>
             <div>
                 <h3>Danh sách ảnh đã tải lên:</h3>
@@ -22,8 +33,20 @@
     </template>
     <template id="file_upload_form" name="File Upload Form">
         <link rel="stylesheet" href="/confirm_order_process/static/src/css/bootstrap.min.css"></link>
-        <div class="container mt16">
-            <h2 class="text-center">Tải lên nhiều ảnh cho đơn hàng</h2>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            #template.container *{
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 16px;
+            }
+        </style>
+        <div id="template" class="container" style="margin: 40px auto;">
+            <div class="text-center">
+                <img class="img" height="120px" t-att-src="image_data_uri(logo)" alt="Logo"/>
+            </div>
+            <div class="text-center m-4">
+                <h3 class="font-weight-bold" style="font-size:26px;">TẢI ẢNH CHO ĐƠN HÀNG</h3>
+            </div>
             <form t-att-action="urlpost" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                 <div class="form-group row">
@@ -43,7 +66,7 @@
                     </div>
                 </div>
                 <div class="text-center mt-4 mb-4">
-                    <button class="btn btn-primary text-center p-4 pt-2 pb-2" type="submit">Tải lên</button>
+                    <button class="btn btn-primary text-center pl-4 pr-4 pt-2 pb-2" type="submit">Tải lên</button>
                 </div>
             </form>
         </div>

@@ -2,6 +2,7 @@
     <template id="map_view_template">
         <script type="text/javascript" src="/confirm_order_process/static/src/js/jquery.min.js"></script>
         <script type="text/javascript" src="/confirm_order_process/static/src/js/google_map.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <style>
             #map {
                 height: 80%;
