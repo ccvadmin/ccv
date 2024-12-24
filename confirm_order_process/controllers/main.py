@@ -60,7 +60,7 @@ class MainController(http.Controller):
                 "title": "Xác nhận đơn hàng - %s - %s" % (order_id, order.partner_id.name),
                 "order_id": order.name,
                 "customer_name": order.partner_id.name,
-                "address": order.partner_id.contact_address,
+                "address": order.partner_id.full_address_vi,
                 "phone": self.format_vietnamese_phone_number(order.partner_id.phone),
                 "total_amount": currency.format(order.amount_total),
                 "products": [
@@ -183,7 +183,7 @@ class MainController(http.Controller):
                 "title": "Xác nhận đơn hàng - %s - %s" % (order_id, order.partner_id.name),
                 "order_id": order.name,
                 "customer_name": order.partner_id.name,
-                "address": order.partner_id.contact_address,
+                "address": order.partner_id.full_address_vi,
                 "phone": self.format_vietnamese_phone_number(order.partner_id.phone),
                 "total_amount": currency.format(order.amount_total),
                 "mrp_str" : mrp_str,
