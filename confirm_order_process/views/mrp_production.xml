@@ -1,0 +1,17 @@
+<odoo>
+    <!-- sale.order inherit form view -->
+    <record id="mrp_production_form_view_inherit" model="ir.ui.view">
+        <field name="name">mrp_production.inherit.view.form</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Thông tin thêm" name="others">
+                    <group string="Đơn bán hàng">
+                        <field name="sale_order_id"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,56 @@
+<odoo>
+    <!-- sale.order inherit form view -->
+    <record id="sale_order" model="ir.ui.view">
+        <field name="name">sale.order.inherit.view.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_confirm_delivery" type="object" string="Xác nhận giao hàng" attrs="{'invisible': [('state_delivery', '!=', 'confirm')]}"/>
+            </xpath>
+            <xpath expr="//page[@name='other_information']/group[1]" position="before">
+                <group>
+                    <group name="mrp_production" string="Trạng thái sản xuất">
+                        <field name="state_mrp" readonly="1"/>
+                        <field name="state_delivery" readonly="1"/>
+                    </group>
+                    <group></group>
+                </group>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Ảnh sản xuất" name="images">
+                    <field string="Đính kèm" name="mrp_attachment_ids" widget='many2many_images' nolabel="1"/>
+                </page>
+                <page string="Ảnh giao hàng" name="images">
+                    <field string="Đính kèm" name="sale_attachment_ids" widget='many2many_images' nolabel="1"/>
+                </page>
+                <page string="URL" name="url">
+                    <group string="Link xử lý đơn hàng">
+                        <button icon="fa-refresh" type="object" string="Làm mới URL" help="Khi link lỗi, thử lại với nút này" name="action_reset_public_url"/>
+                        <group>
+                            <field name="public_url_cf_order" widget="CopyClipboardChar"/>
+                            <field name="public_url_cf_delivery" widget="CopyClipboardChar"/>
+                            <field name="public_url_add_image" widget="CopyClipboardChar"/>
+                            <field name="public_url_tracking_order" widget="CopyClipboardChar"/>
+                        </group>
+                    </group>
+                    <group string="Link cho tài xế" attrs="{'invisible': [('state_delivery', '!=', 'confirm')]}">
+                        <group>
+                            <field name="number_of_vehicles"/>
+                        </group>
+                        <button type='object' name="action_create_public_driver_url" string='Tạo link cho tài xế'/>
+                        <field name="order_link_driver_ids">
+                            <tree>
+                                <field name="name"/>
+                                <field name="type"/>
+                                <field name="url"/>
+                                <field name="state"/>
+                                <button type='object' name="action_open_location" string='Xem' icon='fa-eye'/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

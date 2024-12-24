@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record model="ir.module.category" id="base.module_category_sales_confirm_order">
+            <field name="description"></field>
+            <field name="sequence">12</field>
+        </record>
+        <record id="group_sales_confirm_order_user" model="res.groups">
+            <field name="name">Người dùng</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="base.module_category_sales_confirm_order"/>
+        </record>
+        <record id="group_sales_confirm_order_manager" model="res.groups">
+            <field name="name">Quản lý</field>
+            <field name="implied_ids" eval="[(4, ref('confirm_order_process.group_sales_confirm_order_user'))]"/>
+            <field name="category_id" ref="base.module_category_sales_confirm_order"/>
+        </record>
+        <record id="group_sales_confirm_order_admin" model="res.groups">
+            <field name="name">Quản trị phân hệ</field>
+            <field name="implied_ids" eval="[(4, ref('confirm_order_process.group_sales_confirm_order_manager'))]"/>
+            <field name="category_id" ref="base.module_category_sales_confirm_order"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,13 @@
+@media (min-width: 992px) {
+    .o_field_many2many_images>div>div>.o_attachment.o_attachment_many2many {
+        width: 50%;
+    }
+}
+.o_field_many2many_images{
+    width: 100%;
+}
+.o_field_many2many_images .modal-body>img{
+    width: auto;
+    height: 60vh;
+    max-height: 60vh;
+}

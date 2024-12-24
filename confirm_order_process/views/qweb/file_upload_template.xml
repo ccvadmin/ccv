@@ -1,0 +1,121 @@
+<odoo>
+    <template id="file_upload_result" name="File Upload Result">
+        <link rel="stylesheet" href="/confirm_order_process/static/src/css/bootstrap.min.css"></link>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            #template.container *{
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 16px;
+            }
+        </style>
+        <div id="template" class="container" style="margin: 40px auto;">
+            <div class="text-center">
+                <img class="img" height="120px" t-att-src="image_data_uri(logo)" alt="Logo"/>
+            </div>
+            <div class="text-center m-4">
+                <h3 class="font-weight-bold" style="font-size:26px;">KẾT QUẢ TẢI ẢNH</h3>
+            </div>
+            <p><t t-esc="message"/></p>
+            <div>
+                <h3>Danh sách ảnh đã tải lên:</h3>
+                <div class="row">
+                    <t t-foreach="attachments" t-as="attachment">
+                        <div class="col d-flex justify-content-center">
+                            <img t-att-src="attachment['url']" style="min-height:200px; max-width:200px;"/>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </div>
+        <script src="/confirm_order_process/static/src/js/jquery-3.3.1.slim.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/popper.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/bootstrap.min.js"></script>
+    </template>
+    <template id="file_upload_form" name="File Upload Form">
+        <link rel="stylesheet" href="/confirm_order_process/static/src/css/bootstrap.min.css"></link>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            #template.container *{
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 16px;
+            }
+        </style>
+        <div id="template" class="container" style="margin: 40px auto;">
+            <div class="text-center">
+                <img class="img" height="120px" t-att-src="image_data_uri(logo)" alt="Logo"/>
+            </div>
+            <div class="text-center m-4">
+                <h3 class="font-weight-bold" style="font-size:26px;">TẢI ẢNH CHO ĐƠN HÀNG</h3>
+            </div>
+            <form t-att-action="urlpost" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="form-group row">
+                    <label for="order_name" class="col-sm-2 col-form-label">Đơn hàng</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="order_name" t-att-value="order.name" disabled="1"/>
+                    </div>
+                </div>
+                <div class="form-group row mt-3">
+                    <label for="files" class="col-sm-2 col-form-label">Chọn ảnh</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control-file" id="files" name="files" accept="image/*" multiple="multiple" onchange="previewImages(event)" required="required"/>
+                    </div>
+                </div>
+                <div id="image_preview" class="container row mt-3" style="margin-top: 20px;">
+                    <div class="row">
+                    </div>
+                </div>
+                <div class="text-center mt-4 mb-4">
+                    <button class="btn btn-primary text-center pl-4 pr-4 pt-2 pb-2" type="submit">Tải lên</button>
+                </div>
+            </form>
+        </div>
+        <script type="text/javascript">
+            async function previewImages(event) {
+                var files = event.target.files;
+                var output = document.querySelector('#image_preview .row');
+
+                for (let i = 0; i &lt; files.length; i++) {
+                    await new Promise((resolve) =&gt; {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            var img = document.createElement('img');
+                            img.classList.add('img-thumbnail');
+                            img.src = e.target.result;
+                            img.style.maxWidth = "400px";
+                            img.style.maxHeight = "200px";
+
+                            var nameInput = document.createElement('input');
+                            nameInput.classList.add('form-control');
+                            nameInput.type = 'text';
+                            nameInput.name = files[i].name;
+                            nameInput.required = true;
+                            nameInput.placeholder = 'Tên ảnh';
+                            nameInput.classList.add('mt-2');
+
+                            var nameGroup = document.createElement('div');
+                            nameGroup.classList.add('col-sm');
+                            nameGroup.classList.add('mt-2');
+
+                            var div = document.createElement('div');
+                            div.classList.add('text-center');
+                            div.appendChild(img);
+                            div.appendChild(nameInput);
+                            nameGroup.appendChild(div);
+                            output.appendChild(nameGroup);
+
+                            resolve();
+                        };
+                        reader.readAsDataURL(files[i]);
+                    });
+                }
+            }
+
+        </script>
+        <script src="/confirm_order_process/static/src/js/jquery-3.3.1.slim.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/popper.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/bootstrap.min.js"></script>
+    </template>
+    
+    
+</odoo>
