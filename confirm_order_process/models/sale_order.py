@@ -275,7 +275,7 @@ class SaleOrder(models.Model):
     def action_confirm_delivery(self):
         for order in self:
             order.state_delivery = 'confirm'
-            order.order_link_ids.filtered(lambda l: l.type=='delivery' and l.state=='draft').write({'state':'consume'})
+            order.order_link_ids.filtered(lambda l: l.state=='draft').write({'state':'consume'})
 
     def send_message_w_trigger(self, type='order'):
         channel_env = self.env['mail.channel'].sudo()

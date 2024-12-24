@@ -17,7 +17,7 @@ class OrderLink(models.Model):
         ('order', 'Xác nhận đơn hàng'),
         ('delivery', 'Xác nhận giao hàng'),
         ('image', 'Thêm hình ảnh'),
-        ('driver', 'Giao hàng'),
+        ('driver', 'Tài xế'),
         ('follower', 'Theo dõi giao hàng'),
     ], string="Loại đường dẫn")
     state = fields.Selection(selection=[
@@ -126,7 +126,6 @@ class OrderLink(models.Model):
         return "%s/public/upload_files_to_order?token=%s" % (base_url, urllib.parse.quote(token))
 
     def _generate_tracking_url(self, order, role='driver'):
-        # TODO: tạo secret key k đổi cho key này
         key = self.env["ir.config_parameter"].sudo().get_param("confirm_order_process.image_key_public_user", False)
         if not key:
             self.env['ir.config_parameter'].sudo().set_param('confirm_order_process.image_key_public_user', generate_random_string(150))

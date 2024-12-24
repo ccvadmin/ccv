@@ -1,7 +1,7 @@
 <odoo>
     <data>
         <!-- Nhân viên bán hàng (Salesperson) Rule -->
-        <record id="proposal_user_rule" model="ir.rule">
+        <record id="order_link_user_rule" model="ir.rule">
             <field name="name">Nhân viên bán hàng</field>
             <field name="model_id" ref="model_order_link"/>
             <field name="domain_force">['|',('sale_order_id.user_id', '=', False),('sale_order_id.user_id', '=', user.id)]</field>
@@ -9,7 +9,7 @@
         </record>
         
         <!-- Trợ lý đội bán hàng (Sales Assistant) Rule -->
-        <record id="proposal_assistant_rule" model="ir.rule"> <!-- Changed id -->
+        <record id="order_link_assistant_rule" model="ir.rule">
             <field name="name">Trợ lý đội bán hàng</field>
             <field name="model_id" ref="model_order_link"/>
             <field name="domain_force">['|',('sale_order_id.sales_assistant_ids', '=', False),('sale_order_id.sales_assistant_ids', 'in', [user.id])]</field>
@@ -17,7 +17,7 @@
         </record>
         
         <!-- Trưởng đội bán hàng (Sales Team Leader) Rule -->
-        <record id="proposal_manager_rule" model="ir.rule">
+        <record id="order_link_manager_rule" model="ir.rule">
             <field name="name">Trưởng đội bán hàng</field>
             <field name="model_id" ref="model_order_link"/>
             <field name="domain_force">['|',('sale_order_id.sales_team_captain_id', '=', False),('sale_order_id.sales_team_captain_id', '=', user.id)]</field>
@@ -25,7 +25,7 @@
         </record>
         
         <!-- Quản lý (Administrator) Rule -->
-        <record id="proposal_admin_rule" model="ir.rule">
+        <record id="order_link_admin_rule" model="ir.rule">
             <field name="name">Quản lý</field>
             <field name="model_id" ref="model_order_link"/>
             <field name="domain_force">[(1,'=',1)]</field>

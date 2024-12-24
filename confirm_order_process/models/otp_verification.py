@@ -25,9 +25,10 @@ class OtpVerification(models.Model):
         default="unverified",
         readonly=True,
     )
-    phone = fields.Char(string="Điện thoại", readonly=True)
-    email = fields.Char(readonly=True)
+    phone = fields.Char(string="Điện thoại", readonly=True, related="partner_id.phone")
+    email = fields.Char(readonly=True, related="partner_id.email")
     sale_order_id = fields.Many2one("sale.order", string="Đơn bán hàng", readonly=True)
+    partner_id = fields.Many2one("res.partner", string="Khách hàng", readonly=True, related="sale_order_id.partner_id")
     date_end = fields.Datetime(string="Ngày hết hạn", default=datetime.now() + timedelta(minutes=10), readonly=True)
 
     @api.constrains("otp")
@@ -98,15 +99,16 @@ class OtpVerification(models.Model):
         for record in self:
             try:
                 sms_env = self.env['sms.sms'].sudo()
-                sever_env = self.env['sms.vi.hat.configuration'].sudo()
-                sms_sever = sever_env.search([('esms_type','=',7)], limit=1)
+                # TODO: thêm để gửi Vihat
+                # sever_env = self.env['sms.vi.hat.configuration'].sudo()
+                # sms_sever = sever_env.search([('esms_type','=',7)], limit=1)
                 message_body = 'CCV: Mã OTP của bạn: %s. Mã sẽ hết hạn trong 10 phút. Vui lòng chia sẽ mã này.' % record.otp
                 val = {'body' : message_body}
-                if sms_sever:
-                    val.update({'configuration_id' : sms_sever.id})
-                else:
-                    _logger.error('SMS Server OTP chưa được cấu hình!!!')
-                val.update({'number' : record.phone if record.phone else ""})
+                # if sms_sever:
+                #     val.update({'configuration_id' : sms_sever.id})
+                # else:
+                #     _logger.error('SMS Server OTP chưa được cấu hình!!!')
+                val.update({'number' : record.phone if record.phone else "",'partner_id' :record.partner_id.id})
                 sms_sms = sms_env.create(val)
                 sms_sms.send()
             except Exception as e:

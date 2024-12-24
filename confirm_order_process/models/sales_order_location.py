@@ -43,8 +43,6 @@ class SalesOrderLocation(models.Model):
     def _compute_link(self):
         for record in self:
             link = self.env['order.link'].search([('location_id','=',int(record.id))])
-            _logger.info(link)
             record.url = link.url
-            _logger.info(record.url)
 
 

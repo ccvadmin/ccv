@@ -1,11 +1,24 @@
 <odoo>
     <template id="order_delivery_template">
-        <link rel="stylesheet" href="/confirm_order_process/static/src/css/bootstrap.min.css"></link>
+        <link rel="stylesheet" href="/confirm_order_process/static/src/css/bootstrap.min.css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <style>
             #template.container *{
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 14px;
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 16px;
+            }
+            table {
+                table-layout: auto;
+                width: 100%;
+            }
+
+            @media (max-width: 800px) {
+                table {
+                    width: 100%;
+                }
+                td, th {
+                    white-space: nowrap;
+                }
             }
         </style>
         <div id="template" class="container" style="margin: 40px auto;">
@@ -63,7 +76,7 @@
                     <div class="col-md-10 col-12">
                         <p class="font-weight-bold">
                             <t t-esc="total_amount" />
-                            <t t-esc="currency" />
+                            <!-- <t t-esc="currency" /> -->
                         </p>
                     </div>
                 </div>
@@ -72,7 +85,7 @@
                         <p>Mã sản xuất:</p>
                     </div>
                     <div class="col-md-10 col-12">
-                        <p class="font-weight-bold">MSC123132, MSX1111111</p>
+                        <p class="font-weight-bold"><t t-esc="mrp_str" /></p>
                     </div>
                 </div>
                 <div class="row">
@@ -80,47 +93,49 @@
                         <p>Trạng thái:</p>
                     </div>
                     <div class="col-md-10 col-12">
-                        <p class="font-weight-bold">Hoàn thành</p>
+                        <p class="font-weight-bold"><t t-esc="mrp_state" /></p>
                     </div>
                 </div>
 
                 <div class="mt-4">
                     <h5 class="text-center font-weight-bold"
                         style="font-size: 20px;text-transform: uppercase;">Sản phẩm đã đặt</h5>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="text-center">Tên sản phẩm</th>
-                                <th class="text-center">ĐVT</th>
-                                <th class="text-center">Số lượng</th>
-                                <th class="text-center">Đơn giá</th>
-                                <th class="text-center">Thành tiền</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="products" t-as="line">
+                    <div class="table-responsive" style="overflow-x: auto;">
+                        <table class="table table-bordered">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <t t-esc="line['name']" />
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-esc="line['product_uom']" />
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-esc="line['quantity']" />
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-esc="line['price_unit']" />
-                                        <t t-esc="currency" />
-                                    </td>
-                                    <td class="text-center">
-                                        <t t-esc="line['price_subtotal']" />
-                                        <t t-esc="currency" />
-                                    </td>
+                                    <th class="text-center">Tên sản phẩm</th>
+                                    <th class="text-center">ĐVT</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-center">Đơn giá</th>
+                                    <th class="text-center">Thành tiền</th>
                                 </tr>
-                            </t>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="products" t-as="line">
+                                    <tr>
+                                        <td>
+                                            <t t-esc="line['name']" />
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="line['product_uom']" />
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="line['quantity']" />
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="line['price_unit']" />
+                                            <!-- <t t-esc="currency" /> -->
+                                        </td>
+                                        <td class="text-center">
+                                            <t t-esc="line['price_subtotal']" />
+                                            <!-- <t t-esc="currency" /> -->
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <t t-if="status">
@@ -142,6 +157,15 @@
                 </form>
             </t>
             <script>
+                const form = document.querySelector('form');
+                const pathname = window.location.pathname;
+                const current_url = window.location.search;
+                const tokenValue = pathname+current_url
+                if (tokenValue) {
+                    form.action = tokenValue;
+                } else {
+                    console.log('No token parameter found.');
+                }
                 function validateForm() {
                 var otp = document.getElementById('otp').value;
                 if (otp.trim() === '') {
@@ -182,9 +206,9 @@
                 </div>
             </div>
         </t>
-        <script src="/confirm_order_process/static/src/js/jquery.slim.min.js"></script>
-        <script src="/confirm_order_process/static/src/js/bootstrap.bundle.min.js"></script>
-        <script src="/confirm_order_process/static/src/js/popper.min.js"></script>
-        <script src="/confirm_order_process/static/src/js/bootstrap.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/jquery.slim.min.js"/>
+        <script src="/confirm_order_process/static/src/js/bootstrap.bundle.min.js"/>
+        <script src="/confirm_order_process/static/src/js/popper.min.js"/>
+        <script src="/confirm_order_process/static/src/js/bootstrap.min.js"/>
     </template>
 </odoo>

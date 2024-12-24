@@ -7,6 +7,20 @@
                 font-family: 'Times New Roman', Times, serif;
                 font-size: 16px;
             }
+            table {
+                table-layout: auto;
+                width: 100%;
+            }
+
+            @media (max-width: 800px) {
+                table {
+                    width: 100%;
+                }
+                td, th {
+                    white-space: nowrap;
+                }
+            }
+
         </style>
         <div id="template" class="container" style="margin: 40px auto;">
             <div class="text-center">
@@ -53,34 +67,36 @@
                         <p>Tổng giá trị đơn hàng:</p>
                     </div>
                     <div class="col-md-10 col-12">
-                        <p class="font-weight-bold"><t t-esc="total_amount"/> <t t-esc="currency"/></p>
+                        <p class="font-weight-bold"><t t-esc="total_amount"/></p>
                     </div>
                 </div>
 
                 <div class="mt-4">
                     <h5 class="text-center font-weight-bold" style="font-size: 20px;text-transform: uppercase;">Sản phẩm đã đặt</h5>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="text-center">Tên sản phẩm</th>
-                                <th class="text-center">ĐVT</th>
-                                <th class="text-center">Số lượng</th>
-                                <th class="text-center">Đơn giá</th>
-                                <th class="text-center">Thành tiền</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="products" t-as="line">
+                    <div class="table-responsive" style="overflow-x: auto;">
+                        <table class="table table-bordered">
+                            <thead>
                                 <tr>
-                                    <td><t t-esc="line['name']"/></td>
-                                    <td class="text-center"><t t-esc="line['product_uom']"/></td>
-                                    <td class="text-center"><t t-esc="line['quantity']"/></td>
-                                    <td class="text-center"><t t-esc="line['price_unit']"/> <t t-esc="currency"/></td>
-                                    <td class="text-center"><t t-esc="line['price_subtotal']"/> <t t-esc="currency"/></td>
+                                    <th class="text-center">Tên sản phẩm</th>
+                                    <th class="text-center">ĐVT</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-center">Đơn giá</th>
+                                    <th class="text-center">Thành tiền</th>
                                 </tr>
-                            </t>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="products" t-as="line">
+                                    <tr>
+                                        <td><t t-esc="line['name']"/></td>
+                                        <td class="text-center"><t t-esc="line['product_uom']"/></td>
+                                        <td class="text-center"><t t-esc="line['quantity']"/></td>
+                                        <td class="text-center"><t t-esc="line['price_unit']"/></td>
+                                        <td class="text-center"><t t-esc="line['price_subtotal']"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <t t-if="status">
@@ -108,7 +124,6 @@
                 const tokenValue = pathname+current_url
                 if (tokenValue) {
                     form.action = tokenValue;
-                    console.log(tokenValue)
                 } else {
                     console.log('No token parameter found.');
                 }
@@ -123,8 +138,8 @@
                 }
             </script>
         </div>
-        <script src="/confirm_order_process/static/src/js/jquery-3.3.1.slim.min.js"></script>
-        <script src="/confirm_order_process/static/src/js/popper.min.js"></script>
-        <script src="/confirm_order_process/static/src/js/bootstrap.min.js"></script>
+        <script src="/confirm_order_process/static/src/js/jquery-3.3.1.slim.min.js"/>
+        <script src="/confirm_order_process/static/src/js/popper.min.js"/>
+        <script src="/confirm_order_process/static/src/js/bootstrap.min.js"/>
     </template>
 </odoo>
